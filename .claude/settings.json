@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Remove-Item -Recurse -Force \"g:/Escritorio/Pame/Desarrollo de software 2026/Back/TP1 Crud_todostock/todostock-main/src/services\")",
+      "Bash(Remove-Item -Recurse -Force \"g:/Escritorio/Pame/Desarrollo de software 2026/Back/TP1 Crud_todostock/todostock-main/src/storage\")",
+      "Bash(Remove-Item -Recurse -Force \"g:/Escritorio/Pame/Desarrollo de software 2026/Back/TP1 Crud_todostock/todostock-main/src/validators\")"
+    ]
+  }
+}

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "93cef45f-7866-403f-bece-220cdc6d843a",
+    "nombre": "Supermercado El Ahorro",
+    "cuit": "20-11111111-1",
+    "contacto": "Pedro Ramirez",
+    "telefono": "011-5555-6666",
+    "email": "compras@elahorro.com",
+    "limite_credito": 500000,
+    "saldo_cuenta_corriente": 0
+  },
+  {
+    "id": "9eaf275a-989f-4ccb-aaea-1219fd9b42c7",
+    "nombre": "Limpieza Total S.R.L.",
+    "cuit": "20-22222222-2",
+    "contacto": "Ana Martinez",
+    "telefono": "011-7777-8888",
+    "email": "admin@limpiezatotal.com",
+    "limite_credito": 200000,
+    "saldo_cuenta_corriente": 0
+  },
+  {
+    "id": "430f4cb9-db25-466d-a5fb-21ff28df5834",
+    "nombre": "Hotel Grand Palace",
+    "cuit": "30-33333333-3",
+    "contacto": "Luis Fernandez",
+    "telefono": "011-9999-0000",
+    "email": "compras@grandpalace.com",
+    "limite_credito": 100000,
+    "saldo_cuenta_corriente": 0
+  }
+]

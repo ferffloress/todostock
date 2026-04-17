@@ -1,0 +1,29 @@
+[
+  {
+    "id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "nombre": "Quimica del Sur S.A.",
+    "cuit": "30-12345678-9",
+    "contacto": "Juan Perez",
+    "telefono": "011-4444-5555",
+    "email": "ventas@quimicadelsur.com",
+    "condicion_pago": "30 dias"
+  },
+  {
+    "id": "6cbb302b-6e5d-4f92-8d18-bb161dadcc63",
+    "nombre": "Distribuidora Limpiar S.R.L.",
+    "cuit": "30-98765432-1",
+    "contacto": "Maria Garcia",
+    "telefono": "011-3333-4444",
+    "email": "pedidos@limpiar.com",
+    "condicion_pago": "contado"
+  },
+  {
+    "id": "1f666c34-8747-40d0-b52f-a2f1ee1ec6be",
+    "nombre": "Productos Clean S.A.",
+    "cuit": "30-55555555-5",
+    "contacto": "Carlos Lopez",
+    "telefono": "011-2222-3333",
+    "email": "info@clean.com",
+    "condicion_pago": "60 dias"
+  }
+]

@@ -1,0 +1,112 @@
+[
+  {
+    "id": "45b8e18f-9e2a-4a38-a1e3-706d9668124c",
+    "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "LAV-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 50,
+    "cantidad_actual": 50,
+    "costo_unitario": 850
+  },
+  {
+    "id": "cd701814-e9aa-455c-8a19-3804f9e543b9",
+    "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "LAV-2024-B",
+    "fecha_vencimiento": "2027-04-17T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 100,
+    "cantidad_actual": 100,
+    "costo_unitario": 850
+  },
+  {
+    "id": "91d186ad-2049-4dc1-a80e-42cb8ad8043e",
+    "producto_id": "e43074ba-e1bd-4aba-ae2d-b9b1240ad111",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "DET-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 30,
+    "cantidad_actual": 30,
+    "costo_unitario": 620
+  },
+  {
+    "id": "32b90c1b-866e-4c97-9956-2b92e4ca13a3",
+    "producto_id": "e43074ba-e1bd-4aba-ae2d-b9b1240ad111",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "DET-2024-B",
+    "fecha_vencimiento": "2027-04-17T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 50,
+    "cantidad_actual": 50,
+    "costo_unitario": 620
+  },
+  {
+    "id": "84789821-ddda-404f-b7f4-b5d94a5bb02d",
+    "producto_id": "e92ad407-3ff7-4709-9269-162749edbcfd",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "DES-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 100,
+    "cantidad_actual": 100,
+    "costo_unitario": 380
+  },
+  {
+    "id": "94d38ee9-7c7c-44ce-af37-b512faca5fbb",
+    "producto_id": "e92ad407-3ff7-4709-9269-162749edbcfd",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "DES-2024-B",
+    "fecha_vencimiento": "2027-04-17T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 100,
+    "cantidad_actual": 100,
+    "costo_unitario": 380
+  },
+  {
+    "id": "cc3469ba-479c-4ee3-8e1e-8d1507836540",
+    "producto_id": "71528b42-a518-4df6-8def-5fde73bd67c7",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "JAB-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 20,
+    "cantidad_actual": 20,
+    "costo_unitario": 450
+  },
+  {
+    "id": "f1e731ae-afcb-462a-b8a2-762246df7f35",
+    "producto_id": "71528b42-a518-4df6-8def-5fde73bd67c7",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "JAB-2024-B",
+    "fecha_vencimiento": "2027-04-17T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 25,
+    "cantidad_actual": 25,
+    "costo_unitario": 450
+  },
+  {
+    "id": "40433fda-7f4d-4001-a440-7411805a4cf6",
+    "producto_id": "4f72636d-7b8f-4b4a-b998-2848f6bf48f3",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "ALC-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 50,
+    "cantidad_actual": 0,
+    "costo_unitario": 290
+  },
+  {
+    "id": "0931ffb7-1b1a-439c-b441-af6794aa8f86",
+    "producto_id": "4f72636d-7b8f-4b4a-b998-2848f6bf48f3",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "ALC-2024-B",
+    "fecha_vencimiento": "2027-04-17T02:30:56.568Z",
+    "fecha_ingreso": "2026-04-17T02:30:56.568Z",
+    "cantidad_inicial": 100,
+    "cantidad_actual": 0,
+    "costo_unitario": 290
+  }
+]
