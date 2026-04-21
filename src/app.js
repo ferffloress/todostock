@@ -6,6 +6,11 @@ const path = require('path');
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
+//Conexion archivo index.pug
+app.get('/', (req, res) => {
+  res.render('index'); 
+});
+
 // Middleware
 app.use(express.json());
 
