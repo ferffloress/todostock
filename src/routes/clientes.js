@@ -7,7 +7,10 @@ const cuentasCorrientesService = require('../services/cuentasCorrientesService')
 router.get('/', (req, res, next) => {
   try {
     const clientes = clientesService.getAll();
-    res.json(clientes);
+    res.render('clientes', { 
+        titulo: 'Listado de Clientes', 
+        clientes: clientes 
+    });
   } catch (err) {
     next(err);
   }

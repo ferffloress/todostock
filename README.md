@@ -9,6 +9,7 @@ Backend REST para **TodoStock S.A.**, distribuidora mayorista de productos de li
 ```bash
 cd todostock
 npm install
+npm install --save pug
 ```
 
 ## Ejecución

@@ -1,5 +1,10 @@
 const express = require('express');
 const app = express();
+const path = require('path');
+
+//Habilitar Pug y añadir carpera de vistas
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
 
 // Middleware
 app.use(express.json());
