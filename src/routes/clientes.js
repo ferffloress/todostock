@@ -26,6 +26,11 @@ router.get('/:id/cuenta-corriente', (req, res, next) => {
   }
 });
 
+// GET /nuevo-cliente
+router.get('/nuevo-cliente', (req, res) => {
+  res.render('nuevoCliente', { titulo: 'Alta Nuevo Cliente' });
+});
+
 // GET /clientes/:id
 router.get('/:id', (req, res, next) => {
   try {
