@@ -1,35 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const resumenesService = require('../services/resumenesService');
+const resumenesController = require('../controllers/resumenesController');
 
-// GET /resumen/inventario
-router.get('/inventario', (req, res, next) => {
-  try {
-    const inventario = resumenesService.getInventario();
-    res.json(inventario);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET /resumen/caja
-router.get('/caja', (req, res, next) => {
-  try {
-    const caja = resumenesService.getCaja();
-    res.json(caja);
-  } catch (err) {
-    next(err);
-  }
-});
-
-// GET /resumen/ventas
-router.get('/ventas', (req, res, next) => {
-  try {
-    const ventas = resumenesService.getVentas();
-    res.json(ventas);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/inventario', resumenesController.inventario);
+router.get('/caja', resumenesController.caja);
+router.get('/ventas', resumenesController.ventas);
 
 module.exports = router;

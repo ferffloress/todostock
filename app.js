@@ -2,29 +2,25 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
-//Habilitar Pug y añadir carpera de vistas
 app.set('view engine', 'pug');
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'src/views'));
 
-//Conexion archivo index.pug
 app.get('/', (req, res) => {
-  res.render('index'); 
+  res.render('index');
 });
 
-// Middleware
 app.use(express.json());
 
-// Routes
-const productosRouter = require('./routes/productos');
-const proveedoresRouter = require('./routes/proveedores');
-const clientesRouter = require('./routes/clientes');
-const lotesRouter = require('./routes/lotes');
-const comprasRouter = require('./routes/compras');
-const ventasRouter = require('./routes/ventas');
-const cobranzasRouter = require('./routes/cobranzas');
-const movimientosStockRouter = require('./routes/movimientosStock');
-const alertasRouter = require('./routes/alertas');
-const resumenesRouter = require('./routes/resumenes');
+const productosRouter = require('./src/routes/productos');
+const proveedoresRouter = require('./src/routes/proveedores');
+const clientesRouter = require('./src/routes/clientes');
+const lotesRouter = require('./src/routes/lotes');
+const comprasRouter = require('./src/routes/compras');
+const ventasRouter = require('./src/routes/ventas');
+const cobranzasRouter = require('./src/routes/cobranzas');
+const movimientosStockRouter = require('./src/routes/movimientosStock');
+const alertasRouter = require('./src/routes/alertas');
+const resumenesRouter = require('./src/routes/resumenes');
 
 app.use('/productos', productosRouter);
 app.use('/proveedores', proveedoresRouter);
@@ -37,16 +33,10 @@ app.use('/movimientos-stock', movimientosStockRouter);
 app.use('/alertas', alertasRouter);
 app.use('/resumen', resumenesRouter);
 
-// Run seed on startup
-const seed = require('./seed');
-seed();
-
-// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: `Ruta no encontrada: ${req.method} ${req.originalUrl}` });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
