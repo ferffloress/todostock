@@ -6,7 +6,7 @@ const ventasService = require('../services/ventasService');
 router.get('/', (req, res, next) => {
   try {
     const ventas = ventasService.getAll();
-    res.json(ventas);
+    res.render('ventas', { titulo: 'Ventas', ventas: ventas })
   } catch (err) {
     next(err);
   }

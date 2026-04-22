@@ -6,7 +6,10 @@ const proveedoresService = require('../services/proveedoresService');
 router.get('/', (req, res, next) => {
   try {
     const proveedores = proveedoresService.getAll();
-    res.json(proveedores);
+    res.render('proveedores', { 
+      titulo: 'Listado de Proveedores', 
+      proveedores: proveedores 
+    });
   } catch (err) {
     next(err);
   }

@@ -5,8 +5,12 @@ const comprasService = require('../services/comprasService');
 // GET /compras
 router.get('/', (req, res, next) => {
   try {
-    const compras = comprasService.getAll();
-    res.json(compras);
+    const compras = comprasService.getAll(); // Trae los datos del seed
+    res.render('compras', { 
+      titulo: 'Listado de Compras', 
+      compras: compras 
+    });
+    
   } catch (err) {
     next(err);
   }

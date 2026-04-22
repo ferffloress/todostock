@@ -6,7 +6,10 @@ const lotesService = require('../services/lotesService');
 router.get('/', (req, res, next) => {
   try {
     const lotes = lotesService.getAll();
-    res.json(lotes);
+     res.render('lotes', { 
+      titulo: 'Gestión de Lotes (Stock)', 
+      lotes: lotes 
+    });
   } catch (err) {
     next(err);
   }
