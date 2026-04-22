@@ -19,8 +19,18 @@ router.get('/', (req, res, next) => {
 // GET /clientes/:id/cuenta-corriente
 router.get('/:id/cuenta-corriente', (req, res, next) => {
   try {
+    const cliente = clientesService.getById(req.params.id);
     const cuentaCorriente = cuentasCorrientesService.getByCliente(req.params.id);
-    res.json(cuentaCorriente);
+
+    res.render('cuentaCorriente', {
+      titulo: 'Cuenta Corriente',
+      cliente: {
+        ...cliente,
+        movimientos: cuentaCorriente.movimientos,
+        saldo_actual: cuentaCorriente.saldo_actual,
+        limite_credito: cuentaCorriente.limite_credito ?? cliente.limite_credito
+      }
+    });
   } catch (err) {
     next(err);
   }
