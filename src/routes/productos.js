@@ -15,6 +15,12 @@ router.get('/', (req, res, next) => {
   }
 });
 
+// GET /productos/nuevo-producto 
+router.get('/nuevo-producto', (req, res) => {
+  res.render('nuevoProducto', { titulo: 'Nuevo Producto' });
+});
+
+
 // GET /productos/:id
 router.get('/:id', (req, res, next) => {
   try {
