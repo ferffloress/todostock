@@ -1,1 +1,57 @@
-[]
+[
+  {
+    "id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "nombre": "Lavandina 10L",
+    "categoria": "Desinfectantes",
+    "precio_costo": 850,
+    "precio_venta": 1200,
+    "stock_actual": 150,
+    "stock_minimo": 50,
+    "unidad_medida": "unidad",
+    "activo": true
+  },
+  {
+    "id": "e43074ba-e1bd-4aba-ae2d-b9b1240ad111",
+    "nombre": "Detergente Industrial 5L",
+    "categoria": "Detergentes",
+    "precio_costo": 620,
+    "precio_venta": 920,
+    "stock_actual": 80,
+    "stock_minimo": 30,
+    "unidad_medida": "unidad",
+    "activo": true
+  },
+  {
+    "id": "e92ad407-3ff7-4709-9269-162749edbcfd",
+    "nombre": "Desengrasante 1L",
+    "categoria": "Desengrasantes",
+    "precio_costo": 380,
+    "precio_venta": 580,
+    "stock_actual": 200,
+    "stock_minimo": 60,
+    "unidad_medida": "unidad",
+    "activo": true
+  },
+  {
+    "id": "71528b42-a518-4df6-8def-5fde73bd67c7",
+    "nombre": "Jabon Liquido 5L",
+    "categoria": "Jabones",
+    "precio_costo": 450,
+    "precio_venta": 680,
+    "stock_actual": 45,
+    "stock_minimo": 40,
+    "unidad_medida": "unidad",
+    "activo": true
+  },
+  {
+    "id": "4f72636d-7b8f-4b4a-b998-2848f6bf48f3",
+    "nombre": "Alcohol en Gel 500ml",
+    "categoria": "Antisepticos",
+    "precio_costo": 290,
+    "precio_venta": 450,
+    "stock_actual": 0,
+    "stock_minimo": 20,
+    "unidad_medida": "unidad",
+    "activo": true
+  }
+]
