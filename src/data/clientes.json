@@ -28,5 +28,17 @@
     "email": "compras@grandpalace.com",
     "limite_credito": 100000,
     "saldo_cuenta_corriente": 0
+  },
+  {
+    "id": "f47d485f-ffab-4522-9789-670814ce32b9",
+    "nombre": "Gisela Croci",
+    "cuit": "27343060330",
+    "contacto": "123456",
+    "telefono": "123456",
+    "email": "giselacroci@gmail.com",
+    "limite_credito": 150000,
+    "saldo_cuenta_corriente": 25000,
+    "created_at": "2026-04-23T03:04:07.514Z",
+    "updated_at": "2026-04-23T03:04:07.515Z"
   }
 ]

@@ -54,15 +54,21 @@ const clientesController = {
 
   crear(req, res, next) {
     try {
-      const { errors } = validate(req.body);
+        const body = {
+        ...req.body,
+        limite_credito: Number(req.body.limite_credito),
+        saldo_cuenta_corriente: Number(req.body.saldo_cuenta_corriente),
+      };
+
+      const { errors } = validate(body);
       if (errors.length > 0) {
         const err = makeError('Datos inválidos', 422);
         err.details = errors;
         throw err;
       }
-      const cliente = new Cliente(req.body);
+      const cliente = new Cliente(body);
       clientesStore.create(cliente);
-      res.status(201).json(cliente);
+      res.redirect('/clientes');
     } catch (err) {
       next(err);
     }
@@ -72,14 +78,21 @@ const clientesController = {
     try {
       const existing = clientesStore.getById(req.params.id);
       if (!existing) throw makeError('Cliente no encontrado', 404);
-      const merged = { ...existing, ...req.body };
+      
+      const body = {
+        ...req.body,
+        limite_credito: Number(req.body.limite_credito),
+        saldo_cuenta_corriente: Number(req.body.saldo_cuenta_corriente),
+      };
+
+      const merged = { ...existing, ...body };
       const { errors } = validate(merged);
       if (errors.length > 0) {
         const err = makeError('Datos inválidos', 422);
         err.details = errors;
         throw err;
       }
-      const updated = clientesStore.update(req.params.id, { ...req.body, updated_at: new Date().toISOString() });
+      const updated = clientesStore.update(req.params.id, { ...body, updated_at: new Date().toISOString() });
       res.json(updated);
     } catch (err) {
       next(err);

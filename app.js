@@ -10,6 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); //leer datos de formularios
 
 const productosRouter = require('./src/routes/productos');
 const proveedoresRouter = require('./src/routes/proveedores');
