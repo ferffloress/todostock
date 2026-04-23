@@ -17,6 +17,15 @@ const lotesController = {
     }
   },
 
+    listarVista(req, res, next) {
+    try {
+      const lotes = store.getAll();
+      res.render('lotes', { titulo: 'Gestión de Lotes (Stock)', lotes });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   listarPorProducto(req, res, next) {
     try {
       const lotes = store.findWhere(l => l.producto_id === req.params.producto_id);

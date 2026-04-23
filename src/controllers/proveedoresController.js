@@ -19,6 +19,15 @@ const proveedoresController = {
     }
   },
 
+  listarVista(req, res, next) {
+    try {
+      const proveedores = store.getAll();
+      res.render('proveedores', { titulo: 'Listado de Proveedores', proveedores });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   obtener(req, res, next) {
     try {
       const proveedor = store.getById(req.params.id);
