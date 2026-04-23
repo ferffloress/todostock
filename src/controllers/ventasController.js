@@ -26,6 +26,15 @@ const ventasController = {
     }
   },
 
+    listarVista(req, res, next) {
+    try {
+      const ventas = ventasStore.getAll();
+      res.render('ventas', { titulo: 'Ventas', ventas });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   obtener(req, res, next) {
     try {
       const venta = ventasStore.getById(req.params.id);

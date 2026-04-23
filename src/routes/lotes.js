@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const lotesService = require('../services/lotesService');
 const lotesController = require('../controllers/lotesController');
 
 // GET /lotes

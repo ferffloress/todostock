@@ -1,12 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const proveedoresService = require('../services/proveedoresService');
 const proveedoresController = require('../controllers/proveedoresController');
 
 // GET /proveedores
 router.get('/', (req, res, next) => {
   try {
-    const proveedores = proveedoresService.getAll();
+    const proveedores = proveedoresController.listar();
     res.render('proveedores', { 
       titulo: 'Listado de Proveedores', 
       proveedores: proveedores 

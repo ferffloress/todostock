@@ -3,57 +3,18 @@ const router = express.Router();
 const comprasController = require('../controllers/comprasController');
 
 // GET /compras
-router.get('/', (req, res, next) => {
-  try {
-    const compras = comprasService.getAll(); // Trae los datos del seed
-    res.render('compras', { 
-      titulo: 'Listado de Compras', 
-      compras: compras 
-    });
-    
-  } catch (err) {
-    next(err);
-  }
-});
-
+router.get('/', comprasController.listarVista);
+ 
 // GET /compras/:id
-router.get('/:id', (req, res, next) => {
-  try {
-    const compra = comprasService.getById(req.params.id);
-    res.json(compra);
-  } catch (err) {
-    next(err);
-  }
-});
-
+router.get('/:id', comprasController.obtener);
+ 
 // POST /compras
-router.post('/', (req, res, next) => {
-  try {
-    const compra = comprasService.create(req.body);
-    res.status(201).json(compra);
-  } catch (err) {
-    next(err);
-  }
-});
-
+router.post('/', comprasController.crear);
+ 
 // PATCH /compras/:id/recibir
-router.patch('/:id/recibir', (req, res, next) => {
-  try {
-    const compra = comprasService.recibir(req.params.id);
-    res.json(compra);
-  } catch (err) {
-    next(err);
-  }
-});
-
+router.patch('/:id/recibir', comprasController.recibir);
+ 
 // PATCH /compras/:id/cancelar
-router.patch('/:id/cancelar', (req, res, next) => {
-  try {
-    const compra = comprasService.cancelar(req.params.id);
-    res.json(compra);
-  } catch (err) {
-    next(err);
-  }
-});
+router.patch('/:id/cancelar', comprasController.cancelar);
 
 module.exports = router;

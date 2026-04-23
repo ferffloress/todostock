@@ -25,6 +25,15 @@ const comprasController = {
     }
   },
 
+  listarVista(req, res, next) {
+    try {
+      const compras = comprasStore.getAll();
+      res.render('compras', { titulo: 'Listado de Compras', compras });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   obtener(req, res, next) {
     try {
       const compra = comprasStore.getById(req.params.id);

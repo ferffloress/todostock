@@ -1,56 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const ventasService = require('../services/ventasService');
 const ventasController = require('../controllers/ventasController');
 
 // GET /ventas
-router.get('/', (req, res, next) => {
-  try {
-    const ventas = ventasService.getAll();
-    res.render('ventas', { titulo: 'Ventas', ventas: ventas })
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/', ventasController.listarVista);
 
 // GET /ventas/:id
-router.get('/:id', (req, res, next) => {
-  try {
-    const venta = ventasService.getById(req.params.id);
-    res.json(venta);
-  } catch (err) {
-    next(err);
-  }
-});
+router.get('/:id', ventasController.obtener);
 
 // POST /ventas
-router.post('/', (req, res, next) => {
-  try {
-    const venta = ventasService.create(req.body);
-    res.status(201).json(venta);
-  } catch (err) {
-    next(err);
-  }
-});
+router.post('/', ventasController.crear);
 
 // PATCH /ventas/:id/despachar
-router.patch('/:id/despachar', (req, res, next) => {
-  try {
-    const venta = ventasService.despachar(req.params.id);
-    res.json(venta);
-  } catch (err) {
-    next(err);
-  }
-});
+router.patch('/:id/despachar', ventasController.despachar);
 
 // PATCH /ventas/:id/cancelar
-router.patch('/:id/cancelar', (req, res, next) => {
-  try {
-    const venta = ventasService.cancelar(req.params.id);
-    res.json(venta);
-  } catch (err) {
-    next(err);
-  }
-});
+router.patch('/:id/cancelar', ventasController.cancelar);
 
 module.exports = router;
