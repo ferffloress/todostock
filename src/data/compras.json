@@ -1,0 +1,28 @@
+[
+  {
+    "id": "1d6440da-37d8-4a9e-94a7-a6cd0c83b6e9",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "fecha": "2026-04-07T02:30:56.568Z",
+    "estado": "recibida",
+    "items": [
+      {
+        "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+        "cantidad": 50,
+        "precio_unitario": 850,
+        "numero_lote": "LAV-2024-A",
+        "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+        "subtotal": 42500
+      },
+      {
+        "producto_id": "e43074ba-e1bd-4aba-ae2d-b9b1240ad111",
+        "cantidad": 30,
+        "precio_unitario": 620,
+        "numero_lote": "DET-2024-A",
+        "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+        "subtotal": 18600
+      }
+    ],
+    "total": 61100,
+    "observaciones": "Compra inicial de stock"
+  }
+]

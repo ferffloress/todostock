@@ -1,0 +1,41 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    title= titulo
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+  body
+    div.container.mt-5
+      div.d-flex.justify-content-between.align-items-center.mb-4
+        h1= titulo
+        a.btn.btn-primary(href="/ventas/nueva-venta") Nueva Venta
+
+      table.table.table-hover.shadow-sm
+        thead.table-dark
+          tr
+            th ID Venta
+            th Cliente (ID)
+            th Fecha
+            th Estado
+            th Total
+            th Acciones
+        tbody
+          each venta in ventas
+            tr
+              //- El ID que viene en tu JSON
+              td.text-muted.small= venta.id.substring(0, 8) + "..."
+              //- El ID del cliente que aparece en el JSON
+              td= venta.cliente_id.substring(0, 8) + "..."
+              //- Formateo de la fecha ISO del JSON
+              td= new Date(venta.fecha).toLocaleDateString('es-AR')
+              td
+                span.badge(class=venta.estado === 'despachada' ? 'bg-success' : 'bg-warning')
+                  = venta.estado.toUpperCase()
+              //- El campo 'total' del JSON
+              td.fw-bold= `$${venta.total}`
+              td
+                button.btn.btn-sm.btn-secondary.me-1 Detalle
+                button.btn.btn-sm.btn-danger Eliminar
+          else
+            tr
+              td.text-center(colspan="6") No hay ventas registradas.
