@@ -29,7 +29,6 @@ const productosController = {
       next(err);
     }
   },
-
   formularioNuevo(req, res) {
     res.render('nuevoProducto', { titulo: 'Nuevo Producto' });
   },

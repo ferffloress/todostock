@@ -45,7 +45,6 @@ const clientesController = {
       next(err);
     }
   },
-
   cuentaCorriente(req, res, next) {
     try {
       const cliente = clientesStore.getById(req.params.id);
