@@ -1,0 +1,12 @@
+[
+  {
+    "id": "87835617-46d7-4a89-8006-22d7acec8603",
+    "cliente_id": "93cef45f-7866-403f-bece-220cdc6d843a",
+    "tipo": "debito",
+    "monto": 12000,
+    "fecha": "2026-04-12T02:30:56.568Z",
+    "referencia": "b11c4a57-6ed0-44bc-8a77-1d43887a89a7",
+    "descripcion": "Venta despachada",
+    "saldo_resultante": 12000
+  }
+]
