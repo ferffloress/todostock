@@ -1,0 +1,33 @@
+[
+  {
+    "id": "45b8e18f-9e2a-4a38-a1e3-706d9668124c",
+    "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "LAV-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "cantidad_inicial": 50,
+    "cantidad_actual": 14,
+    "costo_unitario": 850,
+    "updated_at": "2026-04-25T16:41:19.356Z"
+  },
+  {
+    "id": "83b7e31a-9e2a-4a38-a1e3-706d9668124c",
+    "producto_id": "c23d3d85-4123-49af-487e-7b861c8d9e89",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "LAV-2025-A",
+    "fecha_vencimiento": "2027-10-01T02:30:56.568Z",
+    "cantidad_inicial": 50,
+    "cantidad_actual": 40,
+    "costo_unitario": 850
+  },
+  {
+    "id": "7fa3c291-1234-4bcd-9ef0-abc123def456",
+    "producto_id": "e43074ba-e1bd-4aba-ae2d-b9b1240ad111",
+    "proveedor_id": "53abccf0-21e3-462b-a749-289578ec921e",
+    "numero_lote": "DET-2024-A",
+    "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+    "cantidad_inicial": 30,
+    "cantidad_actual": 30,
+    "costo_unitario": 620
+  }
+]

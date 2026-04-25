@@ -1,0 +1,198 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
+    title= titulo
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    style.
+      .producto-item { position: relative; border-left: 5px solid #0d6efd !important; transition: all 0.3s ease; }
+      .producto-item:hover { box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+      .btn-remover { position: absolute; top: 10px; right: 10px; z-index: 10; }
+      .bg-custom-gray { background-color: #f8f9fa; }
+
+  body.bg-light
+    div.container.mt-5.pb-5
+      div.d-flex.justify-content-between.align-items-center.mb-4
+        h1.fw-bold Ventas
+        a.btn.btn-primary(href="/ventas") Volver al Listado
+
+      div.row.justify-content-center
+        div.col-md-10
+          if error
+            div.alert.alert-danger.alert-dismissible.fade.show(role="alert")
+              strong ¡Error! 
+              span= error
+              button.btn-close(type="button" data-bs-dismiss="alert")
+
+          div.card.border-0.shadow-sm
+            div.card-header.bg-dark.text-white.py-3
+              h5.mb-0.fw-semibold Registrar Nueva Operación
+            div.card-body.p-4
+              form(action="/ventas" method="POST")
+                div.row
+                  div.col-md-4.mb-3
+                    label.form-label.fw-bold Cliente
+                    select.form-select.shadow-none(name="cliente_id" required)
+                      option(value="") Seleccione un cliente...
+                      each cliente in clientes
+                        option(value=cliente.id) #{cliente.nombre}
+                  
+                  div.col-md-4.mb-3
+                    label.form-label.fw-bold Fecha
+                    input.form-control.shadow-none(type="date" name="fecha" required value=new Date().toISOString().split('T')[0])
+
+                  div.col-md-4.mb-3
+                    label.form-label.fw-bold Forma de Pago
+                    select.form-select.shadow-none(name="forma_pago" required)
+                      option(value="efectivo") Efectivo
+                      option(value="transferencia") Transferencia
+                      option(value="cuenta_corriente") Cuenta Corriente
+
+                hr.my-4
+                h6.fw-bold.mb-3 Detalle de Productos
+                
+                div#lista-productos
+                  div.producto-item.p-3.bg-custom-gray.border.rounded.mb-3
+                    div.row
+                      div.col-md-6.mb-3
+                        label.form-label Producto
+                        select.form-select.select-producto(name="items[0][producto_id]" required onchange="actualizarFila(this)")
+                          option(value="" data-stock="0" data-precio="0" data-factor="1") Seleccione un producto...
+                          each producto in productos
+                            option(value=producto.id data-stock=producto.stock_actual data-precio=producto.precio_venta data-factor=(producto.unidades_por_bulto || 6)) #{producto.nombre}
+                      
+                      div.col-md-3.mb-3
+                        label.form-label Tipo Venta
+                        select.form-select.select-tipo(name="items[0][tipo_venta]" onchange="actualizarFila(this.closest('.producto-item').querySelector('.select-producto'))")
+                          option(value="unidad") Minorista (Unidad)
+                          option(value="bulto") Mayorista (Bulto)
+
+                      div.col-md-3.mb-3
+                        label.form-label Cantidad
+                        input.form-control.input-cantidad(type="number" name="items[0][cantidad]" min="1" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                        small.text-muted Stock disponible: 
+                          span.stock-label 0
+                    
+                    div.row
+                      div.col-md-4.mb-3
+                        label.form-label Precio Unitario ($)
+                        input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                      
+                      div.col-md-4.mb-3
+                        label.form-label Subtotal
+                        input.form-control.input-subtotal.bg-white(type="text" readonly value="$ 0.00")
+
+                button#btn-agregar.btn.btn-outline-secondary.btn-sm.mb-4(type="button") + Agregar otro producto
+
+                div.row.bg-light.p-3.rounded.border
+                  div.col-md-6
+                    label.form-label.fw-bold Estado Inicial
+                    select.form-select.shadow-none(name="estado")
+                      option(value="pendiente") PENDIENTE (Reserva stock)
+                      option(value="despachada") DESPACHADA (Afecta stock y saldo)
+                  div.col-md-6.text-end
+                    h4.fw-bold Total General: 
+                      span#total-venta $ 0,00
+
+                div.mt-4.d-flex.justify-content-end.gap-2
+                  button.btn.btn-light.border.px-4(type="button" onclick="window.history.back()") Cancelar
+                  button.btn.btn-primary.px-4.fw-bold(type="submit") Guardar Operación
+
+    script.
+      const listaProductos = document.getElementById('lista-productos');
+      const btnAgregar = document.getElementById('btn-agregar');
+      const totalVentaLabel = document.getElementById('total-venta');
+      let itemIndex = 1;
+
+      function actualizarFila(select) {
+        if (!select.value) return;
+
+        const fila = select.closest('.producto-item');
+        const opcion = select.options[select.selectedIndex];
+        const tipoVenta = fila.querySelector('.select-tipo').value;
+        
+        const stockReal = parseFloat(opcion.getAttribute('data-stock')) || 0;
+        const precioBaseUnidad = parseFloat(opcion.getAttribute('data-precio')) || 0;
+        const factor = parseFloat(opcion.getAttribute('data-factor')) || 1;
+        
+        const inputPrecio = fila.querySelector('.input-precio');
+        const inputCantidad = fila.querySelector('.input-cantidad');
+        const stockLabel = fila.querySelector('.stock-label');
+        
+        if (tipoVenta === 'bulto') {
+          // Lógica Mayorista: Multiplicamos el precio por el factor del bulto
+          const precioBulto = precioBaseUnidad * factor;
+          inputPrecio.value = precioBulto.toFixed(2);
+          
+          // Stock expresado en bultos (entero hacia abajo)
+          const stockBultos = Math.floor(stockReal / factor);
+          stockLabel.innerText = stockBultos + " bultos (" + factor + " u. c/u)";
+          inputCantidad.max = stockBultos;
+        } else {
+          // Lógica Minorista: Precio unitario normal
+          inputPrecio.value = precioBaseUnidad.toFixed(2);
+          stockLabel.innerText = stockReal + " unidades";
+          inputCantidad.max = stockReal;
+        }
+        
+        calcularSubtotal(fila);
+      }
+
+      function calcularSubtotal(fila) {
+        const cant = parseFloat(fila.querySelector('.input-cantidad').value) || 0;
+        const prec = parseFloat(fila.querySelector('.input-precio').value) || 0;
+        const subtotal = cant * prec;
+        
+        fila.querySelector('.input-subtotal').value = '$ ' + subtotal.toLocaleString('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+        
+        actualizarTotalGeneral();
+      }
+
+      function actualizarTotalGeneral() {
+        let total = 0;
+        document.querySelectorAll('.input-subtotal').forEach(input => {
+          // Limpiamos el formato para sumar (quitamos '$' y ajustamos decimales)
+          const valor = parseFloat(input.value.replace('$ ', '').replace(/\./g, '').replace(',', '.')) || 0;
+          total += valor;
+        });
+        
+        totalVentaLabel.innerText = '$ ' + total.toLocaleString('es-AR', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+
+      btnAgregar.addEventListener('click', () => {
+        const primeraFila = document.querySelector('.producto-item');
+        const nuevaFila = primeraFila.cloneNode(true);
+        
+        // Limpiar campos y actualizar índices de nombres para el POST de Express
+        nuevaFila.querySelectorAll('input, select').forEach(input => {
+          input.value = (input.tagName === 'SELECT') ? "" : "0";
+          if (input.name) {
+            input.name = input.name.replace(/\[\d+\]/, `[${itemIndex}]`);
+          }
+          // Reiniciar placeholders/valores específicos
+          if (input.classList.contains('input-subtotal')) input.value = "$ 0,00";
+        });
+        
+        nuevaFila.querySelector('.stock-label').innerText = '0';
+        
+        // Crear botón eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.className = 'btn btn-danger btn-sm btn-remover';
+        btnEliminar.innerHTML = '&times;';
+        btnEliminar.type = 'button';
+        btnEliminar.onclick = () => { 
+          nuevaFila.remove(); 
+          actualizarTotalGeneral();
+        };
+        
+        nuevaFila.appendChild(btnEliminar);
+        listaProductos.appendChild(nuevaFila);
+        itemIndex++;
+      });

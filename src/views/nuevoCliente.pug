@@ -1,0 +1,49 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= titulo
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+  
+  body.bg-light
+    div.container.mt-5
+      div.row.justify-content-center
+        div.col-md-7
+          div.bg-dark.text-white.p-3
+            h4.m-0.fw-bold= titulo
+          
+          div.bg-white.p-4.border.border-top-0.shadow-sm
+            form(method="POST", action="/clientes")
+              div.mb-3
+                label.form-label.fw-bold Nombre / Razón Social
+                input.form-control.rounded-0(type="text", name="nombre")
+              
+              div.row
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold CUIT
+                  input.form-control.rounded-0(type="text", name="cuit")
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold Email
+                  input.form-control.rounded-0(type="email", name="email")
+              
+              div.row
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold Teléfono
+                  input.form-control.rounded-0(type="text", name="telefono")
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold Contacto
+                  input.form-control.rounded-0(type="text", name="contacto")
+
+              div.row
+                div.col-md-6.mb-4
+                  label.form-label.fw-bold Límite de Crédito
+                  input.form-control.rounded-0(type="number", name="limite_credito", value="0")
+                div.col-md-6.mb-4
+                  label.form-label.fw-bold Saldo Inicial
+                  input.form-control.rounded-0(type="number", name="saldo_cuenta_corriente", value="0")
+
+              //- Botones
+              div.d-flex.justify-content-end.gap-2
+                a.btn.btn-outline-secondary.rounded-0(href="/clientes") Cancelar
+                button.btn.btn-primary.rounded-0(type="submit") Guardar Cliente
