@@ -1,0 +1,25 @@
+[
+  {
+    "id": "b11c4a57-6ed0-44bc-8a77-1d43887a89a7",
+    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
+    "fecha": "2026-04-12T02:30:56.568Z",
+    "estado": "despachada",
+    "items": [
+      {
+        "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+        "cantidad": 10,
+        "precio_unitario": 1200,
+        "subtotal": 12000,
+        "lote_id": "45b8e18f-9e2a-4a38-a1e3-706d9668124c",
+        "lote_assignments": [
+          {
+            "lote_id": "45b8e18f-9e2a-4a38-a1e3-706d9668124c",
+            "cantidad": 10
+          }
+        ]
+      }
+    ],
+    "total": 12000,
+    "observaciones": null
+  }
+]

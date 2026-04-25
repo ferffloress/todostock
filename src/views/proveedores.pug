@@ -31,7 +31,19 @@ html(lang="es")
                 a(href=`mailto:${prov.email}`)= prov.email
               td: span.badge.bg-secondary= prov.condicion_pago
               td
-                button.btn.btn-sm.btn-outline-secondary Editar
+                button.btn.btn-sm.btn-outline-secondary.me-1 Editar
+                button.btn.btn-sm.btn-danger(onclick=`eliminarProveedor('${prov.id}', this)`) Eliminar
           else
             tr
               td.text-center(colspan="7") No hay proveedores registrados.
+
+    script.
+      async function eliminarProveedor(id, btn) {
+        const res = await fetch(`/proveedores/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (!res.ok) {
+          alert(data.error);
+        } else {
+          btn.closest('tr').remove();
+        }
+      }

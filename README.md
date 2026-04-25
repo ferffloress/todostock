@@ -1,42 +1,69 @@
 # TodoStock S.A. — Backend REST
 
-Backend REST para **TodoStock S.A.**, distribuidora mayorista de productos de limpieza. Desarrollado con Node.js y Express. Todos los datos se almacenan en memoria (no requiere base de datos), con arquitectura diseñada para migración sencilla a MongoDB.
+Backend REST para **TodoStock S.A.**, distribuidora mayorista de productos de limpieza.  
+Desarrollado con **Node.js** y **Express**. Los datos se persisten en archivos JSON.
+
+---
+
+## Requisitos
+
+- Node.js v18 o superior
+- npm
 
 ---
 
 ## Instalación
 
 ```bash
-cd todostock
 npm install
-npm install --save pug
 ```
 
 ## Ejecución
 
-```bash
-# Producción
-npm start
+**Desarrollo** (con recarga automática via nodemon):
 
-# Desarrollo (con hot reload via nodemon)
+```bash
 npm run dev
 ```
 
-El servidor levanta en `http://localhost:3000` (o en el puerto definido por la variable de entorno `PORT`).
+**Producción:**
 
-Al iniciar, se ejecuta automáticamente el **seed** que precarga datos de prueba en memoria.
+```bash
+npm start
+```
+
+El servidor levanta en `http://localhost:3000`.
+
+---
+
+## Estructura del proyecto
+
+```
+todostock/
+├── app.js              → configuración de Express, middlewares y rutas
+├── src/
+│   ├── index.js        → punto de entrada, levanta el servidor
+│   ├── models/         → clases con constructor para cada entidad
+│   ├── controllers/    → lógica de negocio y respuestas JSON
+│   ├── routes/         → definición de endpoints
+│   ├── validators/     → validaciones de datos de entrada
+│   ├── views/          → plantillas Pug
+│   └── data/           → archivos JSON y store de persistencia
+├── package.json
+└── .gitignore
+```
 
 ---
 
 ## Módulos
 
-| Módulo | Descripción |
-|--------|-------------|
-| **storage/** | Capa de persistencia en memoria usando `Map`. Interfaz común: `getAll`, `getById`, `create`, `update`, `delete`, `findWhere`. Diseñada para reemplazar fácilmente por repositorios MongoDB. |
-| **validators/** | Validación manual de datos de entrada (sin dependencias externas). Retornan `{ errors: string[] }`. |
-| **services/** | Lógica de negocio: CRUD, control de stock, FEFO, cuentas corrientes, alertas, resúmenes. |
-| **routes/** | Controladores Express. Llaman a servicios y devuelven respuestas JSON. |
-| **seed.js** | Datos de prueba precargados al iniciar: 3 proveedores, 5 productos, 10 lotes, 3 clientes, 1 compra recibida, 1 venta despachada. |
+| Módulo         | Descripción                                                                                       |
+| -------------- | ------------------------------------------------------------------------------------------------- |
+| `models/`      | Clases con constructor para cada entidad del sistema                                              |
+| `controllers/` | Lógica de negocio: CRUD, validaciones, control de stock, FEFO, cuentas corrientes                 |
+| `routes/`      | Definición de rutas y métodos HTTP                                                                |
+| `validators/`  | Validación de campos requeridos y tipos en el body de cada request                                |
+| `data/`        | Archivos JSON con datos persistidos y `store.js` para lectura/escritura                           |
 
 ---
 
@@ -44,95 +71,94 @@ Al iniciar, se ejecuta automáticamente el **seed** que precarga datos de prueba
 
 ### Productos
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/productos` | Listar todos los productos |
-| GET | `/productos/:id` | Obtener producto por ID |
-| POST | `/productos` | Crear producto |
-| PUT | `/productos/:id` | Actualizar producto |
-| DELETE | `/productos/:id` | Eliminar producto |
+| Método | Ruta             | Descripción                |
+| ------ | ---------------- | -------------------------- |
+| GET    | `/productos`     | Listar todos los productos |
+| GET    | `/productos/:id` | Obtener producto por ID    |
+| POST   | `/productos`     | Crear producto             |
+| PUT    | `/productos/:id` | Actualizar producto        |
+| DELETE | `/productos/:id` | Eliminar producto          |
 
 ### Proveedores
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/proveedores` | Listar todos los proveedores |
-| GET | `/proveedores/:id` | Obtener proveedor por ID |
-| POST | `/proveedores` | Crear proveedor |
-| PUT | `/proveedores/:id` | Actualizar proveedor |
-| DELETE | `/proveedores/:id` | Eliminar proveedor |
+| Método | Ruta               | Descripción                  |
+| ------ | ------------------ | ---------------------------- |
+| GET    | `/proveedores`     | Listar todos los proveedores |
+| GET    | `/proveedores/:id` | Obtener proveedor por ID     |
+| POST   | `/proveedores`     | Crear proveedor              |
+| PUT    | `/proveedores/:id` | Actualizar proveedor         |
+| DELETE | `/proveedores/:id` | Eliminar proveedor           |
 
 ### Clientes
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/clientes` | Listar todos los clientes |
-| GET | `/clientes/:id` | Obtener cliente por ID |
-| POST | `/clientes` | Crear cliente |
-| PUT | `/clientes/:id` | Actualizar cliente |
-| DELETE | `/clientes/:id` | Eliminar cliente |
-| GET | `/clientes/:id/cuenta-corriente` | Ver cuenta corriente del cliente (saldo + movimientos) |
+| Método | Ruta            | Descripción               |
+| ------ | --------------- | ------------------------- |
+| GET    | `/clientes`     | Listar todos los clientes |
+| GET    | `/clientes/:id` | Obtener cliente por ID    |
+| POST   | `/clientes`     | Crear cliente             |
+| PUT    | `/clientes/:id` | Actualizar cliente        |
+| DELETE | `/clientes/:id` | Eliminar cliente          |
 
 ### Lotes
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/lotes` | Listar todos los lotes |
-| GET | `/lotes/:id` | Obtener lote por ID |
-| GET | `/lotes/producto/:producto_id` | Listar lotes de un producto |
+| Método | Ruta                           | Descripción                 |
+| ------ | ------------------------------ | --------------------------- |
+| GET    | `/lotes`                       | Listar todos los lotes      |
+| GET    | `/lotes/:id`                   | Obtener lote por ID         |
+| GET    | `/lotes/producto/:producto_id` | Listar lotes de un producto |
 
 ### Compras
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/compras` | Listar todas las compras |
-| GET | `/compras/:id` | Obtener compra por ID |
-| POST | `/compras` | Crear compra (estado: pendiente) |
-| PATCH | `/compras/:id/recibir` | Recibir compra: crea lotes, actualiza stock, registra movimientos |
-| PATCH | `/compras/:id/cancelar` | Cancelar compra pendiente |
+| Método | Ruta                    | Descripción                                 |
+| ------ | ----------------------- | ------------------------------------------- |
+| GET    | `/compras`              | Listar todas las compras                    |
+| GET    | `/compras/:id`          | Obtener compra por ID                       |
+| POST   | `/compras`              | Crear compra                                |
+| PATCH  | `/compras/:id/recibir`  | Recibir compra: crea lotes, actualiza stock |
+| PATCH  | `/compras/:id/cancelar` | Cancelar compra pendiente                   |
 
 ### Ventas
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/ventas` | Listar todas las ventas |
-| GET | `/ventas/:id` | Obtener venta por ID |
-| POST | `/ventas` | Crear venta (valida stock y límite de crédito, asigna lotes por FEFO) |
-| PATCH | `/ventas/:id/despachar` | Despachar venta: consume stock, registra movimientos y débito en cuenta corriente |
-| PATCH | `/ventas/:id/cancelar` | Cancelar venta pendiente |
+| Método | Ruta                    | Descripción                                                           |
+| ------ | ----------------------- | --------------------------------------------------------------------- |
+| GET    | `/ventas`               | Listar todas las ventas                                               |
+| GET    | `/ventas/:id`           | Obtener venta por ID con datos del cliente y productos                |
+| POST   | `/ventas`               | Crear venta (valida stock y límite de crédito, asigna lotes por FEFO) |
+| PATCH  | `/ventas/:id/despachar` | Despachar venta: consume stock y registra movimientos                 |
+| PATCH  | `/ventas/:id/cancelar`  | Cancelar venta pendiente                                              |
 
 ### Cobranzas
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/cobranzas` | Listar todas las cobranzas |
-| GET | `/cobranzas/:id` | Obtener cobranza por ID |
-| POST | `/cobranzas` | Registrar cobro (genera crédito en cuenta corriente) |
+| Método | Ruta            | Descripción              |
+| ------ | --------------- | ------------------------ |
+| GET    | `/cobranzas`    | Listar todas las cobranzas |
+| GET    | `/cobranzas/:id`| Obtener cobranza por ID  |
+| POST   | `/cobranzas`    | Registrar cobranza (acredita en cuenta corriente del cliente) |
 
 ### Movimientos de Stock
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/movimientos-stock` | Listar todos los movimientos |
-| GET | `/movimientos-stock/producto/:producto_id` | Listar movimientos de un producto |
+| Método | Ruta                                       | Descripción                       |
+| ------ | ------------------------------------------ | --------------------------------- |
+| GET    | `/movimientos-stock`                       | Listar todos los movimientos      |
+| GET    | `/movimientos-stock/producto/:producto_id` | Listar movimientos de un producto |
 
 ### Alertas
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/alertas` | Obtener alertas: stock bajo, lotes por vencer (30 días), clientes con crédito excedido |
+| Método | Ruta       | Descripción                                                                       |
+| ------ | ---------- | --------------------------------------------------------------------------------- |
+| GET    | `/alertas` | Productos con stock bajo, lotes por vencer en 30 días y clientes con saldo excedido |
 
 ### Resúmenes
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| GET | `/resumen/inventario` | Resumen de inventario: valor de stock, sin stock, sobrestock, lotes por vencer |
-| GET | `/resumen/caja` | Resumen de caja del mes: ventas, cobros, compras, deudores |
-| GET | `/resumen/ventas` | Estadísticas de ventas: top 5 productos, top 5 clientes, ventas por semana |
+| Método | Ruta                | Descripción                                              |
+| ------ | ------------------- | -------------------------------------------------------- |
+| GET    | `/resumen/inventario` | Valor del inventario, productos sin stock y sobrestock |
+| GET    | `/resumen/caja`       | Ventas, cobros y compras del mes corriente             |
+| GET    | `/resumen/ventas`     | Top 5 productos y clientes, ventas por semana          |
 
 ---
 
-## Ejemplos de cuerpos JSON
+## Ejemplos de uso
 
 ### POST /productos
 
@@ -145,19 +171,6 @@ Al iniciar, se ejecuta automáticamente el **seed** que precarga datos de prueba
   "stock_actual": 0,
   "stock_minimo": 50,
   "unidad_medida": "unidad"
-}
-```
-
-### POST /proveedores
-
-```json
-{
-  "nombre": "Química del Sur S.A.",
-  "cuit": "30-12345678-9",
-  "contacto": "Juan Pérez",
-  "telefono": "011-4444-5555",
-  "email": "ventas@quimicadelsur.com",
-  "condicion_pago": "30 días"
 }
 ```
 
@@ -178,11 +191,10 @@ Al iniciar, se ejecuta automáticamente el **seed** que precarga datos de prueba
 
 ```json
 {
-  "proveedor_id": "<uuid-del-proveedor>",
-  "observaciones": "Pedido mensual",
+  "proveedor_id": "<id-del-proveedor>",
   "items": [
     {
-      "producto_id": "<uuid-del-producto>",
+      "producto_id": "<id-del-producto>",
       "cantidad": 100,
       "precio_unitario": 850,
       "numero_lote": "LAV-2025-03",
@@ -192,23 +204,14 @@ Al iniciar, se ejecuta automáticamente el **seed** que precarga datos de prueba
 }
 ```
 
-### PATCH /compras/:id/recibir
-
-No requiere cuerpo. La compra debe estar en estado `pendiente`.
-
-```
-PATCH /compras/abc123/recibir
-```
-
 ### POST /ventas
 
 ```json
 {
-  "cliente_id": "<uuid-del-cliente>",
-  "observaciones": "Pedido urgente",
+  "cliente_id": "<id-del-cliente>",
   "items": [
     {
-      "producto_id": "<uuid-del-producto>",
+      "producto_id": "<id-del-producto>",
       "cantidad": 20,
       "precio_unitario": 1200
     }
@@ -216,38 +219,20 @@ PATCH /compras/abc123/recibir
 }
 ```
 
-### PATCH /ventas/:id/despachar
-
-No requiere cuerpo. La venta debe estar en estado `pendiente`.
-
-```
-PATCH /ventas/xyz789/despachar
-```
-
 ### POST /cobranzas
 
 ```json
 {
-  "cliente_id": "<uuid-del-cliente>",
-  "monto": 24000,
-  "forma_pago": "transferencia",
-  "observaciones": "Pago factura 0001-00000123"
+  "cliente_id": "<id-del-cliente>",
+  "monto": 50000
 }
 ```
 
-Formas de pago válidas: `efectivo`, `transferencia`, `cheque`.
-
 ---
 
-## Lógica de negocio clave
+## Lógica de negocio
 
-- **FEFO (First Expired, First Out):** Al crear una venta, los lotes se asignan priorizando los de fecha de vencimiento más próxima. El consumo efectivo ocurre al despachar.
-- **Cuenta Corriente:** El saldo representa lo que el cliente debe. Los débitos (ventas despachadas) lo aumentan; los créditos (cobranzas) lo reducen. Puede ser negativo (saldo a favor del cliente).
-- **Límite de crédito:** Se valida al crear la venta. Si `saldo_actual + total_venta > limite_credito`, la venta es rechazada.
-- **Alertas automáticas:** `GET /alertas` devuelve en tiempo real productos con stock bajo, lotes próximos a vencer (≤ 30 días) y clientes con crédito excedido.
-
----
-
-## Migración a MongoDB
-
-Cada archivo en `storage/` puede reemplazarse por un repositorio Mongoose sin modificar servicios ni rutas. La interfaz (`getAll`, `getById`, `create`, `update`, `delete`, `findWhere`) es idéntica, solo cambia la implementación interna.
+- **FEFO (First Expired, First Out):** Al crear una venta, los lotes se asignan priorizando los de fecha de vencimiento más próxima.
+- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas despachadas); los créditos lo reducen (cobranzas registradas).
+- **Límite de crédito:** Se valida al crear la venta. Si el saldo más el total de la venta supera el límite, la venta es rechazada.
+- **Control de dependencias:** No se puede eliminar un cliente con ventas activas, ni un producto en ventas o compras activas, ni un proveedor con compras activas.
