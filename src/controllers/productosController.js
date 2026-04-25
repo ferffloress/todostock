@@ -22,6 +22,13 @@ const productosController = {
     }
   },
 
+  listarJSON(req, res, next) {
+    try {
+      res.json(store.getAll());
+    } catch (err) {
+      next(err);
+    }
+  },
   formularioNuevo(req, res) {
     res.render('nuevoProducto', { titulo: 'Nuevo Producto' });
   },

@@ -24,10 +24,27 @@ const clientesController = {
     }
   },
 
+  listarJSON(req, res, next) {
+    try {
+      res.json(clientesStore.getAll());
+    } catch (err) {
+      next(err);
+    }
+  },
+
   formularioNuevo(req, res) {
     res.render('nuevoCliente', { titulo: 'Alta Nuevo Cliente' });
   },
 
+  formularioEditar(req, res, next) {
+    try {
+      const cliente = clientesStore.getById(req.params.id);
+      if (!cliente) throw makeError('Cliente no encontrado', 404);
+      res.render('editarCliente', { titulo: 'Editar Cliente', cliente });
+    } catch (err) {
+      next(err);
+    }
+  },
   cuentaCorriente(req, res, next) {
     try {
       const cliente = clientesStore.getById(req.params.id);

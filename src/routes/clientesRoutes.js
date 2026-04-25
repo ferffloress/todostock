@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { obtenerClientes, obtenerClientePorId, crearCliente, actualizarCliente, eliminarCliente } = require("../controllers/clientesController");
+const { listarJSON, obtener, crear, actualizar, eliminar } = require("../controllers/clientesController");
 
-router.get("/", obtenerClientes);
-router.get("/:id", obtenerClientePorId);
-router.post("/", crearCliente);
-router.put("/:id", actualizarCliente);
-router.delete("/:id", eliminarCliente);
+router.get("/", listarJSON);
+router.get("/:id", obtener);
+router.post("/", crear);
+router.put("/:id", actualizar);
+router.delete("/:id", eliminar);
 
 module.exports = router;

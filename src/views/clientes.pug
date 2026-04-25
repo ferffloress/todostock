@@ -25,7 +25,7 @@ html(lang="es")
               td= cliente.email
               td
                 a.btn.btn-sm.btn-info.me-2(href=`/clientes/${cliente.id}/cuenta-corriente`) Cuenta Corriente
-                button.btn.btn-sm.btn-secondary Editar
+                a.btn.btn-sm.btn-secondary.me-2(href=`/clientes/${cliente.id}/editar`) Editar
                 button.btn.btn-sm.btn-danger(onclick=`eliminarCliente('${cliente.id}', this)`) Eliminar
 
           else
