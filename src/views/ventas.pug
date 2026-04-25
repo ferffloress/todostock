@@ -22,20 +22,26 @@ html(lang="es")
         tbody
           each venta in ventas
             tr
-              //- El ID que viene en tu JSON
               td.text-muted.small= venta.id.substring(0, 8) + "..."
-              //- El ID del cliente que aparece en el JSON
               td= venta.cliente_id.substring(0, 8) + "..."
-              //- Formateo de la fecha ISO del JSON
               td= new Date(venta.fecha).toLocaleDateString('es-AR')
               td
-                span.badge(class=venta.estado === 'despachada' ? 'bg-success' : 'bg-warning')
+                span.badge(class=venta.estado === 'despachada' ? 'bg-success' : (venta.estado === 'cancelada' ? 'bg-danger' : 'bg-warning'))
                   = venta.estado.toUpperCase()
-              //- El campo 'total' del JSON
               td.fw-bold= `$${venta.total}`
-              td
-                button.btn.btn-sm.btn-secondary.me-1 Detalle
-                button.btn.btn-sm.btn-danger Eliminar
+              td.d-flex.gap-1
+                //- BOTÓN DETALLE: Nos lleva a la vista de la venta específica
+                a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta.id}`) Detalle
+                
+                //- BOTÓN DESPACHAR: Solo aparece si está pendiente
+                if venta.estado === 'pendiente'
+                  form(action=`/ventas/despachar/${venta.id}` method="POST")
+                    button.btn.btn-sm.btn-success(type="submit") Despachar
+                
+                //- BOTÓN ELIMINAR: Solo aparece si está pendiente
+                if venta.estado === 'pendiente'
+                  form(action=`/ventas/eliminar/${venta.id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
+                    button.btn.btn-sm.btn-danger(type="submit") Eliminar
           else
             tr
               td.text-center(colspan="6") No hay ventas registradas.

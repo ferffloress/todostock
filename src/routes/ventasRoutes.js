@@ -2,31 +2,41 @@ const express = require("express");
 const router = express.Router();
 const ventasController = require("../controllers/ventasController");
 
-// --- 1. RUTAS DE VISTAS (Prioridad Alta) ---
+// --- 1. RUTAS DE VISTAS ---
 
-// Renderiza el listado general de ventas
+// Listado general (donde están los botones de la tabla)
+router.get("/", ventasController.listarVista); 
+const express = require("express");
+const router = express.Router();
+const ventasController = require("../controllers/ventasController");
+
+// --- 1. RUTAS DE VISTAS ---
+
+// Listado general
 router.get("/", ventasController.listarVista); 
 
-// Renderiza el formulario (Asegúrate de que esté arriba de /:id)
+// Formulario de creación
 router.get("/nueva", ventasController.formularioVenta); 
 
+// Vista de detalle (Coincide con /ventas/ver/ID)
+router.get("/ver/:id", ventasController.obtener);
 
-// --- 2. RUTAS DE ACCIÓN (POST/PATCH) ---
 
-// Recibe el formulario de 'nuevaVenta.pug' (con unidades y bultos)
+// --- 2. RUTAS DE ACCIÓN (POST) ---
+
+// Procesa la creación de la venta
 router.post("/", ventasController.crear); 
 
-// Acciones de estado (se disparan desde botones en la tabla)
-router.patch("/:id/despachar", ventasController.despachar);
-router.patch("/:id/cancelar", ventasController.cancelar);
+/**
+ * CORRECCIÓN: El navegador busca /ventas/despachar/ID.
+ * Por eso ponemos "despachar" ANTES del ":id".
+ */
+router.post("/despachar/:id", ventasController.despachar);
+router.post("/cancelar/:id", ventasController.cancelar);
 
 
-// --- 3. RUTAS DE DATOS (API / Consultas) ---
+// --- 3. RUTAS DE DATOS (API) ---
 
-// Devuelve el JSON de todas las ventas (para reportes o Excel)
 router.get("/api/json", ventasController.listar); 
-
-// Devuelve el JSON de una sola venta (por si necesitas un modal de detalle)
-router.get("/:id", ventasController.obtener);
 
 module.exports = router;

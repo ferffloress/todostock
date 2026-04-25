@@ -6,8 +6,9 @@
     "numero_lote": "LAV-2024-A",
     "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
     "cantidad_inicial": 50,
-    "cantidad_actual": 15,
-    "costo_unitario": 850
+    "cantidad_actual": 14,
+    "costo_unitario": 850,
+    "updated_at": "2026-04-25T16:41:19.356Z"
   },
   {
     "id": "83b7e31a-9e2a-4a38-a1e3-706d9668124c",

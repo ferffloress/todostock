@@ -8,5 +8,25 @@
     "referencia": "b11c4a57-6ed0-44bc-8a77-1d43887a89a7",
     "descripcion": "Venta despachada",
     "saldo_resultante": 12000
+  },
+  {
+    "id": "4242a70b-5941-4cd2-93a0-19da08fb3c2a",
+    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
+    "tipo": "debito",
+    "monto": 1200,
+    "fecha": "2026-04-25T16:41:19.367Z",
+    "referencia": "3a6b55d2-d1e5-4bc1-be9c-3ee44254902c",
+    "descripcion": "Venta Contado (undefined)",
+    "saldo_resultante": 1200
+  },
+  {
+    "id": "c8d92b5e-dcb6-4788-bb47-f6d6d067db46",
+    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
+    "tipo": "credito",
+    "monto": 1200,
+    "fecha": "2026-04-25T16:41:19.368Z",
+    "referencia": "3a6b55d2-d1e5-4bc1-be9c-3ee44254902c",
+    "descripcion": "Pago Recibido (undefined)",
+    "saldo_resultante": 0
   }
 ]

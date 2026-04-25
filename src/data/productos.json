@@ -44,15 +44,15 @@
     "activo": true
   },
   {
-  "id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
-  "nombre": "Lavandina 10L",
-  "categoria": "Desinfectantes",
-  "precio_costo": 850,
-  "precio_venta": 1200,
-  "stock_actual": 150,
-  "stock_minimo": 50,
-  "unidad_medida": "unidad",
-  "activo": true
-}
-
+    "id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "nombre": "Lavandina 10L",
+    "categoria": "Desinfectantes",
+    "precio_costo": 850,
+    "precio_venta": 1200,
+    "stock_actual": 149,
+    "stock_minimo": 50,
+    "unidad_medida": "unidad",
+    "activo": true,
+    "updated_at": "2026-04-25T16:41:19.359Z"
+  }
 ]

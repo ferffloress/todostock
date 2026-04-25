@@ -36,45 +36,50 @@ const ventasService = {
     const cliente = clientesStorage.getById(data.cliente_id);
     if (!cliente) throw makeError('Cliente no encontrado', 404);
 
-    // Check stock availability and assign FEFO lotes per item
     const itemsConLote = [];
     for (const item of data.items) {
       const producto = productosStorage.getById(item.producto_id);
       if (!producto) throw makeError(`Producto no encontrado: ${item.producto_id}`, 404);
 
-      const lotesActivos = lotesService.getActivosByProducto(item.producto_id);
+      // --- LOGICA FEFO: Asegurar orden por fecha de vencimiento ---
+      const lotesActivos = lotesService.getActivosByProducto(item.producto_id)
+        .sort((a, b) => new Date(a.fecha_vencimiento) - new Date(b.fecha_vencimiento));
+
       const stockTotal = lotesActivos.reduce((sum, l) => sum + l.cantidad_actual, 0);
 
       if (stockTotal < item.cantidad) {
-        throw makeError(`Stock insuficiente para producto ${producto.nombre}`, 400);
+        throw makeError(`Stock insuficiente para ${producto.nombre}. Disponible: ${stockTotal}`, 400);
       }
 
-      // FEFO: assign from earliest expiring lote
-      // Determine which lote will be consumed (first FEFO lote with enough or partial)
       let remaining = item.cantidad;
       const loteAssignments = [];
+      
       for (const lote of lotesActivos) {
         if (remaining <= 0) break;
         const consume = Math.min(remaining, lote.cantidad_actual);
-        loteAssignments.push({ lote_id: lote.id, cantidad: consume });
+        loteAssignments.push({ 
+          lote_id: lote.id, 
+          cantidad: consume,
+          vencimiento: lote.fecha_vencimiento // Opcional: para auditoría
+        });
         remaining -= consume;
       }
 
       itemsConLote.push({
         producto_id: item.producto_id,
+        nombre: producto.nombre, // Facilita la vista sin hacer otro find
         cantidad: item.cantidad,
         precio_unitario: item.precio_unitario,
         subtotal: item.cantidad * item.precio_unitario,
-        lote_id: loteAssignments[0].lote_id, // primary lote (FEFO)
-        lote_assignments: loteAssignments,    // all lotes to consume on despacho
+        lote_assignments: loteAssignments,
       });
     }
 
     const total = itemsConLote.reduce((sum, item) => sum + item.subtotal, 0);
 
-    // Check credit limit
+    // --- VALIDACIÓN CUENTA CORRIENTE ---
     if (cliente.saldo_cuenta_corriente + total > cliente.limite_credito) {
-      throw makeError('Límite de crédito insuficiente', 400);
+      throw makeError(`Límite de crédito superado. Saldo actual: $${cliente.saldo_cuenta_corriente}, Total venta: $${total}, Límite: $${cliente.limite_credito}`, 400);
     }
 
     const venta = {
@@ -97,43 +102,38 @@ const ventasService = {
     if (!venta) throw makeError('Venta no encontrada', 404);
 
     if (venta.estado !== 'pendiente') {
-      throw makeError(`No se puede despachar una venta en estado '${venta.estado}'`, 400);
+      throw makeError(`Estado inválido: ${venta.estado}`, 400);
     }
 
-    // Consume stock from lotes (FEFO assignments)
-    for (const item of venta.items) {
-      const assignments = item.lote_assignments || [{ lote_id: item.lote_id, cantidad: item.cantidad }];
-
-      for (const assignment of assignments) {
+    // --- PROCESAR DESPACHO ---
+    venta.items.forEach(item => {
+      item.lote_assignments.forEach(assignment => {
+        // 1. Descontar del lote
         const lote = lotesStorage.getById(assignment.lote_id);
-        if (lote) {
-          lotesStorage.update(assignment.lote_id, {
-            cantidad_actual: lote.cantidad_actual - assignment.cantidad,
-            updated_at: new Date().toISOString(),
-          });
-        }
+        lotesStorage.update(assignment.lote_id, {
+          cantidad_actual: lote.cantidad_actual - assignment.cantidad,
+          updated_at: new Date().toISOString(),
+        });
 
-        // Update producto stock
+        // 2. Descontar stock general del producto
         const producto = productosStorage.getById(item.producto_id);
-        if (producto) {
-          productosStorage.update(item.producto_id, {
-            stock_actual: producto.stock_actual - assignment.cantidad,
-            updated_at: new Date().toISOString(),
-          });
-        }
+        productosStorage.update(item.producto_id, {
+          stock_actual: producto.stock_actual - assignment.cantidad,
+          updated_at: new Date().toISOString(),
+        });
 
-        // Log egreso
+        // 3. Log de movimiento
         movimientosStockService.logEgreso(
           item.producto_id,
           assignment.lote_id,
           assignment.cantidad,
           venta.id,
-          `Despacho de venta ${venta.id}`
+          `Despacho Venta #${venta.id.substring(0,8)}`
         );
-      }
-    }
+      });
+    });
 
-    // Update cuenta corriente
+    // --- ACTUALIZAR CUENTA CORRIENTE ---
     const cliente = clientesStorage.getById(venta.cliente_id);
     const nuevoSaldo = cliente.saldo_cuenta_corriente + venta.total;
 
@@ -142,7 +142,7 @@ const ventasService = {
       tipo: 'debito',
       monto: venta.total,
       referencia: venta.id,
-      descripcion: 'Venta despachada',
+      descripcion: `Venta #${venta.id.substring(0,8)} despachada`,
       saldo_resultante: nuevoSaldo,
     });
 
@@ -151,7 +151,11 @@ const ventasService = {
       updated_at: new Date().toISOString(),
     });
 
-    return ventasStorage.update(id, { estado: 'despachada', updated_at: new Date().toISOString() });
+    return ventasStorage.update(id, { 
+      estado: 'despachada', 
+      fecha_despacho: new Date().toISOString(),
+      updated_at: new Date().toISOString() 
+    });
   },
 
   cancelar(id) {
@@ -159,10 +163,13 @@ const ventasService = {
     if (!venta) throw makeError('Venta no encontrada', 404);
 
     if (venta.estado !== 'pendiente') {
-      throw makeError(`No se puede cancelar una venta en estado '${venta.estado}'`, 400);
+      throw makeError('Solo se pueden cancelar ventas pendientes', 400);
     }
 
-    return ventasStorage.update(id, { estado: 'cancelada', updated_at: new Date().toISOString() });
+    return ventasStorage.update(id, { 
+      estado: 'cancelada', 
+      updated_at: new Date().toISOString() 
+    });
   },
 };
 
