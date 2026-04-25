@@ -5,6 +5,8 @@ const ventasController = require('../controllers/ventasController');
 // GET /ventas
 router.get('/', ventasController.listarVista);
 
+router.get('/nueva-venta', ventasController.formularioVenta);
+
 // GET /ventas/:id
 router.get('/:id', ventasController.obtener);
 
