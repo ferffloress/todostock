@@ -103,7 +103,7 @@
     "id": "51616c77-eb69-4444-bfaa-799afa22bf0c",
     "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
     "fecha": "2026-04-25",
-    "estado": "pendiente",
+    "estado": "despachada",
     "items": [
       {
         "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
@@ -123,6 +123,6 @@
     "total": 1200,
     "observaciones": null,
     "created_at": "2026-04-25T16:41:57.453Z",
-    "updated_at": "2026-04-25T16:41:57.453Z"
+    "updated_at": "2026-04-25T21:52:49.238Z"
   }
 ]

@@ -49,10 +49,10 @@
     "categoria": "Desinfectantes",
     "precio_costo": 850,
     "precio_venta": 1200,
-    "stock_actual": 149,
+    "stock_actual": 148,
     "stock_minimo": 50,
     "unidad_medida": "unidad",
     "activo": true,
-    "updated_at": "2026-04-25T16:41:19.359Z"
+    "updated_at": "2026-04-25T21:52:49.235Z"
   }
 ]

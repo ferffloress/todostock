@@ -38,5 +38,15 @@
     "referencia": "3a6b55d2-d1e5-4bc1-be9c-3ee44254902c",
     "observaciones": "Venta 3a6b55d2-d1e5-4bc1-be9c-3ee44254902c - unidad",
     "fecha": "2026-04-25T16:41:19.365Z"
+  },
+  {
+    "id": "9a2c97c7-d539-4dc3-a855-39e9fb1283ad",
+    "tipo": "egreso",
+    "producto_id": "d12d3d85-4123-49af-85f6-7b861c8d9af8",
+    "lote_id": "45b8e18f-9e2a-4a38-a1e3-706d9668124c",
+    "cantidad": 1,
+    "referencia": "51616c77-eb69-4444-bfaa-799afa22bf0c",
+    "observaciones": "Venta 51616c77-eb69-4444-bfaa-799afa22bf0c - unidad",
+    "fecha": "2026-04-25T21:52:49.236Z"
   }
 ]
