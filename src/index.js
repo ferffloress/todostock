@@ -1,9 +1,9 @@
+const mongoose = require('mongoose');
 const app = require('../app');
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`TodoStock S.A. - Backend REST`);
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
-});
+mongoose.connect('mongodb://127.0.0.1:27017/todostock')
+  .then(() => {
+    console.log('MongoDB conectado');
+    app.listen(3000, () => console.log('Servidor en http://localhost:3000'));
+  })
+  .catch(err => console.error('Error MongoDB:', err));

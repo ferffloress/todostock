@@ -1,19 +1,36 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
+const Contador = require('./Contador');
 
-class Lote {
-  constructor(data) {
-    this.id = data.id || randomUUID();
-    this.producto_id = data.producto_id;
-    this.proveedor_id = data.proveedor_id || null;
-    this.numero_lote = data.numero_lote;
-    this.fecha_vencimiento = data.fecha_vencimiento;
-    this.fecha_ingreso = data.fecha_ingreso || new Date().toISOString();
-    this.cantidad_inicial = data.cantidad_inicial;
-    this.cantidad_actual = data.cantidad_actual !== undefined ? data.cantidad_actual : data.cantidad_inicial;
-    this.costo_unitario = data.costo_unitario || 0;
-    this.created_at = data.created_at || new Date().toISOString();
-    this.updated_at = data.updated_at || new Date().toISOString();
+const loteSchema  = new mongoose.Schema({
+    _id: { type: Number },
+    producto_id: { type: Number, required: true },
+    proveedor_id: { type: Number, default: null },
+    numero_lote: { type: String, required: true },
+    fecha_vencimiento: { type: Date, required: true },
+    fecha_ingreso: { type: Date, default: new Date().now },
+    cantidad_inicial: { type: Number, required: true },
+    cantidad_actual: { type: Number },
+    costo_unitario: { type: Number, default: 0 },
+}, {
+  timestamps: true, // reemplaza created_at y updated_at
+  _id: false
+});
+
+// Antes de guardar asigna el próximo número como ID
+loteSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'lotes' },
+      { $inc: { sec: 1 } },
+      { new: true, upsert: true }
+    );
+    this._id = contador.sec;
+    // Si no se pasó cantidad_actual, arranca igual a cantidad_inicial
+    if (this.cantidad_actual === undefined) {
+      this.cantidad_actual = this.cantidad_inicial;
+    }
   }
-}
+  next();
+});
 
-module.exports = Lote;
+module.exports = mongoose.model('Lote', loteSchema);
