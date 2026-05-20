@@ -1,19 +1,17 @@
-const createStore = require('../data/store');
-
-const store = createStore('movimientosStock.json');
+const MovimientoStock  = require('../models/MovimientoStock');
 
 const movimientosStockController = {
-  listar(req, res, next) {
+  async listar(req, res, next) {
     try {
-      res.json(store.getAll());
+      res.json((await MovimientoStock.find()).toSorted({ fecha: -1 }));
     } catch (err) {
       next(err);
     }
   },
 
-  listarPorProducto(req, res, next) {
+  async listarPorProducto(req, res, next) {
     try {
-      const movimientos = store.findWhere(m => m.producto_id === req.params.producto_id);
+      const movimientos = await MovimientoStock.find({ producto_id: Number(req.params.producto_id) }).sort({ fecha: -1});
       res.json(movimientos);
     } catch (err) {
       next(err);

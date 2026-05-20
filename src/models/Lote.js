@@ -7,7 +7,7 @@ const loteSchema  = new mongoose.Schema({
     proveedor_id: { type: Number, default: null },
     numero_lote: { type: String, required: true },
     fecha_vencimiento: { type: Date, required: true },
-    fecha_ingreso: { type: Date, default: new Date().now },
+    fecha_ingreso: { type: Date, default: Date.now },
     cantidad_inicial: { type: Number, required: true },
     cantidad_actual: { type: Number },
     costo_unitario: { type: Number, default: 0 },

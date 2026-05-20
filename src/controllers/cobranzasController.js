@@ -1,11 +1,8 @@
 const Cobranza = require('../models/Cobranza');
 const CuentaCorriente = require('../models/CuentaCorriente');
-const createStore = require('../data/store');
+const Cliente = require('../models/Cliente');
 const { validate } = require('../validators/cobranzasValidator');
 
-const cobranzasStore = createStore('cobranzas.json');
-const clientesStore = createStore('clientes.json');
-const cuentasStore = createStore('cuentasCorrientes.json');
 
 function makeError(message, status) {
   const err = new Error(message);
@@ -14,17 +11,19 @@ function makeError(message, status) {
 }
 
 const cobranzasController = {
-  listar(req, res, next) {
+ async listar(req, res, next) {
     try {
-      res.json(cobranzasStore.getAll());
+      res.json(await Cobranza.find());
+      if (!cobranza) throw makeError('Cobranza no encontrada', 404);  
+      res.json(cobranza);
     } catch (err) {
       next(err);
     }
   },
 
-  obtener(req, res, next) {
+  async obtener(req, res, next) {
     try {
-      const cobranza = cobranzasStore.getById(req.params.id);
+      const cobranza = await Cobranza.findById(Number(req.params.id));
       if (!cobranza) throw makeError('Cobranza no encontrada', 404);
       res.json(cobranza);
     } catch (err) {
@@ -32,7 +31,7 @@ const cobranzasController = {
     }
   },
 
-  crear(req, res, next) {
+ async crear(req, res, next) {
     try {
       const { errors } = validate(req.body);
       if (errors.length > 0) {
@@ -40,25 +39,25 @@ const cobranzasController = {
         err.details = errors;
         throw err;
       }
-      const cliente = clientesStore.getById(req.body.cliente_id);
+      const cliente = await Cliente.findById(Number(req.body.cliente_id));
       if (!cliente) throw makeError('Cliente no encontrado', 404);
 
       const cobranza = new Cobranza(req.body);
-      cobranzasStore.create(cobranza);
+      await cobranza.save();
 
-      const nuevoSaldo = cliente.saldo_cuenta_corriente - req.body.monto;
-      const movCC = new CuentaCorriente({
-        cliente_id: req.body.cliente_id,
+      const nuevoSaldo = cliente.saldo_cuenta_corriente - Number(req.body.monto);
+      
+      await new CuentaCorriente({
+        cliente_id: Number(req.body.cliente_id),
         tipo: 'credito',
-        monto: req.body.monto,
-        referencia: cobranza.id,
+        monto: Number(req.body.monto),
+        referencia: cobranza._id,
         descripcion: 'Cobro registrado',
         saldo_resultante: nuevoSaldo,
-      });
-      cuentasStore.create(movCC);
-      clientesStore.update(req.body.cliente_id, {
+      }).save();
+
+      await Cliente.findByIdAndUpdate(Number(req.body.cliente_id), {
         saldo_cuenta_corriente: nuevoSaldo,
-        updated_at: new Date().toISOString(),
       });
 
       res.status(201).json(cobranza);

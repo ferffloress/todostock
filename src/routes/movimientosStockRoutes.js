@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { obtenerMovimientos, obtenerMovimientosPorProducto } = require("../controllers/movimientosStockController");
+const { listar, listarPorProducto  } = require("../controllers/movimientosStockController");
 
-router.get("/", obtenerMovimientos);
-router.get("/producto/:producto_id", obtenerMovimientosPorProducto);
+router.get("/", listar);
+router.get("/:id", listarPorProducto );
 
 module.exports = router;

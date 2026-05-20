@@ -1,18 +1,30 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
+const Contador = require('./Contador');
 
-class Cliente {
-  constructor(data) {
-    this.id = data.id || randomUUID();
-    this.nombre = (data.nombre || '').trim();
-    this.cuit = (data.cuit || '').trim();
-    this.contacto = data.contacto || null;
-    this.telefono = data.telefono || null;
-    this.email = data.email || null;
-    this.limite_credito = data.limite_credito;
-    this.saldo_cuenta_corriente = data.saldo_cuenta_corriente !== undefined ? data.saldo_cuenta_corriente : 0;
-    this.created_at = data.created_at || new Date().toISOString();
-    this.updated_at = data.updated_at || new Date().toISOString();
-  }
+const ClientSchema = new mongoose.Schema({
+  _id: { type: Number },
+  nombre: { type: String, required: true, trim: true },
+  cuit: { type: String, required: true },
+  contacto: { type: String },
+  telefono: { type: String },
+  email: { type: String },
+  limite_credito: { type: Number },
+  saldo_cuenta_corriente: { type: Number, default: 0 },
+  
+  }, { timestamps: true, _id: false });
+
+ClientSchema.pre('save', async function (next) {
+if (this.isNew) {
+  const contador = await Contador.findOneAndUpdate(
+    { _col: 'cliente' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  this._id = contador.seq;
 }
+next();
+  
+});
 
-module.exports = Cliente;
+
+module.exports = mongoose.model('Cliente', ClientSchema);

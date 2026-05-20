@@ -1,11 +1,13 @@
-import mongoose from "mongoose";
+const mongoose = require('mongoose');
 
-export const conectarDB = async () => {
+const conectarDB = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB conectado");
+    await mongoose.connect('mongodb://127.0.0.1:27017/todoStock');
+    console.log('MongoDB conectado');
   } catch (error) {
-    console.error(error);
+    console.error('Error al conectar MongoDB:', error);
     process.exit(1);
   }
 };
+
+module.exports = conectarDB;

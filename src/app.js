@@ -1,10 +1,18 @@
 const express = require('express');
 const app = express();
+const path = require('path');
 
-// Middleware
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+app.get('/', (req, res) => {
+  res.render('index');
+});
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); //leer datos de formularios
 
-// Routes
+//vistas
 const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const clientesRouter = require('./routes/clientes');
@@ -27,16 +35,30 @@ app.use('/movimientos-stock', movimientosStockRouter);
 app.use('/alertas', alertasRouter);
 app.use('/resumen', resumenesRouter);
 
-// Run seed on startup
-const seed = require('./seed');
-seed();
+//api
+const apiProductosRouter = require('./routes/productosRoutes');
+const apiProveedoresRouter = require('./routes/proveedoresRoutes');
+const apiClientesRouter = require('./routes/clientesRoutes');
+const apiVentasRouter      = require('./routes/ventasRoutes');
+const apiLotesRouter       = require('./routes/lotesRoutes');
+const apiComprasRouter     = require('./routes/comprasRoutes');
+const apiMovimientosRouter = require('./routes/movimientosStockRoutes');
+const apiCuentasRouter     = require('./routes/cuentasCorrientesRoutes');
 
-// 404 handler
+
+app.use('/api/productos', apiProductosRouter);
+app.use('/api/proveedores', apiProveedoresRouter);
+app.use('/api/clientes', apiClientesRouter);
+app.use('/api/ventas', apiVentasRouter);
+app.use('/api/lotes', apiLotesRouter);
+app.use('/api/compras', apiComprasRouter);
+app.use('/api/movimientos-stock', apiMovimientosRouter);
+app.use('/api/cuentas-corrientes', apiCuentasRouter);
+
 app.use((req, res) => {
   res.status(404).json({ error: `Ruta no encontrada: ${req.method} ${req.originalUrl}` });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
