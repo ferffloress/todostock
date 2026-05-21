@@ -3,7 +3,7 @@ const Contador = require('./Contador');
 
 const MovimientoStockSchema = new mongoose.Schema({
   _id: { type: Number },
-  tipo: { type: String, enum: ['entrada', 'salida', 'ajuste'], required: true },
+  tipo: { type: String, enum: ['ingreso', 'egreso', 'ajuste'], required: true },
   producto_id: { type: Number, required: true },
   lote_id: { type: Number, default: null },
   cantidad: { type: Number, required: true },
@@ -15,14 +15,15 @@ const MovimientoStockSchema = new mongoose.Schema({
 MovimientoStockSchema.pre('save', async function (next) {
 if (this.isNew) {
   const contador = await Contador.findOneAndUpdate(
-    { _col: 'movimientos_stock' },
-    { $inc: { seq: 1 } },
+    { _col: 'movimientosStock' },
+    { $inc: { sec: 1 } },
     { new: true, upsert: true }
   );
-  this._id = contador.seq;
+  this._id = contador.sec;
 }
 next();
   
 });
 
-module.exports = mongoose.model('MovimientoStock', MovimientoStockSchema);
+module.exports = mongoose.model('MovimientoStock', MovimientoStockSchema, 'movimientosStock');
+

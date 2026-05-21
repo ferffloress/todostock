@@ -1,0 +1,42 @@
+[
+    {
+        "_id": 1,
+        "tipo": "ingreso",
+        "producto_id": 5,
+        "lote_id": 1,
+        "cantidad": 50,
+        "referencia": 1,
+        "observaciones": "Recepcion de compra",
+        "fecha": "2026-04-07T02:30:56.568Z"
+    },
+    {
+        "_id": 2,
+        "tipo": "ingreso",
+        "producto_id": 1,
+        "lote_id": 3,
+        "cantidad": 30,
+        "referencia": 1,
+        "observaciones": "Recepcion de compra",
+        "fecha": "2026-04-07T02:30:56.568Z"
+    },
+    {
+        "_id": 3,
+        "tipo": "egreso",
+        "producto_id": 5,
+        "lote_id": 1,
+        "cantidad": 10,
+        "referencia": 1,
+        "observaciones": "Despacho de venta",
+        "fecha": "2026-04-12T02:30:56.568Z"
+    },
+    {
+        "_id": 4,
+        "tipo": "egreso",
+        "producto_id": 5,
+        "lote_id": 1,
+        "cantidad": 1,
+        "referencia": 3,
+        "observaciones": "Venta 3 - unidad",
+        "fecha": "2026-04-25T16:41:19.365Z"
+    }
+]

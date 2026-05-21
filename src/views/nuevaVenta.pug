@@ -36,7 +36,7 @@ html(lang="es")
                     select.form-select.shadow-none(name="cliente_id" required)
                       option(value="") Seleccione un cliente...
                       each cliente in clientes
-                        option(value=cliente.id) #{cliente.nombre}
+                        option(value=cliente._id) #{cliente.nombre}
                   
                   div.col-md-4.mb-3
                     label.form-label.fw-bold Fecha
@@ -60,7 +60,7 @@ html(lang="es")
                         select.form-select.select-producto(name="items[0][producto_id]" required onchange="actualizarFila(this)")
                           option(value="" data-stock="0" data-precio="0" data-factor="1") Seleccione un producto...
                           each producto in productos
-                            option(value=producto.id data-stock=producto.stock_actual data-precio=producto.precio_venta data-factor=(producto.unidades_por_bulto || 6)) #{producto.nombre}
+                            option(value=producto._id data-stock=producto.stock_actual data-precio=producto.precio_venta data-factor=(producto.unidades_por_bulto || 6)) #{producto.nombre}
                       
                       div.col-md-3.mb-3
                         label.form-label Tipo Venta

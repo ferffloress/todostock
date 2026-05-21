@@ -29,4 +29,4 @@ productoSchema.pre('save', async function(next) {
 });
 
 
-module.exports = mongoose.model('Producto', productoSchema);
+module.exports = mongoose.model('Producto', productoSchema, 'productos');

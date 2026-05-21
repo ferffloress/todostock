@@ -27,5 +27,5 @@ if (this.isNew) {
     next();
 });
 
-module.exports = mongoose.model('Venta', ventaSchema);
+module.exports = mongoose.model('Venta', ventaSchema, 'ventas');
 

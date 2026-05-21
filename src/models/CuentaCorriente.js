@@ -2,10 +2,11 @@ const mongoose = require('mongoose');
 const Contador = require('./Contador');
 
 
+
 const CuentaCorrienteSchema = new mongoose.Schema({
   _id: { type: Number },
   cliente_id: { type: Number, required: true },
-  tipo: { type: String, enum: ['ingreso', 'egreso'], required: true },
+  tipo: { type: String, enum: ['debito', 'credito'], required: true },
   monto: { type: Number, required: true },
   fecha: { type: Date, default: Date.now },
   referencia: { type: String, default: null },
@@ -16,14 +17,14 @@ const CuentaCorrienteSchema = new mongoose.Schema({
 CuentaCorrienteSchema.pre('save', async function (next) {
 if (this.isNew) {
   const contador = await Contador.findOneAndUpdate(
-    { _col: 'cuentas_corrientes' },
-    { $inc: { seq: 1 } },
+    { _col: 'cuentasCorrientes' },
+    { $inc: { sec: 1 } },
     { new: true, upsert: true }
   );
-  this._id = contador.seq;
+  this._id = contador.sec;
 }
 next();
   
 });
 
-module.exports = mongoose.model('CuentaCorriente', CuentaCorrienteSchema);
+module.exports = mongoose.model('CuentaCorriente', CuentaCorrienteSchema, 'cuentasCorrientes');

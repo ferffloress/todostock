@@ -1,0 +1,22 @@
+[
+    {
+        "_id": 1,
+        "cliente_id": 3,
+        "tipo": "debito",
+        "monto": 1200,
+        "fecha": "2026-04-25T16:41:19.367Z",
+        "referencia": 3,
+        "descripcion": "Venta Contado (efectivo)",
+        "saldo_resultante": 1200
+    },
+    {
+        "_id": 2,
+        "cliente_id": 3,
+        "tipo": "credito",
+        "monto": 1200,
+        "fecha": "2026-04-25T16:41:19.368Z",
+        "referencia": 3,
+        "descripcion": "Pago Recibido (efectivo)",
+        "saldo_resultante": 0
+    }
+]

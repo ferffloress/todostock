@@ -16,14 +16,14 @@ CompraSchema.pre('save', async function (next) {
 if (this.isNew) {
   const contador = await Contador.findOneAndUpdate(
     { _col: 'compras' },
-    { $inc: { seq: 1 } },
+    { $inc: { sec: 1 } },
     { new: true, upsert: true }
   );
-  this._id = contador.seq;
+  this._id = contador.sec;
 }
 next();
   
 });
 
 
-module.exports = mongoose.model('Compra', CompraSchema);
+module.exports = mongoose.model('Compra', CompraSchema, 'compras');

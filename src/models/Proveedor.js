@@ -16,13 +16,13 @@ ProveedorSchema.pre('save', async function (next) {
 if (this.isNew) {
   const contador = await Contador.findOneAndUpdate(
     { _col: 'proveedor' },
-    { $inc: { seq: 1 } },
+    { $inc: { sec: 1 } },
     { new: true, upsert: true }
   );
-  this._id = contador.seq;
+  this._id = contador.sec;
 }
 next();
   
 });
 
-module.exports = mongoose.model('Proveedor', ProveedorSchema);
+module.exports = mongoose.model('Proveedor', ProveedorSchema, 'proveedores');

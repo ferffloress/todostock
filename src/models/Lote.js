@@ -33,4 +33,4 @@ loteSchema.pre('save', async function(next) {
   next();
 });
 
-module.exports = mongoose.model('Lote', loteSchema);
+module.exports = mongoose.model('Lote', loteSchema, 'lotes');
