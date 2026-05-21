@@ -1,0 +1,32 @@
+[
+    {
+        "_id": 1,
+        "producto_id": 5,
+        "proveedor_id": null,
+        "numero_lote": "LAV-2024-A",
+        "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+        "cantidad_inicial": 50,
+        "cantidad_actual": 14,
+        "costo_unitario": 850
+    },
+    {
+        "_id": 2,
+        "producto_id": 1,
+        "proveedor_id": null,
+        "numero_lote": "LAV-2025-A",
+        "fecha_vencimiento": "2027-10-01T02:30:56.568Z",
+        "cantidad_inicial": 50,
+        "cantidad_actual": 40,
+        "costo_unitario": 850
+    },
+    {
+        "_id": 3,
+        "producto_id": 1,
+        "proveedor_id": null,
+        "numero_lote": "DET-2024-A",
+        "fecha_vencimiento": "2026-05-07T02:30:56.568Z",
+        "cantidad_inicial": 30,
+        "cantidad_actual": 30,
+        "costo_unitario": 620
+    }
+]

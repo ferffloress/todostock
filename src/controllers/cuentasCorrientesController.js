@@ -1,32 +1,35 @@
-const fs = require("fs");
-const path = require("path");
+const CuentaCorriente = require('../models/CuentaCorriente');
+const Cliente = require('../models/Cliente');
 
-const rutaCuentas = path.join(__dirname, "../data/cuentasCorrientes.json");
-const rutaClientes = path.join(__dirname, "../data/clientes.json");
+function makeError(message, status) {
+  const err = new Error(message);
+  err.status = status;
+  return err;
+}
 
-const leerCuentas = () => JSON.parse(fs.readFileSync(rutaCuentas, "utf-8"));
-const leerClientes = () => JSON.parse(fs.readFileSync(rutaClientes, "utf-8"));
+const cuentasCorrientesController = {
 
-const obtenerCuentaPorCliente = (req, res) => {
-    const clientes = leerClientes();
-    const cliente = clientes.find(c => c.id === req.params.cliente_id);
-    if (!cliente) return res.status(404).json({ error: "Cliente no encontrado" });
+  async obtenerCuentaPorCliente(req, res, next) {
+    try {
+      const cliente = await Cliente.findById(Number(req.params.cliente_id));
+      if (!cliente) throw makeError('Cliente no encontrado', 404);
 
-    const cuentas = leerCuentas();
-    const movimientos = cuentas
-        .filter(m => m.cliente_id === req.params.cliente_id)
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      const movimientos = await CuentaCorriente
+        .find({ cliente_id: Number(req.params.cliente_id) })
+        .sort({ fecha: -1 });
 
-    res.json({
+      res.json({
         cliente: {
-            id: cliente.id,
-            nombre: cliente.nombre,
-            saldo_cuenta_corriente: cliente.saldo_cuenta_corriente,
-            limite_credito: cliente.limite_credito
+          id:                     cliente._id,
+          nombre:                 cliente.nombre,
+          saldo_cuenta_corriente: cliente.saldo_cuenta_corriente,
+          limite_credito:         cliente.limite_credito
         },
         movimientos,
         saldo_actual: cliente.saldo_cuenta_corriente
-    });
+      });
+    } catch (err) { next(err); }
+  },
 };
 
-module.exports = { obtenerCuentaPorCliente };
+module.exports = cuentasCorrientesController;

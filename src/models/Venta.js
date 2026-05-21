@@ -1,17 +1,31 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
+const Contador = require('./Contador');
 
-class Venta {
-  constructor(data) {
-    this.id = data.id || randomUUID();
-    this.cliente_id = data.cliente_id;
-    this.fecha = data.fecha || new Date().toISOString();
-    this.estado = data.estado || 'pendiente';
-    this.items = data.items || [];
-    this.total = data.total || 0;
-    this.observaciones = data.observaciones || null;
-    this.created_at = data.created_at || new Date().toISOString();
-    this.updated_at = data.updated_at || new Date().toISOString();
+
+const ventaSchema = new mongoose.Schema({
+    _id: { type: Number },
+    cliente_id: { type: Number, required: true },
+    fecha: { type: Date, default: Date.now },
+    estado: { type: String, default: 'pendiente' },
+    items: { type: Array,  default: [] },
+    total: { type: Number, default: 0 },
+    observaciones: { type: String, default: null }
+},{
+    timestamps: true,
+    _id: false  // deshabilita el _id automático de MongoDB
+});
+
+ventaSchema.pre('save', async function(next) {
+if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'ventas' },
+      { $inc: { sec: 1 } },
+      { new: true, upsert: true }
+    );
+    this._id = contador.sec;
   }
-}
+    next();
+});
 
-module.exports = Venta;
+module.exports = mongoose.model('Venta', ventaSchema, 'ventas');
+

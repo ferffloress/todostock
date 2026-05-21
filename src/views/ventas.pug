@@ -22,8 +22,8 @@ html(lang="es")
         tbody
           each venta in ventas
             tr
-              td.text-muted.small= venta.id.substring(0, 8) + "..."
-              td= venta.cliente_id.substring(0, 8) + "..."
+              td.text-muted.small= venta._id
+              td= venta.cliente_id
               td= new Date(venta.fecha).toLocaleDateString('es-AR')
               td
                 span.badge(class=venta.estado === 'despachada' ? 'bg-success' : (venta.estado === 'cancelada' ? 'bg-danger' : 'bg-warning'))

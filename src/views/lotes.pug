@@ -23,7 +23,7 @@ html(lang="es")
           each lote in lotes
             tr
               td.fw-bold= lote.numero_lote
-              td.text-muted.small= lote.producto_id.substring(0, 8) + "..."
+              td.text-muted.small= lote.producto_id
               td= lote.cantidad_actual
               td= `$${lote.costo_unitario}`
               td

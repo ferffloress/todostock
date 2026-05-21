@@ -1,31 +1,31 @@
-const createStore = require('../data/store');
-
-const productosStore = createStore('productos.json');
-const lotesStore = createStore('lotes.json');
-const clientesStore = createStore('clientes.json');
+const Producto = require('../models/Producto');
+const Lote = require('../models/Lote');
+const Cliente = require('../models/Cliente');
 
 const alertasController = {
-  obtener(req, res, next) {
+
+  async obtener(req, res, next) {
     try {
-      const productos = productosStore.getAll();
-      const lotes = lotesStore.getAll();
-      const clientes = clientesStore.getAll();
       const ahora = new Date();
 
-      const stock_bajo = productos.filter(p => p.stock_actual <= p.stock_minimo);
-
-      const lotes_por_vencer = lotes.filter(l => {
-        if (l.cantidad_actual <= 0) return false;
-        const dias = (new Date(l.fecha_vencimiento) - ahora) / (1000 * 60 * 60 * 24);
-        return dias <= 30;
+      const stock_bajo = await Producto.find({
+        $expr: { $lte: ['$stock_actual', '$stock_minimo'] }
       });
 
-      const clientes_excedidos = clientes.filter(c => c.saldo_cuenta_corriente > c.limite_credito);
+      const lotes_por_vencer = await Lote.find({
+        cantidad_actual:  { $gt: 0 },
+        fecha_vencimiento: {
+          $gte: ahora,
+          $lte: new Date(ahora.getTime() + 30 * 24 * 60 * 60 * 1000)
+        }
+      });
+
+      const clientes_excedidos = await Cliente.find({
+        $expr: { $gt: ['$saldo_cuenta_corriente', '$limite_credito'] }
+      });
 
       res.json({ stock_bajo, lotes_por_vencer, clientes_excedidos });
-    } catch (err) {
-      next(err);
-    }
+    } catch (err) { next(err); }
   },
 };
 

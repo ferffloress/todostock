@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { obtenerLotes, obtenerLotePorId, obtenerLotesPorProducto } = require("../controllers/lotesController");
+const { listar, obtener, listarPorProducto  } = require("../controllers/lotesController");
 
-router.get("/", obtenerLotes);
-router.get("/producto/:producto_id", obtenerLotesPorProducto);
-router.get("/:id", obtenerLotePorId);
+router.get("/", listar);
+router.get("/producto/:producto_id", listarPorProducto );
+router.get("/:id", obtener);
 
 module.exports = router;

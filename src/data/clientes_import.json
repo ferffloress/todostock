@@ -1,0 +1,32 @@
+[
+    {
+        "_id": 1,
+        "nombre": "Hotel Grand Palace",
+        "cuit": "30-33333333-3",
+        "contacto": "Luis Fernandez",
+        "telefono": "011-9999-0000",
+        "email": "compras@grandpalace.com",
+        "limite_credito": 100000,
+        "saldo_cuenta_corriente": 0
+    },
+    {
+        "_id": 2,
+        "nombre": "Gisela Croci",
+        "cuit": "27343060330",
+        "contacto": "123456",
+        "telefono": "123456",
+        "email": "giselacroci@gmail.com",
+        "limite_credito": 150000,
+        "saldo_cuenta_corriente": 25000
+    },
+    {
+        "_id": 3,
+        "nombre": "Supermercado El Ahorro",
+        "cuit": "30-12345678-9",
+        "contacto": "Compras",
+        "telefono": "011-4444-5555",
+        "email": "compras@elahorro.com",
+        "limite_credito": 500000,
+        "saldo_cuenta_corriente": 0
+    }
+]

@@ -25,7 +25,7 @@ html(lang="es")
               //- Formateamos la fecha del seed
               td= new Date(compra.fecha).toLocaleDateString('es-AR')
               //- ID del proveedor
-              td.text-muted.small= compra.proveedor_id.substring(0, 8) + "..."
+              td.text-muted.small= compra.proveedor_id
               td
                 span.badge(class=compra.estado === 'recibida' ? 'bg-info' : 'bg-secondary')
                   = compra.estado.toUpperCase()

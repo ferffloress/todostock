@@ -1,0 +1,14 @@
+[
+  {
+    "_id": 1,
+    "proveedor_id": 3,
+    "fecha": "2026-04-07T02:30:56.568Z",
+    "estado": "recibida",
+    "items": [
+      { "producto_id": 5, "cantidad": 50, "precio_unitario": 850, "numero_lote": "LAV-2024-A", "fecha_vencimiento": "2026-05-07T02:30:56.568Z", "subtotal": 42500 },
+      { "producto_id": 1, "cantidad": 30, "precio_unitario": 620, "numero_lote": "DET-2024-A", "fecha_vencimiento": "2026-05-07T02:30:56.568Z", "subtotal": 18600 }
+    ],
+    "total": 61100,
+    "observaciones": "Compra inicial de stock"
+  }
+]

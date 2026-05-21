@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
-const { obtenerCompras, obtenerCompraPorId, crearCompra, recibirCompra, cancelarCompra } = require("../controllers/comprasController");
+const { listar, obtener, crear, recibir, cancelar } = require("../controllers/comprasController");
 
-router.get("/", obtenerCompras);
-router.get("/:id", obtenerCompraPorId);
-router.post("/", crearCompra);
-router.patch("/:id/recibir", recibirCompra);
-router.patch("/:id/cancelar", cancelarCompra);
+router.get("/", listar);
+router.get("/:id", obtener);
+router.post("/", crear);
+router.patch("/:id/recibir", recibir);
+router.patch("/:id/cancelar", cancelar);
 
 module.exports = router;

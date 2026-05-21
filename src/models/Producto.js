@@ -1,19 +1,32 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
+const Contador = require('./Contador');
 
-class Producto {
-  constructor(data) {
-    this.id = data.id || randomUUID();
-    this.nombre = (data.nombre || '').trim();
-    this.categoria = (data.categoria || '').trim();
-    this.precio_costo = data.precio_costo;
-    this.precio_venta = data.precio_venta;
-    this.stock_actual = data.stock_actual;
-    this.stock_minimo = data.stock_minimo;
-    this.unidad_medida = (data.unidad_medida || '').trim();
-    this.activo = data.activo !== undefined ? data.activo : true;
-    this.created_at = data.created_at || new Date().toISOString();
-    this.updated_at = data.updated_at || new Date().toISOString();
+const productoSchema = new mongoose.Schema({
+  _id:           { type: Number },
+  nombre:        { type: String, required: true, trim: true },
+  categoria:     { type: String, required: true, trim: true },
+  precio_costo:  { type: Number, required: true },
+  precio_venta:  { type: Number, required: true },
+  stock_actual:  { type: Number, default: 0 },
+  stock_minimo:  { type: Number, default: 0 },
+  unidad_medida: { type: String, required: true },
+  activo:        { type: Boolean, default: true },
+}, { timestamps: true,
+    _id: false
+ });  
+
+
+productoSchema.pre('save', async function(next) {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'productos' },
+      { $inc: { sec: 1 } },
+      { new: true, upsert: true }
+    );
+    this._id = contador.sec;
   }
-}
+  next();
+});
 
-module.exports = Producto;
+
+module.exports = mongoose.model('Producto', productoSchema, 'productos');

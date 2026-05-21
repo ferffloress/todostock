@@ -1,17 +1,29 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
+const Contador = require('./Contador');
 
-class Compra {
-  constructor(data) {
-    this.id = data.id || randomUUID();
-    this.proveedor_id = data.proveedor_id;
-    this.fecha = data.fecha || new Date().toISOString();
-    this.estado = data.estado || 'pendiente';
-    this.items = data.items || [];
-    this.total = data.total || 0;
-    this.observaciones = data.observaciones || null;
-    this.created_at = data.created_at || new Date().toISOString();
-    this.updated_at = data.updated_at || new Date().toISOString();
-  }
+
+const CompraSchema = new mongoose.Schema({
+  _id: { type: Number },
+  proveedor_id: { type: Number, required: true },
+  fecha: { type: Date, default: Date.now },
+  estado: { type: String, default: 'pendiente' },
+  items: { type: Array, default: [] },
+  total: { type: Number, default: 0 },
+  observaciones: { type: String, default: null },
+}, { timestamps: true, _id: false });
+
+CompraSchema.pre('save', async function (next) {
+if (this.isNew) {
+  const contador = await Contador.findOneAndUpdate(
+    { _col: 'compras' },
+    { $inc: { sec: 1 } },
+    { new: true, upsert: true }
+  );
+  this._id = contador.sec;
 }
+next();
+  
+});
 
-module.exports = Compra;
+
+module.exports = mongoose.model('Compra', CompraSchema, 'compras');

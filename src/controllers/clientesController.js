@@ -1,12 +1,7 @@
 const Cliente = require('../models/Cliente');
 const CuentaCorriente = require('../models/CuentaCorriente');
-const createStore = require('../data/store');
+const Venta = require('../models/Venta');
 const { validate } = require('../validators/clientesValidator');
-
-const clientesStore = createStore('clientes.json');
-const cuentasStore = createStore('cuentasCorrientes.json');
-const ventasStore = createStore('ventas.json');
-
 
 function makeError(message, status) {
   const err = new Error(message);
@@ -15,43 +10,41 @@ function makeError(message, status) {
 }
 
 const clientesController = {
-  listar(req, res, next) {
+  async listar(req, res, next) {
     try {
-      const clientes = clientesStore.getAll();
+      const clientes = await Cliente.find({});
       res.render('clientes', { titulo: 'Listado de Clientes', clientes });
     } catch (err) {
       next(err);
     }
   },
 
-  listarJSON(req, res, next) {
+  async listarJSON(req, res, next) {
     try {
-      res.json(clientesStore.getAll());
+      res.json(await Cliente.find({}));
     } catch (err) {
       next(err);
     }
   },
 
-  formularioNuevo(req, res) {
+  async formularioNuevo(req, res) {
     res.render('nuevoCliente', { titulo: 'Alta Nuevo Cliente' });
   },
 
-  formularioEditar(req, res, next) {
+  async formularioEditar(req, res, next) {
     try {
-      const cliente = clientesStore.getById(req.params.id);
+      const cliente = await Cliente.findById(Number(req.params.id));
       if (!cliente) throw makeError('Cliente no encontrado', 404);
       res.render('editarCliente', { titulo: 'Editar Cliente', cliente });
     } catch (err) {
       next(err);
     }
   },
-  cuentaCorriente(req, res, next) {
+  async cuentaCorriente(req, res, next) {
     try {
-      const cliente = clientesStore.getById(req.params.id);
+      const cliente = await Cliente.findById(Number(req.params.id));
       if (!cliente) throw makeError('Cliente no encontrado', 404);
-      const movimientos = cuentasStore
-        .findWhere(m => m.cliente_id === req.params.id)
-        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      const movimientos = await CuentaCorriente.find({ cliente_id: Number(req.params.id) }).sort({ fecha: -1 });
       res.render('cuentaCorriente', {
         titulo: 'Cuenta Corriente',
         cliente: { ...cliente, movimientos, saldo_actual: cliente.saldo_cuenta_corriente },
@@ -61,9 +54,9 @@ const clientesController = {
     }
   },
 
-  obtener(req, res, next) {
+  async obtener(req, res, next) {
     try {
-      const cliente = clientesStore.getById(req.params.id);
+      const cliente = await Cliente.findById(Number(req.params.id));
       if (!cliente) throw makeError('Cliente no encontrado', 404);
       res.json(cliente);
     } catch (err) {
@@ -71,7 +64,7 @@ const clientesController = {
     }
   },
 
-  crear(req, res, next) {
+  async crear(req, res, next) {
     try {
         const body = {
         ...req.body,
@@ -85,17 +78,16 @@ const clientesController = {
         err.details = errors;
         throw err;
       }
-      const cliente = new Cliente(body);
-      clientesStore.create(cliente);
+      await new Cliente(body).save(); 
       res.redirect('/clientes');
     } catch (err) {
       next(err);
     }
   },
 
-  actualizar(req, res, next) {
+  async actualizar(req, res, next) {
     try {
-      const existing = clientesStore.getById(req.params.id);
+      const existing = await Cliente.findById(Number(req.params.id));
       if (!existing) throw makeError('Cliente no encontrado', 404);
       
       const body = {
@@ -104,27 +96,28 @@ const clientesController = {
         saldo_cuenta_corriente: Number(req.body.saldo_cuenta_corriente),
       };
 
-      const merged = { ...existing, ...body };
+      const merged = { ...existing.toObject(), ...body };
       const { errors } = validate(merged);
+
       if (errors.length > 0) {
         const err = makeError('Datos inválidos', 422);
         err.details = errors;
         throw err;
       }
-      const updated = clientesStore.update(req.params.id, { ...body, updated_at: new Date().toISOString() });
+      const updated = await Cliente.findByIdAndUpdate(Number(req.params.id), { ...body, updated_at: new Date().toISOString() }, { new: true });
       res.json(updated);
     } catch (err) {
       next(err);
     }
   },
 
-  eliminar(req, res, next) {
+  async eliminar(req, res, next) {
     try {
-      const existing = clientesStore.getById(req.params.id);
+      const existing = await Cliente.findById(Number(req.params.id));
       if (!existing) throw makeError('Cliente no encontrado', 404);
-      const ventas = ventasStore.findWhere(v => v.cliente_id === req.params.id);
+      const ventas = await Venta.find({ cliente_id: Number(req.params.id) });
       if (ventas.length > 0) throw makeError('No se puede eliminar: el cliente tiene ventas activas', 400);
-      clientesStore.delete(req.params.id);
+      await Cliente.findByIdAndDelete(Number(req.params.id));
       res.json({ message: 'Cliente eliminado correctamente' });
     } catch (err) {
       next(err);
