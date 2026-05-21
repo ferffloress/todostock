@@ -16,7 +16,7 @@ if (this.isNew) {
   const contador = await Contador.findOneAndUpdate(
     { _col: 'cobranzas' },
     { $inc: { sec: 1 } },
-    { new: true, upsert: true }
+    { returnDocument: 'after', upsert: true }
   );
   this._id = contador.sec;
 }
