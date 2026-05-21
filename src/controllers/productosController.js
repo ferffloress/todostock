@@ -27,7 +27,7 @@ const productosController = {
     }
   },
   
-  formularioNuevo(req, res) {
+  formularioNuevo(req, res,next) {
     res.render('nuevoProducto', { titulo: 'Nuevo Producto' });
   },
 

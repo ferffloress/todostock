@@ -22,7 +22,7 @@ loteSchema.pre('save', async function(next) {
     const contador = await Contador.findOneAndUpdate(
       { _col: 'lotes' },
       { $inc: { sec: 1 } },
-      { new: true, upsert: true }
+      { returnDocument: 'after', upsert: true }
     );
     this._id = contador.sec;
     // Si no se pasó cantidad_actual, arranca igual a cantidad_inicial
