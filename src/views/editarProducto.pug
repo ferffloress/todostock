@@ -57,7 +57,7 @@ html(lang="es")
         stock_actual: Number(document.getElementById('stock_actual').value),
         stock_minimo: Number(document.getElementById('stock_minimo').value),
       };
-      const res = await fetch(`/productos/!{producto.id}`, {
+      const res = await fetch(`/productos/!{producto._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

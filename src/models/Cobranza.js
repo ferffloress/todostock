@@ -11,17 +11,15 @@ const CobranzaSchema = new mongoose.Schema({
   observaciones: { type: String, default: null },
 }, { timestamps: true, _id: false });
 
-CobranzaSchema.pre('save', async function (next) {
-if (this.isNew) {
-  const contador = await Contador.findOneAndUpdate(
-    { _col: 'cobranzas' },
-    { $inc: { sec: 1 } },
-    { returnDocument: 'after', upsert: true }
-  );
-  this._id = contador.sec;
-}
-next();
-  
+CobranzaSchema.pre('save', async function () {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'cobranzas' },
+      { $inc: { sec: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    this._id = contador.sec;
+  }
 });
 
 module.exports = mongoose.model('Cobranza', CobranzaSchema, 'cobranzas');

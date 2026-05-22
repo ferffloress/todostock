@@ -16,7 +16,7 @@ const productoSchema = new mongoose.Schema({
  });  
 
 
-productoSchema.pre('save', async function(next) {
+productoSchema.pre('save', async function() {
   if (this.isNew) {
     const contador = await Contador.findOneAndUpdate(
       { _col: 'productos' },
@@ -25,7 +25,6 @@ productoSchema.pre('save', async function(next) {
     );
     this._id = contador.sec;
   }
-  next();
 });
 
 

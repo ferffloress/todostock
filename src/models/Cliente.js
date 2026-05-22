@@ -13,17 +13,15 @@ const ClientSchema = new mongoose.Schema({
   
   }, { timestamps: true, _id: false });
 
-ClientSchema.pre('save', async function (next) {
-if (this.isNew) {
-  const contador = await Contador.findOneAndUpdate(
-    { _col: 'cliente' },
-    { $inc: { sec: 1 } },
-    { returnDocument: 'after', upsert: true }
-  );
-  this._id = contador.sec;
-}
-next();
-  
+ClientSchema.pre('save', async function () {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'clientes' },
+      { $inc: { sec: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    this._id = contador.sec;
+  }
 });
 
 

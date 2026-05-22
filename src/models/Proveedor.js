@@ -12,17 +12,15 @@ const ProveedorSchema = new mongoose.Schema({
   condicion_pago: { type: String },
 }, { timestamps: true, _id: false });
 
-ProveedorSchema.pre('save', async function (next) {
-if (this.isNew) {
-  const contador = await Contador.findOneAndUpdate(
-    { _col: 'proveedor' },
-    { $inc: { sec: 1 } },
-    { returnDocument: 'after', upsert: true }
-  );
-  this._id = contador.sec;
-}
-next();
-  
+ProveedorSchema.pre('save', async function () {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'proveedores' },
+      { $inc: { sec: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    this._id = contador.sec;
+  }
 });
 
 module.exports = mongoose.model('Proveedor', ProveedorSchema, 'proveedores');
