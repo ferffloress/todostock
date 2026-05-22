@@ -1,0 +1,11 @@
+[
+    { "_col": "productos",         "sec": 6 },
+    { "_col": "lotes",             "sec": 3 },
+    { "_col": "ventas",            "sec": 5 },
+    { "_col": "clientes",          "sec": 3 },
+    { "_col": "proveedores",       "sec": 3 },
+    { "_col": "compras",           "sec": 1 },
+    { "_col": "cobranzas",         "sec": 0 },
+    { "_col": "movimientosStock",  "sec": 4 },
+    { "_col": "cuentasCorrientes", "sec": 2 }
+]

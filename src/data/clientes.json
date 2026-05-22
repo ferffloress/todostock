@@ -1,36 +1,32 @@
 [
-  {
-    "id": "430f4cb9-db25-466d-a5fb-21ff28df5834",
-    "nombre": "Hotel Grand Palace",
-    "cuit": "30-33333333-3",
-    "contacto": "Luis Fernandez",
-    "telefono": "011-9999-0000",
-    "email": "compras@grandpalace.com",
-    "limite_credito": 100000,
-    "saldo_cuenta_corriente": 0
-  },
-  {
-    "id": "f47d485f-ffab-4522-9789-670814ce32b9",
-    "nombre": "Gisela Croci",
-    "cuit": "27343060330",
-    "contacto": "123456",
-    "telefono": "123456",
-    "email": "giselacroci@gmail.com",
-    "limite_credito": 150000,
-    "saldo_cuenta_corriente": 25000,
-    "created_at": "2026-04-23T03:04:07.514Z",
-    "updated_at": "2026-04-23T03:04:07.515Z"
-  },
-  {
-    "id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
-    "nombre": "Supermercado El Ahorro",
-    "cuit": "30-12345678-9",
-    "contacto": "Compras",
-    "telefono": "011-4444-5555",
-    "email": "compras@elahorro.com",
-    "limite_credito": 500000,
-    "saldo_cuenta_corriente": 0,
-    "created_at": "2026-04-12T00:00:00.000Z",
-    "updated_at": "2026-04-25T21:52:49.238Z"
-  }
+    {
+        "_id": 1,
+        "nombre": "Hotel Grand Palace",
+        "cuit": "30-33333333-3",
+        "contacto": "Luis Fernandez",
+        "telefono": "011-9999-0000",
+        "email": "compras@grandpalace.com",
+        "limite_credito": 100000,
+        "saldo_cuenta_corriente": 0
+    },
+    {
+        "_id": 2,
+        "nombre": "Gisela Croci",
+        "cuit": "27343060330",
+        "contacto": "123456",
+        "telefono": "123456",
+        "email": "giselacroci@gmail.com",
+        "limite_credito": 150000,
+        "saldo_cuenta_corriente": 25000
+    },
+    {
+        "_id": 3,
+        "nombre": "Supermercado El Ahorro",
+        "cuit": "30-12345678-9",
+        "contacto": "Compras",
+        "telefono": "011-4444-5555",
+        "email": "compras@elahorro.com",
+        "limite_credito": 500000,
+        "saldo_cuenta_corriente": 0
+    }
 ]

@@ -1,52 +1,22 @@
 [
-  {
-    "id": "87835617-46d7-4a89-8006-22d7acec8603",
-    "cliente_id": "93cef45f-7866-403f-bece-220cdc6d843a",
-    "tipo": "debito",
-    "monto": 12000,
-    "fecha": "2026-04-12T02:30:56.568Z",
-    "referencia": "b11c4a57-6ed0-44bc-8a77-1d43887a89a7",
-    "descripcion": "Venta despachada",
-    "saldo_resultante": 12000
-  },
-  {
-    "id": "4242a70b-5941-4cd2-93a0-19da08fb3c2a",
-    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
-    "tipo": "debito",
-    "monto": 1200,
-    "fecha": "2026-04-25T16:41:19.367Z",
-    "referencia": "3a6b55d2-d1e5-4bc1-be9c-3ee44254902c",
-    "descripcion": "Venta Contado (undefined)",
-    "saldo_resultante": 1200
-  },
-  {
-    "id": "c8d92b5e-dcb6-4788-bb47-f6d6d067db46",
-    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
-    "tipo": "credito",
-    "monto": 1200,
-    "fecha": "2026-04-25T16:41:19.368Z",
-    "referencia": "3a6b55d2-d1e5-4bc1-be9c-3ee44254902c",
-    "descripcion": "Pago Recibido (undefined)",
-    "saldo_resultante": 0
-  },
-  {
-    "id": "7d02101d-ce40-48a6-add6-6ffc54595a0d",
-    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
-    "tipo": "debito",
-    "monto": 1200,
-    "fecha": "2026-04-25T21:52:49.236Z",
-    "referencia": "51616c77-eb69-4444-bfaa-799afa22bf0c",
-    "descripcion": "Venta Contado (undefined)",
-    "saldo_resultante": 1200
-  },
-  {
-    "id": "46330828-cce1-4f0a-970e-72983f93712d",
-    "cliente_id": "363f2ef7-d804-4dbe-a9d5-c62c2dae70b7",
-    "tipo": "credito",
-    "monto": 1200,
-    "fecha": "2026-04-25T21:52:49.237Z",
-    "referencia": "51616c77-eb69-4444-bfaa-799afa22bf0c",
-    "descripcion": "Pago Recibido (undefined)",
-    "saldo_resultante": 0
-  }
+    {
+        "_id": 1,
+        "cliente_id": 3,
+        "tipo": "debito",
+        "monto": 1200,
+        "fecha": "2026-04-25T16:41:19.367Z",
+        "referencia": 3,
+        "descripcion": "Venta Contado (efectivo)",
+        "saldo_resultante": 1200
+    },
+    {
+        "_id": 2,
+        "cliente_id": 3,
+        "tipo": "credito",
+        "monto": 1200,
+        "fecha": "2026-04-25T16:41:19.368Z",
+        "referencia": 3,
+        "descripcion": "Pago Recibido (efectivo)",
+        "saldo_resultante": 0
+    }
 ]

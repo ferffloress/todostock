@@ -15,8 +15,8 @@ const ventaSchema = new mongoose.Schema({
     _id: false  // deshabilita el _id automático de MongoDB
 });
 
-ventaSchema.pre('save', async function(next) {
-if (this.isNew) {
+ventaSchema.pre('save', async function() {
+  if (this.isNew) {
     const contador = await Contador.findOneAndUpdate(
       { _col: 'ventas' },
       { $inc: { sec: 1 } },
@@ -24,7 +24,6 @@ if (this.isNew) {
     );
     this._id = contador.sec;
   }
-    next();
 });
 
 module.exports = mongoose.model('Venta', ventaSchema, 'ventas');

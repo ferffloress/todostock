@@ -4,11 +4,16 @@ html(lang="es")
     meta(charset="UTF-8")
     title= titulo
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
   body
     div.container.mt-5
       div.d-flex.justify-content-between.align-items-center.mb-4
         h1= titulo
-        a.btn.btn-primary(href="/ventas/nueva-venta") Nueva Venta
+        div.d-flex.gap-2
+          a.btn.btn-outline-secondary(href="/")
+            i.bi.bi-house-fill.me-1
+            | Home
+          a.btn.btn-primary(href="/ventas/nueva-venta") Nueva Venta
 
       table.table.table-hover.shadow-sm
         thead.table-dark
@@ -31,16 +36,16 @@ html(lang="es")
               td.fw-bold= `$${venta.total}`
               td.d-flex.gap-1
                 //- BOTÓN DETALLE: Nos lleva a la vista de la venta específica
-                a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta.id}`) Detalle
+                a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta._id}`) Detalle
                 
                 //- BOTÓN DESPACHAR: Solo aparece si está pendiente
                 if venta.estado === 'pendiente'
-                  form(action=`/ventas/despachar/${venta.id}` method="POST")
+                  form(action=`/ventas/despachar/${venta._id}` method="POST")
                     button.btn.btn-sm.btn-success(type="submit") Despachar
                 
                 //- BOTÓN ELIMINAR: Solo aparece si está pendiente
                 if venta.estado === 'pendiente'
-                  form(action=`/ventas/eliminar/${venta.id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
+                  form(action=`/ventas/eliminar/${venta._id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
                     button.btn.btn-sm.btn-danger(type="submit") Eliminar
           else
             tr

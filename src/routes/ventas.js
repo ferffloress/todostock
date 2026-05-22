@@ -9,7 +9,7 @@ router.get('/', ventasController.listarVista);
 router.get('/nueva-venta', ventasController.formularioVenta);
 
 // Detalle de una venta específica (coincide con /ventas/ver/:id)
-router.get('/ver/:id', ventasController.obtener);
+router.get('/ver/:id', ventasController.detalleVista);
 
 // Crear la venta (Procesa el formulario de nueva-venta)
 router.post('/', ventasController.crear);

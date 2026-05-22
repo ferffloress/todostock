@@ -11,7 +11,7 @@ function validate(data) {
     data.items.forEach((item, index) => {
       const prefix = `items[${index}]`;
 
-      if (!item.producto_id || typeof item.producto_id !== 'string' || item.producto_id.trim() === '') {
+      if (!item.producto_id && item.producto_id !== 0) {
         errors.push(`${prefix}.producto_id es requerido`);
       }
 

@@ -9,14 +9,15 @@ const productoSchema = new mongoose.Schema({
   precio_venta:  { type: Number, required: true },
   stock_actual:  { type: Number, default: 0 },
   stock_minimo:  { type: Number, default: 0 },
-  unidad_medida: { type: String, required: true },
-  activo:        { type: Boolean, default: true },
+  unidad_medida:      { type: String, required: true },
+  unidades_por_bulto: { type: Number, default: 1 },
+  activo:             { type: Boolean, default: true },
 }, { timestamps: true,
     _id: false
  });  
 
 
-productoSchema.pre('save', async function(next) {
+productoSchema.pre('save', async function() {
   if (this.isNew) {
     const contador = await Contador.findOneAndUpdate(
       { _col: 'productos' },
@@ -25,7 +26,6 @@ productoSchema.pre('save', async function(next) {
     );
     this._id = contador.sec;
   }
-  next();
 });
 
 

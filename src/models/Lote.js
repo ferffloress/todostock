@@ -16,8 +16,7 @@ const loteSchema  = new mongoose.Schema({
   _id: false
 });
 
-// Antes de guardar asigna el próximo número como ID
-loteSchema.pre('save', async function(next) {
+loteSchema.pre('save', async function() {
   if (this.isNew) {
     const contador = await Contador.findOneAndUpdate(
       { _col: 'lotes' },
@@ -25,12 +24,10 @@ loteSchema.pre('save', async function(next) {
       { returnDocument: 'after', upsert: true }
     );
     this._id = contador.sec;
-    // Si no se pasó cantidad_actual, arranca igual a cantidad_inicial
     if (this.cantidad_actual === undefined) {
       this.cantidad_actual = this.cantidad_inicial;
     }
   }
-  next();
 });
 
 module.exports = mongoose.model('Lote', loteSchema, 'lotes');

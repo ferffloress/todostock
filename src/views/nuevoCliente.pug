@@ -5,13 +5,17 @@ html(lang="es")
     meta(name="viewport", content="width=device-width, initial-scale=1.0")
     title= titulo
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
   
   body.bg-light
     div.container.mt-5
       div.row.justify-content-center
         div.col-md-7
-          div.bg-dark.text-white.p-3
+          div.bg-dark.text-white.p-3.d-flex.justify-content-between.align-items-center
             h4.m-0.fw-bold= titulo
+            a.btn.btn-outline-light.btn-sm.rounded-0(href="/")
+              i.bi.bi-house-fill.me-1
+              | Home
           
           div.bg-white.p-4.border.border-top-0.shadow-sm
             form(method="POST", action="/clientes")

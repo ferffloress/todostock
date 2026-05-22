@@ -14,17 +14,15 @@ const CuentaCorrienteSchema = new mongoose.Schema({
   saldo_resultante: { type: Number, default: 0 },
 }, { timestamps: true, _id: false });
 
-CuentaCorrienteSchema.pre('save', async function (next) {
-if (this.isNew) {
-  const contador = await Contador.findOneAndUpdate(
-    { _col: 'cuentasCorrientes' },
-    { $inc: { sec: 1 } },
-    { returnDocument: 'after', upsert: true }
-  );
-  this._id = contador.sec;
-}
-next();
-  
+CuentaCorrienteSchema.pre('save', async function () {
+  if (this.isNew) {
+    const contador = await Contador.findOneAndUpdate(
+      { _col: 'cuentasCorrientes' },
+      { $inc: { sec: 1 } },
+      { returnDocument: 'after', upsert: true }
+    );
+    this._id = contador.sec;
+  }
 });
 
 module.exports = mongoose.model('CuentaCorriente', CuentaCorrienteSchema, 'cuentasCorrientes');
