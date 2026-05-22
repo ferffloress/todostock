@@ -9,8 +9,9 @@ const productoSchema = new mongoose.Schema({
   precio_venta:  { type: Number, required: true },
   stock_actual:  { type: Number, default: 0 },
   stock_minimo:  { type: Number, default: 0 },
-  unidad_medida: { type: String, required: true },
-  activo:        { type: Boolean, default: true },
+  unidad_medida:      { type: String, required: true },
+  unidades_por_bulto: { type: Number, default: 1 },
+  activo:             { type: Boolean, default: true },
 }, { timestamps: true,
     _id: false
  });  

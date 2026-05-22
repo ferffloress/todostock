@@ -39,12 +39,15 @@ html(lang="es")
                 input.form-control.rounded-0#precio_venta(type="number", value=producto.precio_venta)
 
             div.row
-              div.col-md-6.mb-4
+              div.col-md-4.mb-4
                 label.form-label.fw-bold Stock Actual
                 input.form-control.rounded-0#stock_actual(type="number", value=producto.stock_actual)
-              div.col-md-6.mb-4
+              div.col-md-4.mb-4
                 label.form-label.fw-bold Stock Mínimo
                 input.form-control.rounded-0#stock_minimo(type="number", value=producto.stock_minimo)
+              div.col-md-4.mb-4
+                label.form-label.fw-bold Unidades por Bulto
+                input.form-control.rounded-0#unidades_por_bulto(type="number", value=producto.unidades_por_bulto || 1, min="1")
 
             div.d-flex.justify-content-end.gap-2
               a.btn.btn-outline-secondary.rounded-0(href="/productos") Cancelar
@@ -58,8 +61,9 @@ html(lang="es")
         unidad_medida: document.getElementById('unidad_medida').value,
         precio_costo: Number(document.getElementById('precio_costo').value),
         precio_venta: Number(document.getElementById('precio_venta').value),
-        stock_actual: Number(document.getElementById('stock_actual').value),
-        stock_minimo: Number(document.getElementById('stock_minimo').value),
+        stock_actual:       Number(document.getElementById('stock_actual').value),
+        stock_minimo:       Number(document.getElementById('stock_minimo').value),
+        unidades_por_bulto: Number(document.getElementById('unidades_por_bulto').value),
       };
       const res = await fetch(`/productos/!{producto._id}`, {
         method: 'PUT',

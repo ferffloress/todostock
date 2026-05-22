@@ -43,6 +43,24 @@ const ventasController = {
     } catch (err) { next(err); }
   },
 
+  async detalleVista(req, res, next) {
+    try {
+      const venta = await Venta.findById(Number(req.params.id));
+      if (!venta) throw makeError('Venta no encontrada', 404);
+
+      const cliente = await Cliente.findById(venta.cliente_id);
+
+      const itemsConNombre = await Promise.all(
+        venta.items.map(async (item) => {
+          const producto = await Producto.findById(item.producto_id);
+          return { ...item, nombreProducto: producto?.nombre ?? `Producto #${item.producto_id}` };
+        })
+      );
+
+      res.render('detalleVenta', { titulo: `Venta #${venta._id}`, venta, cliente, items: itemsConNombre });
+    } catch (err) { next(err); }
+  },
+
   async crear(req, res, next) {
     try {
       // 1. Limpieza numérica
@@ -205,12 +223,8 @@ const ventasController = {
         saldo_cuenta_corriente: nuevoSaldo
       });
 
-      const updated = await Venta.findByIdAndUpdate(
-        Number(req.params.id),
-        { estado: 'despachada' },
-        { new: true }
-      );
-      res.json(updated);
+      await Venta.findByIdAndUpdate(Number(req.params.id), { estado: 'despachada' });
+      res.redirect(`/ventas/ver/${req.params.id}`);
 
     } catch (err) { next(err); }
   },
@@ -220,12 +234,8 @@ const ventasController = {
       const venta = await Venta.findById(Number(req.params.id));
       if (!venta) throw makeError('Venta no encontrada', 404);
       if (venta.estado !== 'pendiente') throw makeError('Solo se pueden cancelar ventas pendientes', 400);
-      const updated = await Venta.findByIdAndUpdate(
-        Number(req.params.id),
-        { estado: 'cancelada' },
-        { new: true }
-      );
-      res.json(updated);
+      await Venta.findByIdAndUpdate(Number(req.params.id), { estado: 'cancelada' });
+      res.redirect(`/ventas/ver/${req.params.id}`);
     } catch (err) { next(err); }
   },
 };

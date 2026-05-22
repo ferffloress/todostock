@@ -36,16 +36,16 @@ html(lang="es")
               td.fw-bold= `$${venta.total}`
               td.d-flex.gap-1
                 //- BOTÓN DETALLE: Nos lleva a la vista de la venta específica
-                a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta.id}`) Detalle
+                a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta._id}`) Detalle
                 
                 //- BOTÓN DESPACHAR: Solo aparece si está pendiente
                 if venta.estado === 'pendiente'
-                  form(action=`/ventas/despachar/${venta.id}` method="POST")
+                  form(action=`/ventas/despachar/${venta._id}` method="POST")
                     button.btn.btn-sm.btn-success(type="submit") Despachar
                 
                 //- BOTÓN ELIMINAR: Solo aparece si está pendiente
                 if venta.estado === 'pendiente'
-                  form(action=`/ventas/eliminar/${venta.id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
+                  form(action=`/ventas/eliminar/${venta._id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
                     button.btn.btn-sm.btn-danger(type="submit") Eliminar
           else
             tr

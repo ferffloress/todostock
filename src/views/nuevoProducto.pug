@@ -40,12 +40,15 @@ html(lang="es")
                   input.form-control.rounded-0(type="number", name="precio_venta", value="0")
 
               div.row
-                div.col-md-6.mb-4
+                div.col-md-4.mb-4
                   label.form-label.fw-bold Stock Actual
                   input.form-control.rounded-0(type="number", name="stock_actual", value="0")
-                div.col-md-6.mb-4
+                div.col-md-4.mb-4
                   label.form-label.fw-bold Stock Mínimo
                   input.form-control.rounded-0(type="number", name="stock_minimo", value="0")
+                div.col-md-4.mb-4
+                  label.form-label.fw-bold Unidades por Bulto
+                  input.form-control.rounded-0(type="number", name="unidades_por_bulto", value="1", min="1")
 
               div.d-flex.justify-content-end.gap-2
                 a.btn.btn-outline-secondary.rounded-0(href="/productos") Cancelar
