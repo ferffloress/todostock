@@ -12,15 +12,15 @@ const Producto = require('./src/models/Producto');
 const Proveedor = require('./src/models/Proveedor');
 const Venta = require('./src/models/Venta');
 
-const clientes = require('./src/data/clientes_import.json');
-const compras = require('./src/data/compras_import.json');
-const contadores = require('./src/data/contadores_import.json');
-const cuentasCorrientes = require('./src/data/cuentasCorrientes_import.json');
-const lotes = require('./src/data/lotes_import.json');
-const movimientosStock = require('./src/data/movimientosStock_import.json');
-const productos = require('./src/data/productos_import.json');
-const proveedores = require('./src/data/proveedores_import.json');
-const ventas = require('./src/data/ventas_import.json');
+const clientes = require('./src/data/clientes.json');
+const compras = require('./src/data/compras.json');
+const contadores = require('./src/data/contadores.json');
+const cuentasCorrientes = require('./src/data/cuentasCorrientes.json');
+const lotes = require('./src/data/lotes.json');
+const movimientosStock = require('./src/data/movimientosStock.json');
+const productos = require('./src/data/productos.json');
+const proveedores = require('./src/data/proveedores.json');
+const ventas = require('./src/data/ventas.json');
 
 const colecciones = [
   { modelo: Cliente,         datos: clientes,         nombre: 'clientes' },
