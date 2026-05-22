@@ -2,17 +2,18 @@ const express = require('express');
 const app = express();
 const path = require('path');
 
+//CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-app.get('/', (req, res) => {
-  res.render('index');
-});
-
+//MIDDLEWARES
 app.use(express.json());
-app.use(express.urlencoded({ extended: true })); //leer datos de formularios
+app.use(express.urlencoded({ extended: true }));
 
-//vistas
+//IMPORTACIÓN DE ENRUTADORES (ROUTERS)
+const authRouter = require('./routes/authRoutes');
+const authController = require('./controllers/authController');
+
 const productosRouter = require('./routes/productos');
 const proveedoresRouter = require('./routes/proveedores');
 const clientesRouter = require('./routes/clientes');
@@ -24,18 +25,40 @@ const movimientosStockRouter = require('./routes/movimientosStock');
 const alertasRouter = require('./routes/alertas');
 const resumenesRouter = require('./routes/resumenes');
 
-app.use('/productos', productosRouter);
-app.use('/proveedores', proveedoresRouter);
-app.use('/clientes', clientesRouter);
-app.use('/lotes', lotesRouter);
-app.use('/compras', comprasRouter);
-app.use('/ventas', ventasRouter);
-app.use('/cobranzas', cobranzasRouter);
-app.use('/movimientos-stock', movimientosStockRouter);
-app.use('/alertas', alertasRouter);
-app.use('/resumen', resumenesRouter);
+// --- INTEGRACIÓN DEL CANDADO DE AUTENTICACIÓN ---
+const protegerRuta = (req, res, next) => {
+  // Si la variable global es true, lo dejamos pasar al menú. Si no, al login.
+  if (global.usuarioLogueado === true) {
+    next(); 
+  } else {
+    res.redirect('/login'); 
+  }
+};
 
-//api
+//VINCULACIÓN DE RUTAS AL SERVIDOR
+
+// Ruta raíz
+app.get('/', protegerRuta, (req, res, next) => {
+  res.render('index');
+  next();
+});
+
+// Rutas públicas
+app.use('/', authRouter);
+
+//Rutas de vistas del sistema
+app.use('/productos', protegerRuta, productosRouter);
+app.use('/proveedores', protegerRuta, proveedoresRouter);
+app.use('/clientes', protegerRuta, clientesRouter);
+app.use('/lotes', protegerRuta, lotesRouter);
+app.use('/compras', protegerRuta, comprasRouter);
+app.use('/ventas', protegerRuta, ventasRouter);
+app.use('/cobranzas', protegerRuta, cobranzasRouter);
+app.use('/movimientos-stock', protegerRuta, movimientosStockRouter);
+app.use('/alertas', protegerRuta, alertasRouter);
+app.use('/resumen', protegerRuta, resumenesRouter);
+
+// APIs
 const apiProductosRouter = require('./routes/productosRoutes');
 const apiProveedoresRouter = require('./routes/proveedoresRoutes');
 const apiClientesRouter = require('./routes/clientesRoutes');
@@ -44,7 +67,6 @@ const apiLotesRouter       = require('./routes/lotesRoutes');
 const apiComprasRouter     = require('./routes/comprasRoutes');
 const apiMovimientosRouter = require('./routes/movimientosStockRoutes');
 const apiCuentasRouter     = require('./routes/cuentasCorrientesRoutes');
-
 
 app.use('/api/productos', apiProductosRouter);
 app.use('/api/proveedores', apiProveedoresRouter);
@@ -55,6 +77,7 @@ app.use('/api/compras', apiComprasRouter);
 app.use('/api/movimientos-stock', apiMovimientosRouter);
 app.use('/api/cuentas-corrientes', apiCuentasRouter);
 
+//MANEJO DE ERRORES
 app.use((req, res) => {
   res.status(404).json({ error: `Ruta no encontrada: ${req.method} ${req.originalUrl}` });
 });
