@@ -10,11 +10,11 @@ exports.procesarLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // DATOS POR DEFECTO
+    //DATOS POR DEFECTO
     const EMAIL_DEFECTO = "usuario@todostock.com";
     const CLAVE_DEFECTO = "123456";
 
-    // Si coinciden los datos por defecto
+    //Si coinciden los datos por defecto
     if (email === EMAIL_DEFECTO && password === CLAVE_DEFECTO) {
       global.usuarioLogueado = true; 
       return res.redirect('/');
@@ -44,7 +44,25 @@ exports.procesarLogin = async (req, res, next) => {
   }
 };
 
-// Middleware para proteger rutas (Se ejecuta por separado en app.js)
+//Middleware para proteger rutas
 exports.protegerRuta = (req, res, next) => {
-  next();
+  if (global.usuarioLogueado === true) {
+    return next();
+  }
+  res.redirect('/login');
+};
+
+//Función para cerrar sesión
+exports.logout = (req, res) => {
+  global.usuarioLogueado = false;
+
+  if (req.session) {
+    req.session.destroy((err) => {
+      if (err) console.error("Error destruyendo sesión:", err);
+      res.clearCookie('connect.sid');
+      return res.redirect('/login');
+    });
+  } else {
+    res.redirect('/login');
+  }
 };
