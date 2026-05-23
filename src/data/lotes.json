@@ -13,11 +13,11 @@
         "_id": 2,
         "producto_id": 2,
         "proveedor_id": 3,
-        "numero_lote": "LAV-2025-A",
+        "numero_lote": "DES-2025-A",
         "fecha_vencimiento": "2027-10-01T02:30:56.568Z",
         "cantidad_inicial": 50,
         "cantidad_actual": 40,
-        "costo_unitario": 850
+        "costo_unitario": 380
     },
     {
         "_id": 3,
@@ -28,5 +28,25 @@
         "cantidad_inicial": 30,
         "cantidad_actual": 30,
         "costo_unitario": 620
+    },
+    {
+        "_id": 4,
+        "producto_id": 3,
+        "proveedor_id": 2,
+        "numero_lote": "JAB-2025-A",
+        "fecha_vencimiento": "2027-06-01T00:00:00.000Z",
+        "cantidad_inicial": 50,
+        "cantidad_actual": 45,
+        "costo_unitario": 450
+    },
+    {
+        "_id": 5,
+        "producto_id": 6,
+        "proveedor_id": 1,
+        "numero_lote": "LIM-2025-A",
+        "fecha_vencimiento": "2027-08-01T00:00:00.000Z",
+        "cantidad_inicial": 30,
+        "cantidad_actual": 29,
+        "costo_unitario": 100
     }
 ]

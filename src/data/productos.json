@@ -5,9 +5,10 @@
         "categoria": "Detergentes",
         "precio_costo": 620,
         "precio_venta": 920,
-        "stock_actual": 80,
+        "stock_actual": 30,
         "stock_minimo": 30,
         "unidad_medida": "unidad",
+        "unidades_por_bulto": 6,
         "activo": true
     },
     {
@@ -16,9 +17,10 @@
         "categoria": "Desengrasantes",
         "precio_costo": 380,
         "precio_venta": 580,
-        "stock_actual": 200,
+        "stock_actual": 40,
         "stock_minimo": 60,
         "unidad_medida": "unidad",
+        "unidades_por_bulto": 12,
         "activo": true
     },
     {
@@ -30,6 +32,7 @@
         "stock_actual": 45,
         "stock_minimo": 40,
         "unidad_medida": "unidad",
+        "unidades_por_bulto": 6,
         "activo": true
     },
     {
@@ -41,6 +44,7 @@
         "stock_actual": 0,
         "stock_minimo": 20,
         "unidad_medida": "unidad",
+        "unidades_por_bulto": 12,
         "activo": true
     },
     {
@@ -49,9 +53,10 @@
         "categoria": "Desinfectantes",
         "precio_costo": 850,
         "precio_venta": 1200,
-        "stock_actual": 149,
+        "stock_actual": 14,
         "stock_minimo": 50,
         "unidad_medida": "unidad",
+        "unidades_por_bulto": 6,
         "activo": true
     },
     {
@@ -63,6 +68,7 @@
         "stock_actual": 29,
         "stock_minimo": 5,
         "unidad_medida": "l",
+        "unidades_por_bulto": 4,
         "activo": true
     }
 ]

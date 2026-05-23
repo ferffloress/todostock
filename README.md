@@ -1,7 +1,7 @@
 # TodoStock S.A. — Backend REST
 
 Backend REST para **TodoStock S.A.**, distribuidora mayorista de productos de limpieza.  
-Desarrollado con **Node.js** y **Express**. Los datos se persisten en archivos JSON.
+Desarrollado con **Node.js**, **Express** y **MongoDB** (Mongoose). Incluye vistas renderizadas con **Pug**.
 
 ---
 
@@ -9,6 +9,7 @@ Desarrollado con **Node.js** y **Express**. Los datos se persisten en archivos J
 
 - Node.js v18 o superior
 - npm
+- MongoDB local (v6 o superior) o una URI de MongoDB Atlas
 
 ---
 
@@ -17,6 +18,27 @@ Desarrollado con **Node.js** y **Express**. Los datos se persisten en archivos J
 ```bash
 npm install
 ```
+
+## Variables de entorno
+
+Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+
+```
+MONGODB_URI=mongodb://127.0.0.1:27017/todoStock
+```
+
+Si usás MongoDB Atlas, reemplazá el valor por tu URI de conexión.  
+Si no creás el archivo `.env`, el sistema usa `mongodb://127.0.0.1:27017/todoStock` por defecto.
+
+## Carga inicial de datos (Seed)
+
+Para importar los datos de prueba a MongoDB ejecutar una sola vez:
+
+```bash
+node seed.js
+```
+
+Esto elimina los datos existentes e inserta los registros de prueba en todas las colecciones.
 
 ## Ejecución
 
@@ -40,15 +62,19 @@ El servidor levanta en `http://localhost:3000`.
 
 ```
 todostock/
-├── app.js              → configuración de Express, middlewares y rutas
+├── seed.js             → script de carga inicial de datos en MongoDB
 ├── src/
-│   ├── index.js        → punto de entrada, levanta el servidor
-│   ├── models/         → clases con constructor para cada entidad
-│   ├── controllers/    → lógica de negocio y respuestas JSON
-│   ├── routes/         → definición de endpoints
+│   ├── index.js        → punto de entrada, conecta MongoDB y levanta el servidor
+│   ├── app.js          → configuración de Express, middlewares y rutas
+│   ├── config/
+│   │   └── db.js       → conexión a MongoDB con Mongoose
+│   ├── models/         → esquemas Mongoose para cada entidad
+│   ├── controllers/    → lógica de negocio y respuestas HTTP
+│   ├── routes/         → definición de endpoints (vistas + API REST)
 │   ├── validators/     → validaciones de datos de entrada
+│   ├── services/       → lógica de negocio reutilizable
 │   ├── views/          → plantillas Pug
-│   └── data/           → archivos JSON y store de persistencia
+│   └── data/           → archivos JSON originales (usados por seed.js)
 ├── package.json
 └── .gitignore
 ```
@@ -59,11 +85,12 @@ todostock/
 
 | Módulo         | Descripción                                                                                       |
 | -------------- | ------------------------------------------------------------------------------------------------- |
-| `models/`      | Clases con constructor para cada entidad del sistema                                              |
+| `models/`      | Esquemas Mongoose con validaciones de tipos y restricciones por entidad                           |
 | `controllers/` | Lógica de negocio: CRUD, validaciones, control de stock, FEFO, cuentas corrientes                 |
-| `routes/`      | Definición de rutas y métodos HTTP                                                                |
+| `routes/`      | Definición de rutas y métodos HTTP (vistas HTML + endpoints API REST)                             |
 | `validators/`  | Validación de campos requeridos y tipos en el body de cada request                                |
-| `data/`        | Archivos JSON con datos persistidos y `store.js` para lectura/escritura                           |
+| `services/`    | Lógica reutilizable desacoplada de los controladores                                              |
+| `data/`        | Archivos JSON con datos de prueba, utilizados por seed.js para poblar MongoDB                     |
 
 ---
 
@@ -129,11 +156,11 @@ todostock/
 
 ### Cobranzas
 
-| Método | Ruta            | Descripción              |
-| ------ | --------------- | ------------------------ |
-| GET    | `/cobranzas`    | Listar todas las cobranzas |
-| GET    | `/cobranzas/:id`| Obtener cobranza por ID  |
-| POST   | `/cobranzas`    | Registrar cobranza (acredita en cuenta corriente del cliente) |
+| Método | Ruta             | Descripción                                              |
+| ------ | ---------------- | -------------------------------------------------------- |
+| GET    | `/cobranzas`     | Listar todas las cobranzas                               |
+| GET    | `/cobranzas/:id` | Obtener cobranza por ID                                  |
+| POST   | `/cobranzas`     | Registrar cobranza (acredita en cuenta corriente)        |
 
 ### Movimientos de Stock
 
@@ -144,17 +171,17 @@ todostock/
 
 ### Alertas
 
-| Método | Ruta       | Descripción                                                                       |
-| ------ | ---------- | --------------------------------------------------------------------------------- |
+| Método | Ruta       | Descripción                                                                         |
+| ------ | ---------- | ----------------------------------------------------------------------------------- |
 | GET    | `/alertas` | Productos con stock bajo, lotes por vencer en 30 días y clientes con saldo excedido |
 
 ### Resúmenes
 
-| Método | Ruta                | Descripción                                              |
-| ------ | ------------------- | -------------------------------------------------------- |
-| GET    | `/resumen/inventario` | Valor del inventario, productos sin stock y sobrestock |
-| GET    | `/resumen/caja`       | Ventas, cobros y compras del mes corriente             |
-| GET    | `/resumen/ventas`     | Top 5 productos y clientes, ventas por semana          |
+| Método | Ruta                    | Descripción                                              |
+| ------ | ----------------------- | -------------------------------------------------------- |
+| GET    | `/resumen/inventario`   | Valor del inventario, productos sin stock y sobrestock   |
+| GET    | `/resumen/caja`         | Ventas, cobros y compras del mes corriente               |
+| GET    | `/resumen/ventas`       | Top 5 productos y clientes, ventas por semana            |
 
 ---
 
