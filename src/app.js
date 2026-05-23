@@ -38,9 +38,8 @@ const protegerRuta = (req, res, next) => {
 //VINCULACIÓN DE RUTAS AL SERVIDOR
 
 // Ruta raíz
-app.get('/', protegerRuta, (req, res, next) => {
+app.get('/', protegerRuta, (req, res) => {
   res.render('index');
-  next();
 });
 
 // Rutas públicas
@@ -83,6 +82,9 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
+  if (res.headersSent) {
+    return next(err);
+  };
   const status = err.status || err.statusCode || 500;
   res.status(status).json({
     error: err.message || 'Error interno del servidor',
