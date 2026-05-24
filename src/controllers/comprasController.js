@@ -37,13 +37,12 @@ const comprasController = {
   async crear(req, res, next) {
     try {
       const { errors } = validate(req.body);
-      if (errors.length > 0) {
+      if (errors && errors.length > 0) {
+        console.log("ERRORES DETECTADOS:", errors);
         const err = makeError('Datos inválidos', 422);
         err.details = errors;
         throw err;
       }
-      const proveedor = await Proveedor.findById(Number(req.body.proveedor_id));
-      if (!proveedor) throw makeError('Proveedor no encontrado', 404);
 
       for (const item of req.body.items) {
         const producto = await Producto.findById(Number(item.producto_id));
