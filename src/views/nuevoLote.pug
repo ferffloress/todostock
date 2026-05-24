@@ -1,0 +1,52 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= titulo
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+
+  body.bg-light
+    div.container.mt-5
+      div.row.justify-content-center
+        div.col-md-7
+          div.bg-dark.text-white.p-3.d-flex.justify-content-between.align-items-center
+            h4.m-0.fw-bold= titulo
+            a.btn.btn-outline-light.btn-sm.rounded-0(href="/")
+              i.bi.bi-house-fill.me-1
+              | Home
+
+          div.bg-white.p-4.border.border-top-0.shadow-sm
+            form(method="POST", action="/lotes")
+              div.row
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold ID Producto
+                  input.form-control.rounded-0(type="number", name="producto_id", required)
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold ID Proveedor
+                  input.form-control.rounded-0(type="number", name="proveedor_id")
+
+              div.mb-3
+                label.form-label.fw-bold Número de Lote
+                input.form-control.rounded-0(type="text", name="numero_lote", required)
+
+              div.row
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold Cantidad
+                  input.form-control.rounded-0(type="number", name="cantidad_inicial", min="1", required)
+                div.col-md-6.mb-3
+                  label.form-label.fw-bold Costo Unitario
+                  input.form-control.rounded-0(type="number", name="costo_unitario", min="0", value="0")
+
+              div.mb-4
+                label.form-label.fw-bold Fecha de Vencimiento
+                input.form-control.rounded-0#fecha_vencimiento(type="date", name="fecha_vencimiento", required)
+
+              div.d-flex.justify-content-end.gap-2
+                a.btn.btn-outline-secondary.rounded-0(href="/lotes") Cancelar
+                button.btn.btn-primary.rounded-0(type="submit") Guardar Lote
+
+    script.
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha_vencimiento').setAttribute('min', hoy);

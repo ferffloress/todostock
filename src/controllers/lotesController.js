@@ -1,5 +1,4 @@
 const Lote = require('../models/Lote');
-const createStore = require('../models/Lote');
 
 
 function makeError(message, status) {
@@ -39,9 +38,29 @@ const lotesController = {
 
   async obtener(req, res, next) {
     try {
-      const lote = await Lote.find({ _id: req.params.id });
+      const lote = await Lote.findById(Number(req.params.id));
       if (!lote) throw makeError('Lote no encontrado', 404);
       res.json(lote);
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async formularioNuevo(req, res) {
+    res.render('nuevoLote', { titulo: 'Nuevo Lote' });
+  },
+
+  async crear(req, res, next) {
+    try {
+      const body = {
+        ...req.body,
+        producto_id: Number(req.body.producto_id),
+        proveedor_id: req.body.proveedor_id ? Number(req.body.proveedor_id) : null,
+        cantidad_inicial: Number(req.body.cantidad_inicial),
+        costo_unitario: Number(req.body.costo_unitario),
+      };
+      await new Lote(body).save();
+      res.redirect('/lotes');
     } catch (err) {
       next(err);
     }

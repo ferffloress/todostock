@@ -53,7 +53,7 @@
         "categoria": "Desinfectantes",
         "precio_costo": 850,
         "precio_venta": 1200,
-        "stock_actual": 14,
+        "stock_actual": 38,
         "stock_minimo": 50,
         "unidad_medida": "unidad",
         "unidades_por_bulto": 6,

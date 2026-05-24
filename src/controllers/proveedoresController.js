@@ -37,16 +37,28 @@ const proveedoresController = {
     }
   },
 
+  async formularioNuevo(req, res) {
+    res.render('nuevoProveedor', { titulo: 'Nuevo Proveedor' });
+  },
+
+  async formularioEditar(req, res, next) {
+    try {
+      const proveedor = await Proveedor.findById(Number(req.params.id));
+      if (!proveedor) throw makeError('Proveedor no encontrado', 404);
+      res.render('editarProveedor', { titulo: 'Editar Proveedor', proveedor });
+    } catch (err) {
+      next(err);
+    }
+  },
+
   async crear(req, res, next) {
     try {
       const { errors } = validate(req.body);
       if (errors.length > 0) {
-        const err = makeError('Datos inválidos', 422);
-        err.details = errors;
-        throw err;
+        return res.render('nuevoProveedor', { titulo: 'Nuevo Proveedor', errores: errors, datos: req.body });
       }
-      const proveedor = await new Proveedor(req.body).save();
-      res.status(201).json(proveedor);
+      await new Proveedor(req.body).save();
+      res.redirect('/proveedores');
     } catch (err) {
       next(err);
     }

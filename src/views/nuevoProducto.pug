@@ -18,10 +18,15 @@ html(lang="es")
               | Home
           
           div.bg-white.p-4.border.border-top-0.shadow-sm
+            if errores && errores.length
+              div.alert.alert-danger.rounded-0
+                ul.mb-0
+                  each e in errores
+                    li= e
             form(method="POST", action="/productos")
               div.mb-3
                 label.form-label.fw-bold Nombre
-                input.form-control.rounded-0(type="text", name="nombre")
+                input.form-control.rounded-0(type="text", name="nombre", value=datos && datos.nombre)
 
               div.row
                 div.col-md-6.mb-3
@@ -34,10 +39,10 @@ html(lang="es")
               div.row
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Precio Costo
-                  input.form-control.rounded-0(type="number", name="precio_costo", value="0")
+                  input.form-control.rounded-0(type="number", name="precio_costo", value=datos ? datos.precio_costo : 0)
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Precio Venta
-                  input.form-control.rounded-0(type="number", name="precio_venta", value="0")
+                  input.form-control.rounded-0(type="number", name="precio_venta", value=datos ? datos.precio_venta : 0)
 
               div.row
                 div.col-md-4.mb-4
