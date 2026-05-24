@@ -52,9 +52,7 @@ const productosController = {
       };
       const { errors } = validate(body);
       if (errors.length > 0) {
-        const err = makeError("Datos inválidos", 422);
-        err.details = errors;
-        throw err;
+        return res.render("nuevoProducto", { titulo: "Nuevo Producto", errores: errors, datos: body });
       }
       const producto = new Producto(body);
       await producto.save();

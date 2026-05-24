@@ -25,5 +25,14 @@
         "telefono": "011-5555-6666",
         "email": "ventas@quimicadelsur.com",
         "condicion_pago": "30 dias"
+    },
+    {
+        "_id": 4,
+        "nombre": "BioLimpieza Argentina S.R.L.",
+        "cuit": "30-77777777-7",
+        "contacto": "Pamela Olave",
+        "telefono": "011-6666-7777",
+        "email": "compras@biolimpieza.com",
+        "condicion_pago": "30 dias"
     }
 ]

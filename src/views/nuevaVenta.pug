@@ -45,7 +45,7 @@ html(lang="es")
                   
                   div.col-md-4.mb-3
                     label.form-label.fw-bold Fecha
-                    input.form-control.shadow-none(type="date" name="fecha" required value=new Date().toISOString().split('T')[0])
+                    input.form-control.shadow-none#fecha-venta(type="date" name="fecha" required value=new Date().toISOString().split('T')[0])
 
                   div.col-md-4.mb-3
                     label.form-label.fw-bold Forma de Pago
@@ -201,3 +201,6 @@ html(lang="es")
         listaProductos.appendChild(nuevaFila);
         itemIndex++;
       });
+
+      const hoy = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha-venta').setAttribute('min', hoy);

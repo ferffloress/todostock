@@ -74,11 +74,9 @@ const clientesController = {
 
       const { errors } = validate(body);
       if (errors.length > 0) {
-        const err = makeError('Datos inválidos', 422);
-        err.details = errors;
-        throw err;
+        return res.render('nuevoCliente', { titulo: 'Alta Nuevo Cliente', errores: errors, datos: body });
       }
-      await new Cliente(body).save(); 
+      await new Cliente(body).save();
       res.redirect('/clientes');
     } catch (err) {
       next(err);
