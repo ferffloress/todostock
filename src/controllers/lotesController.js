@@ -28,7 +28,7 @@ const lotesController = {
 
   async listarPorProducto(req, res, next) {
     try {
-      const lotes = await Lote.find({ producto_id: req.params.producto_id });
+      const lotes = await Lote.find({ producto_id: Number(req.params.producto_id) });
       if (!lotes.length) throw makeError('No se encontraron lotes para este producto', 404);
       res.json(lotes);
     } catch (err) {

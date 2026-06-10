@@ -3,7 +3,7 @@ const MovimientoStock  = require('../models/MovimientoStock');
 const movimientosStockController = {
   async listar(req, res, next) {
     try {
-      res.json((await MovimientoStock.find()).toSorted({ fecha: -1 }));
+      res.json(await MovimientoStock.find().sort({ fecha: -1 }));
     } catch (err) {
       next(err);
     }

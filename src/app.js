@@ -1,21 +1,30 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const cors = require('cors');
+const session = require('express-session');
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-//MIDDLEWARES 
+//MIDDLEWARES
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'todostock_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
+}));
 
 //CANDADO DE AUTENTICACIÓN
 const protegerRuta = (req, res, next) => {
-  if (global.usuarioLogueado === true) {
-    next(); 
+  if (req.session && req.session.usuarioLogueado === true) {
+    next();
   } else {
-    res.redirect('/login'); 
+    res.redirect('/login');
   }
 };
 

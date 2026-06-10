@@ -98,8 +98,8 @@ const productosController = {
     try {
       const existing = await Producto.findById(req.params.id);
       if (!existing) throw makeError("Producto no encontrado", 404);
-      const ventas = await Venta.find({ "items.producto_id": req.params.id });
-      const lotes = await Lote.find({ producto_id: req.params.id });
+      const ventas = await Venta.find({ "items.producto_id": Number(req.params.id) });
+      const lotes = await Lote.find({ producto_id: Number(req.params.id) });
       if (ventas.length > 0)
         throw makeError(
           "No se puede eliminar: el producto tiene ventas activas",

@@ -7,8 +7,9 @@ const ventaSchema = new mongoose.Schema({
     cliente_id: { type: Number, required: true },
     fecha: { type: Date, default: Date.now },
     estado: { type: String, default: 'pendiente' },
-    items: { type: Array,  default: [] },
+    items: { type: Array, default: [] },
     total: { type: Number, default: 0 },
+    forma_pago: { type: String, default: 'efectivo' },
     observaciones: { type: String, default: null }
 },{
     timestamps: true,

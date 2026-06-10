@@ -10,33 +10,32 @@ exports.procesarLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    //DATOS POR DEFECTO
-    const EMAIL_DEFECTO = "usuario@todostock.com";
-    const CLAVE_DEFECTO = "123456";
-
-    //Si coinciden los datos por defecto
-    if (email === EMAIL_DEFECTO && password === CLAVE_DEFECTO) {
-      global.usuarioLogueado = true; 
-      return res.redirect('/');
+    if (!email || !password) {
+      return res.render('login', {
+        titulo: 'Iniciar Sesión',
+        error: 'Email y contraseña son obligatorios.'
+      });
     }
 
-    //LÓGICA DE RESPALDO CON BASE DE DATOS
-    const usuario = await Usuario.findOne({ email });
+    const usuario = await Usuario.findOne({ email: email.toLowerCase().trim() });
     if (!usuario) {
-      return res.render('login', { 
-        titulo: 'Iniciar Sesión', 
-        error: 'El email o la contraseña son incorrectos.' 
+      return res.render('login', {
+        titulo: 'Iniciar Sesión',
+        error: 'El email o la contraseña son incorrectos.'
       });
     }
 
-    if (usuario.password !== password) {
-      return res.render('login', { 
-        titulo: 'Iniciar Sesión', 
-        error: 'El email o la contraseña son incorrectos.' 
+    const passwordValida = await usuario.compararPassword(password);
+    if (!passwordValida) {
+      return res.render('login', {
+        titulo: 'Iniciar Sesión',
+        error: 'El email o la contraseña son incorrectos.'
       });
     }
 
-    global.usuarioLogueado = true;
+    req.session.usuarioLogueado = true;
+    req.session.usuarioId = usuario._id;
+    req.session.usuarioRol = usuario.rol;
     res.redirect('/');
 
   } catch (error) {
@@ -44,25 +43,19 @@ exports.procesarLogin = async (req, res, next) => {
   }
 };
 
-//Middleware para proteger rutas
+// Middleware para proteger rutas
 exports.protegerRuta = (req, res, next) => {
-  if (global.usuarioLogueado === true) {
+  if (req.session && req.session.usuarioLogueado === true) {
     return next();
   }
   res.redirect('/login');
 };
 
-//Función para cerrar sesión
+// Cierra sesión
 exports.logout = (req, res) => {
-  global.usuarioLogueado = false;
-
-  if (req.session) {
-    req.session.destroy((err) => {
-      if (err) console.error("Error destruyendo sesión:", err);
-      res.clearCookie('connect.sid');
-      return res.redirect('/login');
-    });
-  } else {
+  req.session.destroy((err) => {
+    if (err) console.error('Error destruyendo sesión:', err);
+    res.clearCookie('connect.sid');
     res.redirect('/login');
-  }
+  });
 };

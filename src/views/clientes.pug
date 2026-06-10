@@ -25,13 +25,13 @@ html(lang="es")
         tbody
           each cliente in clientes
             tr
-              td= cliente.id
+              td= cliente._id
               td= cliente.nombre
               td= cliente.email
               td
-                a.btn.btn-sm.btn-info.me-2(href=`/clientes/${cliente.id}/cuenta-corriente`) Cuenta Corriente
-                a.btn.btn-sm.btn-secondary.me-2(href=`/clientes/${cliente.id}/editar`) Editar
-                button.btn.btn-sm.btn-danger(onclick=`eliminarCliente('${cliente.id}', this)`) Eliminar
+                a.btn.btn-sm.btn-info.me-2(href=`/clientes/${cliente._id}/cuenta-corriente`) Cuenta Corriente
+                a.btn.btn-sm.btn-secondary.me-2(href=`/clientes/${cliente._id}/editar`) Editar
+                button.btn.btn-sm.btn-danger(onclick=`eliminarCliente('${cliente._id}', this)`) Eliminar
 
           else
             tr

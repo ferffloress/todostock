@@ -11,6 +11,7 @@ const MovimientoStock = require('./src/models/MovimientoStock');
 const Producto = require('./src/models/Producto');
 const Proveedor = require('./src/models/Proveedor');
 const Venta = require('./src/models/Venta');
+const Usuario = require('./src/models/Usuario');
 
 const clientes = require('./src/data/clientes.json');
 const compras = require('./src/data/compras.json');
@@ -42,6 +43,16 @@ const seed = async () => {
     await modelo.insertMany(datos);
     console.log(`✓ ${nombre}: ${datos.length} documentos insertados`);
   }
+
+  // Crear usuario admin por defecto (la contraseña se hashea automáticamente)
+  await Usuario.deleteMany({});
+  await new Usuario({
+    nombre: 'Administrador',
+    email: 'usuario',
+    password: '123456',
+    rol: 'admin'
+  }).save();
+  console.log('✓ usuarios: usuario admin creado (usuario / 123456)');
 
   await mongoose.disconnect();
   console.log('Seed completado. Conexión cerrada.');
