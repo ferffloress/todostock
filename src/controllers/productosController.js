@@ -56,6 +56,19 @@ const productosController = {
       }
       const producto = new Producto(body);
       await producto.save();
+
+      // Si hay stock inicial, crear lote automático para que las ventas puedan consumirlo
+      if (body.stock_actual > 0) {
+        await new Lote({
+          producto_id:      producto._id,
+          numero_lote:      'INICIAL',
+          fecha_vencimiento: new Date('2099-12-31'),
+          cantidad_inicial: body.stock_actual,
+          cantidad_actual:  body.stock_actual,
+          costo_unitario:   body.precio_costo || 0,
+        }).save();
+      }
+
       res.redirect("/productos");
     } catch (err) {
       next(err);
