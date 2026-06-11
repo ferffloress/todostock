@@ -26,6 +26,62 @@ const comprasController = {
     } catch (err) { next(err); }
   },
 
+  async detalleVista(req, res, next) {
+    try {
+      const compra = await Compra.findById(Number(req.params.id));
+      if (!compra) throw makeError('Compra no encontrada', 404);
+      const proveedor = await Proveedor.findById(compra.proveedor_id);
+      const itemsConNombre = await Promise.all(
+        compra.items.map(async (item) => {
+          const producto = await Producto.findById(item.producto_id);
+          return { ...item, nombreProducto: producto?.nombre ?? `Producto #${item.producto_id}` };
+        })
+      );
+      res.render('detalleCompra', { titulo: `Compra #${compra._id}`, compra, proveedor, items: itemsConNombre });
+    } catch (err) { next(err); }
+  },
+
+  async recibirVista(req, res, next) {
+    try {
+      const compra = await Compra.findById(Number(req.params.id));
+      if (!compra) throw makeError('Compra no encontrada', 404);
+      if (compra.estado !== 'pendiente') throw makeError(`No se puede recibir una compra en estado '${compra.estado}'`, 400);
+
+      for (const item of compra.items) {
+        const lote = await new Lote({
+          producto_id:       item.producto_id,
+          proveedor_id:      compra.proveedor_id,
+          numero_lote:       item.numero_lote,
+          fecha_vencimiento: item.fecha_vencimiento,
+          cantidad_inicial:  item.cantidad,
+          cantidad_actual:   item.cantidad,
+          costo_unitario:    item.precio_unitario,
+        }).save();
+        await Producto.findByIdAndUpdate(item.producto_id, { $inc: { stock_actual: item.cantidad } });
+        await new MovimientoStock({
+          tipo:          'ingreso',
+          producto_id:   item.producto_id,
+          lote_id:       lote._id,
+          cantidad:      item.cantidad,
+          referencia:    compra._id,
+          observaciones: `Recepción de compra ${compra._id}`,
+        }).save();
+      }
+      await Compra.findByIdAndUpdate(Number(req.params.id), { estado: 'recibida' });
+      res.redirect(`/compras/ver/${req.params.id}`);
+    } catch (err) { next(err); }
+  },
+
+  async cancelarVista(req, res, next) {
+    try {
+      const compra = await Compra.findById(Number(req.params.id));
+      if (!compra) throw makeError('Compra no encontrada', 404);
+      if (compra.estado !== 'pendiente') throw makeError(`No se puede cancelar una compra en estado '${compra.estado}'`, 400);
+      await Compra.findByIdAndUpdate(Number(req.params.id), { estado: 'cancelada' });
+      res.redirect(`/compras/ver/${req.params.id}`);
+    } catch (err) { next(err); }
+  },
+
   async obtener(req, res, next) {
     try {
       const compra = await Compra.findById(Number(req.params.id));
