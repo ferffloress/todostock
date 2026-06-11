@@ -65,6 +65,21 @@ try {
   console.log("Nota: Las rutas de cuentas-corrientes no se cargaron.");
 }
 
+//RUTA TEMPORAL DE SETUP - crear usuario admin si no existe
+app.get('/setup-inicial', async (req, res) => {
+  try {
+    const Usuario = require('./models/Usuario');
+    const existe = await Usuario.findOne({ email: 'usuario' });
+    if (existe) {
+      return res.send('Ya existe el usuario admin. Login con: usuario / 123456');
+    }
+    await new Usuario({ nombre: 'Administrador', email: 'usuario', password: '123456', rol: 'admin' }).save();
+    res.send('Usuario admin creado. Login con: usuario / 123456');
+  } catch (err) {
+    res.status(500).send('Error: ' + err.message);
+  }
+});
+
 //RUTAS DE VISTAS
 app.get('/', protegerRuta, (req, res) => {
   res.render('index');
