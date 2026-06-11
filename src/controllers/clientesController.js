@@ -47,7 +47,7 @@ const clientesController = {
       const movimientos = await CuentaCorriente.find({ cliente_id: Number(req.params.id) }).sort({ fecha: -1 });
       res.render('cuentaCorriente', {
         titulo: 'Cuenta Corriente',
-        cliente: { ...cliente, movimientos, saldo_actual: cliente.saldo_cuenta_corriente },
+        cliente: { ...cliente.toObject(), movimientos, saldo_actual: cliente.saldo_cuenta_corriente },
       });
     } catch (err) {
       next(err);
