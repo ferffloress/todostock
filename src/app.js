@@ -3,7 +3,6 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
@@ -17,7 +16,6 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'todostock_secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGODB_URI }),
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
 }));
 
