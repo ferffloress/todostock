@@ -65,35 +65,6 @@ try {
   console.log("Nota: Las rutas de cuentas-corrientes no se cargaron.");
 }
 
-//RUTA TEMPORAL - crea lotes para productos sin lote
-app.get('/fix-lotes', async (req, res) => {
-  try {
-    const Producto = require('./models/Producto');
-    const Lote = require('./models/Lote');
-    const productos = await Producto.find({ stock_actual: { $gt: 0 } });
-    const resultados = [];
-    for (const p of productos) {
-      const loteExistente = await Lote.findOne({ producto_id: p._id });
-      if (!loteExistente) {
-        await new Lote({
-          producto_id: p._id,
-          numero_lote: 'INICIAL',
-          fecha_vencimiento: new Date('2099-12-31'),
-          cantidad_inicial: p.stock_actual,
-          cantidad_actual: p.stock_actual,
-          costo_unitario: p.precio_costo || 0,
-        }).save();
-        resultados.push(`Lote creado para: ${p.nombre} (${p.stock_actual} unidades)`);
-      } else {
-        resultados.push(`Ya existe lote para: ${p.nombre}`);
-      }
-    }
-    res.send('<pre>' + resultados.join('\n') + '\n\nListo!</pre>');
-  } catch (err) {
-    res.status(500).send('Error: ' + err.message);
-  }
-});
-
 //RUTAS DE VISTAS
 app.get('/', protegerRuta, (req, res) => {
   res.render('index');
