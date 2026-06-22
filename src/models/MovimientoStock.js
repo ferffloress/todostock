@@ -7,7 +7,7 @@ const MovimientoStockSchema = new mongoose.Schema({
   producto_id: { type: Number, required: true },
   lote_id: { type: Number, default: null },
   cantidad: { type: Number, required: true },
-  referencia: { type: String, default: null },
+  referencia: { type: mongoose.Schema.Types.Mixed, default: null },
   observaciones: { type: String, default: null },
   fecha: { type: Date, default: Date.now },
 }, { timestamps: true, _id: false });

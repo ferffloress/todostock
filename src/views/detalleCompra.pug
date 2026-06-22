@@ -1,0 +1,106 @@
+doctype html
+html(lang="es")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title= titulo
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+
+  body.bg-light
+    div.container.mt-5.pb-5
+
+      div.d-flex.justify-content-between.align-items-center.mb-4
+        h1.fw-bold= titulo
+        div.d-flex.gap-2
+          a.btn.btn-outline-secondary(href="/")
+            i.bi.bi-house-fill.me-1
+            | Home
+          a.btn.btn-outline-secondary(href="/compras")
+            i.bi.bi-arrow-left.me-1
+            | Volver
+
+      div.row.g-4
+
+        div.col-md-6
+          div.card.shadow-sm.h-100
+            div.card-header.bg-dark.text-white
+              h5.mb-0
+                i.bi.bi-cart.me-2
+                | Información de la Compra
+            div.card-body
+              dl.row.mb-0
+                dt.col-5 ID
+                dd.col-7= `#${compra._id}`
+                dt.col-5 Fecha
+                dd.col-7= new Date(compra.fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+                dt.col-5 Estado
+                dd.col-7
+                  span.badge.fs-6(class=compra.estado === 'recibida' ? 'bg-success' : (compra.estado === 'cancelada' ? 'bg-danger' : 'bg-warning text-dark'))
+                    = compra.estado.toUpperCase()
+                dt.col-5 Total
+                dd.col-7
+                  span.fw-bold.fs-5= `$${compra.total}`
+                if compra.observaciones
+                  dt.col-5 Observaciones
+                  dd.col-7= compra.observaciones
+
+        div.col-md-6
+          div.card.shadow-sm.h-100
+            div.card-header.bg-dark.text-white
+              h5.mb-0
+                i.bi.bi-building.me-2
+                | Proveedor
+            div.card-body
+              if proveedor
+                dl.row.mb-0
+                  dt.col-5 Nombre
+                  dd.col-7= proveedor.nombre
+                  dt.col-5 CUIT
+                  dd.col-7= proveedor.cuit
+                  dt.col-5 Contacto
+                  dd.col-7= proveedor.contacto || '-'
+                  dt.col-5 Teléfono
+                  dd.col-7= proveedor.telefono || '-'
+              else
+                p.text-muted Proveedor no encontrado
+
+      div.card.shadow-sm.mt-4
+        div.card-header.bg-dark.text-white
+          h5.mb-0
+            i.bi.bi-box-seam.me-2
+            | Items de la Compra
+        div.card-body.p-0
+          table.table.table-hover.mb-0
+            thead.table-light
+              tr
+                th Producto
+                th N° Lote
+                th Vencimiento
+                th Cantidad
+                th Precio Unit.
+                th Subtotal
+            tbody
+              each item in items
+                tr
+                  td= item.nombreProducto
+                  td= item.numero_lote || '-'
+                  td= item.fecha_vencimiento ? new Date(item.fecha_vencimiento).toLocaleDateString('es-AR') : '-'
+                  td.text-center= item.cantidad
+                  td= `$${item.precio_unitario}`
+                  td.fw-bold= `$${item.subtotal}`
+            tfoot.table-light
+              tr
+                td.text-end.fw-bold(colspan="5") Total
+                td.fw-bold.fs-5= `$${compra.total}`
+
+      if compra.estado === 'pendiente'
+        div.d-flex.gap-2.mt-4.justify-content-end
+          form(action=`/compras/${compra._id}/recibir` method="POST")
+            button.btn.btn-success(type="submit")
+              i.bi.bi-check-circle.me-1
+              | Recibir Compra
+          form(action=`/compras/${compra._id}/cancelar` method="POST" onsubmit="return confirm('¿Cancelar esta compra?')")
+            button.btn.btn-danger(type="submit")
+              i.bi.bi-x-circle.me-1
+              | Cancelar

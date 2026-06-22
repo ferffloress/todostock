@@ -1,21 +1,30 @@
 const express = require('express');
 const app = express();
 const path = require('path');
+const cors = require('cors');
+const session = require('express-session');
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 
-//MIDDLEWARES 
+//MIDDLEWARES
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'todostock_secret',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
+}));
 
 //CANDADO DE AUTENTICACIÓN
 const protegerRuta = (req, res, next) => {
-  if (global.usuarioLogueado === true) {
-    next(); 
+  if (req.session && req.session.usuarioLogueado === true) {
+    next();
   } else {
-    res.redirect('/login'); 
+    res.redirect('/login');
   }
 };
 
@@ -55,6 +64,53 @@ try {
 } catch (error) {
   console.log("Nota: Las rutas de cuentas-corrientes no se cargaron.");
 }
+
+//RUTA TEMPORAL - carga datos de ejemplo desde los JSON
+app.get('/cargar-datos', async (req, res) => {
+  try {
+    const Cliente = require('./models/Cliente');
+    const Compra = require('./models/Compra');
+    const Contador = require('./models/Contador');
+    const CuentaCorriente = require('./models/CuentaCorriente');
+    const Lote = require('./models/Lote');
+    const MovimientoStock = require('./models/MovimientoStock');
+    const Producto = require('./models/Producto');
+    const Proveedor = require('./models/Proveedor');
+    const Venta = require('./models/Venta');
+
+    const clientes = require('./data/clientes.json');
+    const compras = require('./data/compras.json');
+    const contadores = require('./data/contadores.json');
+    const cuentasCorrientes = require('./data/cuentasCorrientes.json');
+    const lotes = require('./data/lotes.json');
+    const movimientosStock = require('./data/movimientosStock.json');
+    const productos = require('./data/productos.json');
+    const proveedores = require('./data/proveedores.json');
+    const ventas = require('./data/ventas.json');
+
+    const colecciones = [
+      { modelo: Cliente,         datos: clientes,          nombre: 'clientes' },
+      { modelo: Compra,          datos: compras,           nombre: 'compras' },
+      { modelo: Contador,        datos: contadores,        nombre: 'contadores' },
+      { modelo: CuentaCorriente, datos: cuentasCorrientes, nombre: 'cuentasCorrientes' },
+      { modelo: Lote,            datos: lotes,             nombre: 'lotes' },
+      { modelo: MovimientoStock, datos: movimientosStock,  nombre: 'movimientosStock' },
+      { modelo: Producto,        datos: productos,          nombre: 'productos' },
+      { modelo: Proveedor,       datos: proveedores,        nombre: 'proveedores' },
+      { modelo: Venta,           datos: ventas,             nombre: 'ventas' },
+    ];
+
+    const resultados = [];
+    for (const { modelo, datos, nombre } of colecciones) {
+      await modelo.deleteMany({});
+      await modelo.insertMany(datos);
+      resultados.push(`✓ ${nombre}: ${datos.length} documentos`);
+    }
+    res.send('<pre>' + resultados.join('\n') + '\n\nDatos cargados. Ya podés borrar esta ruta.</pre>');
+  } catch (err) {
+    res.status(500).send('Error: ' + err.message);
+  }
+});
 
 //RUTAS DE VISTAS
 app.get('/', protegerRuta, (req, res) => {

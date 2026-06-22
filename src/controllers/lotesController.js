@@ -1,4 +1,6 @@
 const Lote = require('../models/Lote');
+const MovimientoStock = require('../models/MovimientoStock');
+const Producto = require('../models/Producto');
 
 
 function makeError(message, status) {
@@ -28,7 +30,7 @@ const lotesController = {
 
   async listarPorProducto(req, res, next) {
     try {
-      const lotes = await Lote.find({ producto_id: req.params.producto_id });
+      const lotes = await Lote.find({ producto_id: Number(req.params.producto_id) });
       if (!lotes.length) throw makeError('No se encontraron lotes para este producto', 404);
       res.json(lotes);
     } catch (err) {
@@ -44,6 +46,16 @@ const lotesController = {
     } catch (err) {
       next(err);
     }
+  },
+
+  async detalleVista(req, res, next) {
+    try {
+      const lote = await Lote.findById(Number(req.params.id));
+      if (!lote) throw makeError('Lote no encontrado', 404);
+      const producto = await Producto.findById(lote.producto_id);
+      const movimientos = await MovimientoStock.find({ lote_id: Number(req.params.id) }).sort({ fecha: -1 });
+      res.render('detalleLote', { titulo: `Lote #${lote._id} - ${lote.numero_lote}`, lote, producto, movimientos });
+    } catch (err) { next(err); }
   },
 
   async formularioNuevo(req, res) {

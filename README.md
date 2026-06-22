@@ -1,7 +1,16 @@
 # TodoStock S.A. — Backend REST
 
 Backend REST para **TodoStock S.A.**, distribuidora mayorista de productos de limpieza.  
-Desarrollado con **Node.js**, **Express** y **MongoDB** (Mongoose). Incluye vistas renderizadas con **Pug**.
+Desarrollado con **Node.js**, **Express** y **MongoDB** (Mongoose). Incluye vistas renderizadas con **Pug** y autenticación con **express-session** + **bcrypt**.
+
+---
+
+## Demo en producción
+
+**URL:** https://todostock-99j7.onrender.com  
+**Usuario:** `usuario` | **Contraseña:** `123456`
+
+> El servidor es de plan gratuito (Render). Si no responde en el primer intento, esperá 30 segundos — se reactiva automáticamente.
 
 ---
 
@@ -9,7 +18,7 @@ Desarrollado con **Node.js**, **Express** y **MongoDB** (Mongoose). Incluye vist
 
 - Node.js v18 o superior
 - npm
-- MongoDB local (v6 o superior) o una URI de MongoDB Atlas
+- MongoDB local (v6+) o una URI de MongoDB Atlas
 
 ---
 
@@ -21,24 +30,25 @@ npm install
 
 ## Variables de entorno
 
-Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+Crear un archivo `.env` en la raíz del proyecto:
 
 ```
 MONGODB_URI=mongodb://127.0.0.1:27017/todoStock
+PORT=3000
+SESSION_SECRET=cambiar_por_una_clave_secreta_segura
 ```
 
-Si usás MongoDB Atlas, reemplazá el valor por tu URI de conexión.  
-Si no creás el archivo `.env`, el sistema usa `mongodb://127.0.0.1:27017/todoStock` por defecto.
+Para MongoDB Atlas, reemplazá `MONGODB_URI` por tu URI de conexión.
 
 ## Carga inicial de datos (Seed)
 
-Para importar los datos de prueba a MongoDB ejecutar una sola vez:
+Para importar los datos de prueba y crear el usuario admin:
 
 ```bash
 node seed.js
 ```
 
-Esto elimina los datos existentes e inserta los registros de prueba en todas las colecciones.
+Esto elimina los datos existentes e inserta los registros de prueba en todas las colecciones, y crea el usuario `usuario` / `123456`.
 
 ## Ejecución
 
@@ -72,8 +82,7 @@ todostock/
 │   ├── controllers/    → lógica de negocio y respuestas HTTP
 │   ├── routes/         → definición de endpoints (vistas + API REST)
 │   ├── validators/     → validaciones de datos de entrada
-│   ├── services/       → lógica de negocio reutilizable
-│   ├── views/          → plantillas Pug
+│   ├── views/          → plantillas Pug (interfaz web)
 │   └── data/           → archivos JSON originales (usados por seed.js)
 ├── package.json
 └── .gitignore
@@ -81,185 +90,134 @@ todostock/
 
 ---
 
-## Módulos
+## Autenticación
 
-| Módulo         | Descripción                                                                                       |
-| -------------- | ------------------------------------------------------------------------------------------------- |
-| `models/`      | Esquemas Mongoose con validaciones de tipos y restricciones por entidad                           |
-| `controllers/` | Lógica de negocio: CRUD, validaciones, control de stock, FEFO, cuentas corrientes                 |
-| `routes/`      | Definición de rutas y métodos HTTP (vistas HTML + endpoints API REST)                             |
-| `validators/`  | Validación de campos requeridos y tipos en el body de cada request                                |
-| `services/`    | Lógica reutilizable desacoplada de los controladores                                              |
-| `data/`        | Archivos JSON con datos de prueba, utilizados por seed.js para poblar MongoDB                     |
+El sistema usa **express-session** con contraseñas hasheadas con **bcrypt**.
+
+| Método | Ruta       | Descripción                        |
+| ------ | ---------- | ---------------------------------- |
+| GET    | `/login`   | Formulario de login                |
+| POST   | `/login`   | Iniciar sesión                     |
+| POST   | `/logout`  | Cerrar sesión                      |
+
+Todas las rutas están protegidas. Sin sesión activa, redirige a `/login`.
 
 ---
 
-## Endpoints
+## Rutas de vistas (interfaz web)
 
 ### Productos
 
-| Método | Ruta             | Descripción                |
-| ------ | ---------------- | -------------------------- |
-| GET    | `/productos`     | Listar todos los productos |
-| GET    | `/productos/:id` | Obtener producto por ID    |
-| POST   | `/productos`     | Crear producto             |
-| PUT    | `/productos/:id` | Actualizar producto        |
-| DELETE | `/productos/:id` | Eliminar producto          |
+| Método | Ruta                        | Descripción                   |
+| ------ | --------------------------- | ----------------------------- |
+| GET    | `/productos`                | Listado de productos          |
+| GET    | `/productos/nuevo`          | Formulario nuevo producto     |
+| POST   | `/productos`                | Crear producto (+ lote inicial si stock > 0) |
+| GET    | `/productos/:id/editar`     | Formulario editar             |
+| PUT    | `/productos/:id`            | Actualizar producto           |
+| DELETE | `/productos/:id`            | Eliminar producto             |
 
 ### Proveedores
 
-| Método | Ruta               | Descripción                  |
-| ------ | ------------------ | ---------------------------- |
-| GET    | `/proveedores`     | Listar todos los proveedores |
-| GET    | `/proveedores/:id` | Obtener proveedor por ID     |
-| POST   | `/proveedores`     | Crear proveedor              |
-| PUT    | `/proveedores/:id` | Actualizar proveedor         |
-| DELETE | `/proveedores/:id` | Eliminar proveedor           |
+| Método | Ruta                          | Descripción               |
+| ------ | ----------------------------- | ------------------------- |
+| GET    | `/proveedores`                | Listado de proveedores    |
+| GET    | `/proveedores/nuevo`          | Formulario nuevo          |
+| POST   | `/proveedores`                | Crear proveedor           |
+| GET    | `/proveedores/:id/editar`     | Formulario editar         |
+| PUT    | `/proveedores/:id`            | Actualizar proveedor      |
+| DELETE | `/proveedores/:id`            | Eliminar proveedor        |
 
 ### Clientes
 
-| Método | Ruta            | Descripción               |
-| ------ | --------------- | ------------------------- |
-| GET    | `/clientes`     | Listar todos los clientes |
-| GET    | `/clientes/:id` | Obtener cliente por ID    |
-| POST   | `/clientes`     | Crear cliente             |
-| PUT    | `/clientes/:id` | Actualizar cliente        |
-| DELETE | `/clientes/:id` | Eliminar cliente          |
+| Método | Ruta                                  | Descripción                |
+| ------ | ------------------------------------- | -------------------------- |
+| GET    | `/clientes`                           | Listado de clientes        |
+| GET    | `/clientes/nuevo-cliente`             | Formulario nuevo cliente   |
+| POST   | `/clientes`                           | Crear cliente              |
+| GET    | `/clientes/:id/editar`                | Formulario editar          |
+| PUT    | `/clientes/:id`                       | Actualizar cliente         |
+| DELETE | `/clientes/:id`                       | Eliminar cliente           |
+| GET    | `/clientes/:id/cuenta-corriente`      | Ver cuenta corriente       |
 
 ### Lotes
 
-| Método | Ruta                           | Descripción                 |
-| ------ | ------------------------------ | --------------------------- |
-| GET    | `/lotes`                       | Listar todos los lotes      |
-| GET    | `/lotes/:id`                   | Obtener lote por ID         |
-| GET    | `/lotes/producto/:producto_id` | Listar lotes de un producto |
+| Método | Ruta                           | Descripción                        |
+| ------ | ------------------------------ | ---------------------------------- |
+| GET    | `/lotes`                       | Listado de lotes                   |
+| GET    | `/lotes/nuevo`                 | Formulario nuevo lote              |
+| POST   | `/lotes`                       | Crear lote                         |
+| GET    | `/lotes/:id/movimientos`       | Ver movimientos de stock del lote  |
 
 ### Compras
 
-| Método | Ruta                    | Descripción                                 |
-| ------ | ----------------------- | ------------------------------------------- |
-| GET    | `/compras`              | Listar todas las compras                    |
-| GET    | `/compras/:id`          | Obtener compra por ID                       |
-| POST   | `/compras`              | Crear compra                                |
-| PATCH  | `/compras/:id/recibir`  | Recibir compra: crea lotes, actualiza stock |
-| PATCH  | `/compras/:id/cancelar` | Cancelar compra pendiente                   |
+| Método | Ruta                      | Descripción                                  |
+| ------ | ------------------------- | -------------------------------------------- |
+| GET    | `/compras`                | Listado de compras                           |
+| GET    | `/compras/nueva`          | Formulario nueva compra                      |
+| GET    | `/compras/ver/:id`        | Detalle de compra con items                  |
+| POST   | `/compras/:id/recibir`    | Recibir compra: crea lotes, actualiza stock  |
+| POST   | `/compras/:id/cancelar`   | Cancelar compra pendiente                    |
 
 ### Ventas
 
-| Método | Ruta                    | Descripción                                                           |
-| ------ | ----------------------- | --------------------------------------------------------------------- |
-| GET    | `/ventas`               | Listar todas las ventas                                               |
-| GET    | `/ventas/:id`           | Obtener venta por ID con datos del cliente y productos                |
-| POST   | `/ventas`               | Crear venta (valida stock y límite de crédito, asigna lotes por FEFO) |
-| PATCH  | `/ventas/:id/despachar` | Despachar venta: consume stock y registra movimientos                 |
-| PATCH  | `/ventas/:id/cancelar`  | Cancelar venta pendiente                                              |
+| Método | Ruta                       | Descripción                                           |
+| ------ | -------------------------- | ----------------------------------------------------- |
+| GET    | `/ventas`                  | Listado de ventas                                     |
+| GET    | `/ventas/nueva`            | Formulario nueva venta                                |
+| POST   | `/ventas`                  | Crear venta (valida stock FEFO y límite de crédito)   |
+| GET    | `/ventas/ver/:id`          | Detalle de venta                                      |
+| POST   | `/ventas/despachar/:id`    | Despachar venta: consume stock y registra movimientos |
+| POST   | `/ventas/eliminar/:id`     | Cancelar venta pendiente                              |
 
 ### Cobranzas
 
-| Método | Ruta             | Descripción                                              |
-| ------ | ---------------- | -------------------------------------------------------- |
-| GET    | `/cobranzas`     | Listar todas las cobranzas                               |
-| GET    | `/cobranzas/:id` | Obtener cobranza por ID                                  |
-| POST   | `/cobranzas`     | Registrar cobranza (acredita en cuenta corriente)        |
-
-### Movimientos de Stock
-
-| Método | Ruta                                       | Descripción                       |
-| ------ | ------------------------------------------ | --------------------------------- |
-| GET    | `/movimientos-stock`                       | Listar todos los movimientos      |
-| GET    | `/movimientos-stock/producto/:producto_id` | Listar movimientos de un producto |
-
-### Alertas
-
-| Método | Ruta       | Descripción                                                                         |
-| ------ | ---------- | ----------------------------------------------------------------------------------- |
-| GET    | `/alertas` | Productos con stock bajo, lotes por vencer en 30 días y clientes con saldo excedido |
-
-### Resúmenes
-
-| Método | Ruta                    | Descripción                                              |
-| ------ | ----------------------- | -------------------------------------------------------- |
-| GET    | `/resumen/inventario`   | Valor del inventario, productos sin stock y sobrestock   |
-| GET    | `/resumen/caja`         | Ventas, cobros y compras del mes corriente               |
-| GET    | `/resumen/ventas`       | Top 5 productos y clientes, ventas por semana            |
+| Método | Ruta              | Descripción                                       |
+| ------ | ----------------- | ------------------------------------------------- |
+| GET    | `/cobranzas`      | Listado de cobranzas                              |
+| GET    | `/cobranzas/nueva`| Formulario nueva cobranza                         |
+| POST   | `/cobranzas`      | Registrar cobranza (acredita en cuenta corriente) |
 
 ---
 
-## Ejemplos de uso
+## API REST
 
-### POST /productos
+Endpoints JSON para integración externa, todos bajo `/api/`:
 
-```json
-{
-  "nombre": "Lavandina 10L",
-  "categoria": "Desinfectantes",
-  "precio_costo": 850,
-  "precio_venta": 1200,
-  "stock_actual": 0,
-  "stock_minimo": 50,
-  "unidad_medida": "unidad"
-}
-```
-
-### POST /clientes
-
-```json
-{
-  "nombre": "Supermercado El Ahorro",
-  "cuit": "20-11111111-1",
-  "contacto": "Pedro Ramírez",
-  "telefono": "011-5555-6666",
-  "email": "compras@elahorro.com",
-  "limite_credito": 500000
-}
-```
-
-### POST /compras
-
-```json
-{
-  "proveedor_id": "<id-del-proveedor>",
-  "items": [
-    {
-      "producto_id": "<id-del-producto>",
-      "cantidad": 100,
-      "precio_unitario": 850,
-      "numero_lote": "LAV-2025-03",
-      "fecha_vencimiento": "2026-06-01T00:00:00.000Z"
-    }
-  ]
-}
-```
-
-### POST /ventas
-
-```json
-{
-  "cliente_id": "<id-del-cliente>",
-  "items": [
-    {
-      "producto_id": "<id-del-producto>",
-      "cantidad": 20,
-      "precio_unitario": 1200
-    }
-  ]
-}
-```
-
-### POST /cobranzas
-
-```json
-{
-  "cliente_id": "<id-del-cliente>",
-  "monto": 50000
-}
-```
+| Módulo           | Base URL                  |
+| ---------------- | ------------------------- |
+| Productos        | `/api/productos`          |
+| Proveedores      | `/api/proveedores`        |
+| Clientes         | `/api/clientes`           |
+| Ventas           | `/api/ventas`             |
+| Lotes            | `/api/lotes`              |
+| Compras          | `/api/compras`            |
+| Movimientos      | `/api/movimientos-stock`  |
+| Cuentas corrientes | `/api/cuentas-corrientes` |
 
 ---
 
 ## Lógica de negocio
 
 - **FEFO (First Expired, First Out):** Al crear una venta, los lotes se asignan priorizando los de fecha de vencimiento más próxima.
-- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas despachadas); los créditos lo reducen (cobranzas registradas).
-- **Límite de crédito:** Se valida al crear la venta. Si el saldo más el total de la venta supera el límite, la venta es rechazada.
-- **Control de dependencias:** No se puede eliminar un cliente con ventas activas, ni un producto en ventas o compras activas, ni un proveedor con compras activas.
+- **Lote automático:** Al crear un producto con `stock_actual > 0`, se genera un lote inicial automáticamente.
+- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas); los créditos lo reducen (cobranzas).
+- **Límite de crédito:** Se valida al crear una venta con forma de pago `cuenta_corriente`.
+- **Control de dependencias:** No se puede eliminar un cliente con ventas, ni un producto con ventas o lotes, ni un proveedor con compras activas.
+- **IDs numéricos auto-increment:** Todos los modelos usan un campo `_id: Number` generado por el modelo `Contador`.
+
+---
+
+## Tecnologías
+
+| Tecnología       | Uso                              |
+| ---------------- | -------------------------------- |
+| Node.js + Express| Servidor HTTP y routing          |
+| MongoDB + Mongoose | Base de datos y ODM            |
+| Pug              | Motor de plantillas (vistas)     |
+| bcrypt           | Hash de contraseñas              |
+| express-session  | Manejo de sesiones               |
+| dotenv           | Variables de entorno             |
+| CORS             | Acceso desde otros orígenes      |
+| Render           | Hosting en la nube               |
+| MongoDB Atlas    | Base de datos en la nube         |

@@ -56,6 +56,19 @@ const productosController = {
       }
       const producto = new Producto(body);
       await producto.save();
+
+      // Si hay stock inicial, crear lote automático para que las ventas puedan consumirlo
+      if (body.stock_actual > 0) {
+        await new Lote({
+          producto_id:      producto._id,
+          numero_lote:      'INICIAL',
+          fecha_vencimiento: new Date('2099-12-31'),
+          cantidad_inicial: body.stock_actual,
+          cantidad_actual:  body.stock_actual,
+          costo_unitario:   body.precio_costo || 0,
+        }).save();
+      }
+
       res.redirect("/productos");
     } catch (err) {
       next(err);
@@ -98,8 +111,8 @@ const productosController = {
     try {
       const existing = await Producto.findById(req.params.id);
       if (!existing) throw makeError("Producto no encontrado", 404);
-      const ventas = await Venta.find({ "items.producto_id": req.params.id });
-      const lotes = await Lote.find({ producto_id: req.params.id });
+      const ventas = await Venta.find({ "items.producto_id": Number(req.params.id) });
+      const lotes = await Lote.find({ producto_id: Number(req.params.id) });
       if (ventas.length > 0)
         throw makeError(
           "No se puede eliminar: el producto tiene ventas activas",

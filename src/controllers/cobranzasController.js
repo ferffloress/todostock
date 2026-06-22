@@ -13,9 +13,8 @@ function makeError(message, status) {
 const cobranzasController = {
  async listar(req, res, next) {
     try {
-      res.json(await Cobranza.find());
-      if (!cobranza) throw makeError('Cobranza no encontrada', 404);  
-      res.json(cobranza);
+      const cobranzas = await Cobranza.find();
+      res.json(cobranzas);
     } catch (err) {
       next(err);
     }

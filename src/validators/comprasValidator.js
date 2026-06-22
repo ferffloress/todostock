@@ -7,7 +7,7 @@ function isValidISODate(str) {
 function validate(data) {
   const errors = [];
 
-  if (!data.proveedor_id || typeof data.proveedor_id !== 'string' || data.proveedor_id.trim() === '') {
+  if (data.proveedor_id === undefined || data.proveedor_id === null || data.proveedor_id === '') {
     errors.push('proveedor_id es requerido');
   }
 
@@ -17,7 +17,7 @@ function validate(data) {
     data.items.forEach((item, index) => {
       const prefix = `items[${index}]`;
 
-      if (!item.producto_id || typeof item.producto_id !== 'string' || item.producto_id.trim() === '') {
+      if (item.producto_id === undefined || item.producto_id === null || item.producto_id === '') {
         errors.push(`${prefix}.producto_id es requerido`);
       }
 

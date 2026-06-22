@@ -61,7 +61,7 @@ html(lang="es")
           limite_credito: Number(document.getElementById('limite_credito').value),
           saldo_cuenta_corriente: Number(document.getElementById('saldo_cuenta_corriente').value),
         };
-        const res = await fetch(`/clientes/!{cliente.id}`, {
+        const res = await fetch(`/clientes/!{cliente._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),

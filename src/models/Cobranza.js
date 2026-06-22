@@ -6,7 +6,7 @@ const CobranzaSchema = new mongoose.Schema({
   _id: { type: Number },
   cliente_id: { type: Number, required: true },
   monto: { type: Number, required: true },
-  forma_pago: { type: String, enum: ['efectivo', 'transferencia'] ,required: true },
+  forma_pago: { type: String, enum: ['efectivo', 'transferencia', 'cheque'], required: true },
   fecha: { type: Date, default: Date.now },
   observaciones: { type: String, default: null },
 }, { timestamps: true, _id: false });

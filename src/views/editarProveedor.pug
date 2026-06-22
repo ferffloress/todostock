@@ -60,7 +60,7 @@ html(lang="es")
           contacto: document.getElementById('contacto').value,
           condicion_pago: document.getElementById('condicion_pago').value,
         };
-        const res = await fetch(`/proveedores/!{proveedor.id}`, {
+        const res = await fetch(`/proveedores/!{proveedor._id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),

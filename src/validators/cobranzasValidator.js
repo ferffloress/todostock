@@ -3,7 +3,7 @@ const FORMAS_PAGO_VALIDAS = ['efectivo', 'transferencia', 'cheque'];
 function validate(data) {
   const errors = [];
 
-  if (!data.cliente_id || typeof data.cliente_id !== 'string' || data.cliente_id.trim() === '') {
+  if (data.cliente_id === undefined || data.cliente_id === null || data.cliente_id === '') {
     errors.push('cliente_id es requerido');
   }
 
