@@ -44,7 +44,7 @@ html(lang="es")
                     button.btn.btn-sm.btn-success(type="submit") Despachar
                 
                 //- BOTÓN ELIMINAR: Solo aparece si está pendiente
-                if venta.estado === 'pendiente'
+                if venta.estado === 'pendiente'  && usuarioRol === 'admin'
                   form(action=`/ventas/eliminar/${venta._id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
                     button.btn.btn-sm.btn-danger(type="submit") Eliminar
           else

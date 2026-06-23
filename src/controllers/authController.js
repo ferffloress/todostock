@@ -133,3 +133,11 @@ exports.logout = (req, res) => {
     res.redirect('/login');
   });
 };
+
+// Middleware solo para admin
+exports.soloAdmin = (req, res, next) => {
+  if (req.session && req.session.usuarioRol === 'admin') {
+    return next();
+  }
+  res.status(403).json({ error: 'No tenés permiso para realizar esta acción.' });
+};

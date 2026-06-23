@@ -19,6 +19,12 @@ app.use(session({
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
 }));
 
+// Inyecta el rol en todas las vistas
+app.use((req, res, next) => {
+  res.locals.usuarioRol = req.session?.usuarioRol || null;
+  next();
+});
+
 //CANDADO DE AUTENTICACIÓN
 const protegerRuta = (req, res, next) => {
   if (req.session && req.session.usuarioLogueado === true) {
@@ -26,6 +32,13 @@ const protegerRuta = (req, res, next) => {
   } else {
     res.redirect('/login');
   }
+};
+
+const soloAdmin = (req, res, next) => {
+  if (req.session && req.session.usuarioRol === 'admin') {
+    return next();
+  }
+  res.status(403).json({ error: 'No tenés permiso para realizar esta acción.' });
 };
 
 //IMPORTACIÓN DE ENRUTADORES
@@ -40,6 +53,7 @@ const cobranzasRouter = require('./routes/cobranzas');
 const movimientosStockRouter = require('./routes/movimientosStock');
 const alertasRouter = require('./routes/alertas');
 const resumenesRouter = require('./routes/resumenes');
+const usuariosRouter = require('./routes/usuariosRoutes');
 
 //APIs 
 const apiProductosRouter = require('./routes/productosRoutes');
@@ -57,6 +71,7 @@ app.use('/api/ventas', apiVentasRouter);
 app.use('/api/lotes', apiLotesRouter);
 app.use('/api/compras', apiComprasRouter);
 app.use('/api/movimientos-stock', apiMovimientosRouter);
+app.use('/usuarios', protegerRuta, soloAdmin, usuariosRouter);
 
 try {
   const apiCuentasRouter = require('./routes/cuentasCorrientesRoutes');
