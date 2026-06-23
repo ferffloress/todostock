@@ -37,7 +37,8 @@ html(lang="es")
               td: span.badge.bg-secondary= prov.condicion_pago
               td
                 a.btn.btn-sm.btn-outline-secondary.me-1(href=`/proveedores/${prov._id}/editar`) Editar
-                button.btn.btn-sm.btn-danger(onclick=`eliminarProveedor('${prov._id}', this)`) Eliminar
+                if usuarioRol === 'admin'
+                  button.btn.btn-sm.btn-danger(onclick=`eliminarProveedor('${prov._id}', this)`) Eliminar
           else
             tr
               td.text-center(colspan="7") No hay proveedores registrados.

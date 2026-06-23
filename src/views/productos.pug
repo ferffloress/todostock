@@ -38,7 +38,8 @@ html(lang="es")
               td= producto.unidad_medida
               td
                 a.btn.btn-sm.btn-secondary.me-1(href=`/productos/${producto._id}/editar`) Editar
-                button.btn.btn-sm.btn-danger(onclick=`eliminarProducto('${producto._id}', this)`) Eliminar
+                if usuarioRol === 'admin'
+                  button.btn.btn-sm.btn-danger(onclick=`eliminarProducto('${producto._id}', this)`) Eliminar
           else
             tr
               td.text-center(colspan="7") No hay productos en la base de datos.

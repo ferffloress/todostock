@@ -31,7 +31,8 @@ html(lang="es")
               td
                 a.btn.btn-sm.btn-info.me-2(href=`/clientes/${cliente._id}/cuenta-corriente`) Cuenta Corriente
                 a.btn.btn-sm.btn-secondary.me-2(href=`/clientes/${cliente._id}/editar`) Editar
-                button.btn.btn-sm.btn-danger(onclick=`eliminarCliente('${cliente._id}', this)`) Eliminar
+                if usuarioRol === 'admin'
+                  button.btn.btn-sm.btn-danger(onclick=`eliminarCliente('${cliente._id}', this)`) Eliminar
 
           else
             tr
