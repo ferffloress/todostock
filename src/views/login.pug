@@ -11,11 +11,16 @@ html(lang="es")
           h3.text-center.mb-4 TodoStock - Login
           if error
             .alert.alert-danger= error
+          if success
+            .alert.alert-success= success
           form(action="/login" method="POST")
             .mb-3
               label.form-label Email
-              input.form-control(type="text" name="email" value="usuario" required)
+              input.form-control(type="email" name="email" required placeholder="tu@email.com")
             .mb-3
               label.form-label Contraseña
-              input.form-control(type="password" name="password" value="123456" required)
+              input.form-control(type="password" name="password" required placeholder="Contraseña")
             button.btn.btn-primary.w-100.mt-2(type="submit") Ingresar
+          hr.my-3
+          p.text-center.mb-0.text-muted ¿No tenés cuenta?
+            a.ms-1(href="/registro") Registrate
