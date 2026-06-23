@@ -1,8 +1,14 @@
+const jwt = require('jsonwebtoken');
 const Usuario = require('../models/Usuario');
+
+const JWT_SECRET = process.env.JWT_SECRET || 'todostock_jwt_secret';
 
 // Muestra el formulario de login
 exports.mostrarLogin = (req, res) => {
-  res.render('login', { titulo: 'Iniciar Sesión' });
+  const success = req.query.registro === 'ok'
+    ? 'Cuenta creada correctamente. Ya podés iniciar sesión.'
+    : null;
+  res.render('login', { titulo: 'Iniciar Sesión', success });
 };
 
 // Valida lo que el usuario escribe en el formulario
@@ -33,15 +39,82 @@ exports.procesarLogin = async (req, res, next) => {
       });
     }
 
+    // Generar JWT
+    const token = jwt.sign(
+      { id: usuario._id, email: usuario.email, rol: usuario.rol },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
     req.session.usuarioLogueado = true;
     req.session.usuarioId = usuario._id;
     req.session.usuarioRol = usuario.rol;
+    res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 8 });
+
     res.redirect('/');
 
   } catch (error) {
     next(error);
   }
 };
+
+
+// Muestra el formulario de registro
+exports.mostrarRegistro = (req, res) => {
+  res.render('registro', { titulo: 'Crear cuenta' });
+};
+
+// Registra un nuevo usuario
+exports.procesarRegistro = async (req, res, next) => {
+  try {
+    const { nombre, email, password, confirmarPassword } = req.body;
+
+    if (!nombre || !email || !password || !confirmarPassword) {
+      return res.render('registro', {
+        titulo: 'Crear cuenta',
+        error: 'Todos los campos son obligatorios.'
+      });
+    }
+
+    if (password !== confirmarPassword) {
+      return res.render('registro', {
+        titulo: 'Crear cuenta',
+        error: 'Las contraseñas no coinciden.'
+      });
+    }
+
+    const existe = await Usuario.findOne({ email: email.toLowerCase().trim() });
+    if (existe) {
+      return res.render('registro', {
+        titulo: 'Crear cuenta',
+        error: 'Ya existe una cuenta con ese email.'
+      });
+    }
+
+    // El pre('save') del modelo hashea la contraseña automáticamente
+    const nuevoUsuario = new Usuario({ nombre, email, password });
+    await nuevoUsuario.save();
+
+    // Generar JWT
+    const token = jwt.sign(
+      { id: nuevoUsuario._id, email: nuevoUsuario.email, rol: nuevoUsuario.rol },
+      JWT_SECRET,
+      { expiresIn: '8h' }
+    );
+
+    // Setear session y cookie
+    req.session.usuarioLogueado = true;
+    req.session.usuarioId = nuevoUsuario._id;
+    req.session.usuarioRol = nuevoUsuario.rol;
+    res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 8 });
+
+    res.redirect('/login?registro=ok');
+
+  } catch (error) {
+    next(error);
+  }
+};
+
 
 // Middleware para proteger rutas
 exports.protegerRuta = (req, res, next) => {
@@ -56,6 +129,7 @@ exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error('Error destruyendo sesión:', err);
     res.clearCookie('connect.sid');
+    res.clearCookie('token');
     res.redirect('/login');
   });
 };
