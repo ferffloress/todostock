@@ -33,18 +33,18 @@ html(lang="es")
             div.row
               div.col-md-6.mb-3
                 label.form-label.fw-bold Precio Costo
-                input.form-control.rounded-0#precio_costo(type="number", value=producto.precio_costo)
+                input.form-control.rounded-0#precio_costo(type="number", min="0", value=producto.precio_costo)
               div.col-md-6.mb-3
                 label.form-label.fw-bold Precio Venta
-                input.form-control.rounded-0#precio_venta(type="number", value=producto.precio_venta)
+                input.form-control.rounded-0#precio_venta(type="number", min="0", value=producto.precio_venta)
 
             div.row
               div.col-md-4.mb-4
                 label.form-label.fw-bold Stock Actual
-                input.form-control.rounded-0#stock_actual(type="number", value=producto.stock_actual)
+                input.form-control.rounded-0#stock_actual(type="number", min="0", value=producto.stock_actual)
               div.col-md-4.mb-4
                 label.form-label.fw-bold Stock Mínimo
-                input.form-control.rounded-0#stock_minimo(type="number", value=producto.stock_minimo)
+                input.form-control.rounded-0#stock_minimo(type="number", min="0", value=producto.stock_minimo)
               div.col-md-4.mb-4
                 label.form-label.fw-bold Unidades por Bulto
                 input.form-control.rounded-0#unidades_por_bulto(type="number", value=producto.unidades_por_bulto || 1, min="1")
