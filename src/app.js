@@ -3,6 +3,8 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
@@ -18,6 +20,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
 }));
+app.use(cookieParser());
 
 // Inyecta el rol en todas las vistas
 app.use((req, res, next) => {

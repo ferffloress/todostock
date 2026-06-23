@@ -43,7 +43,7 @@ exports.procesarLogin = async (req, res, next) => {
     const token = jwt.sign(
       { id: usuario._id, email: usuario.email, rol: usuario.rol },
       JWT_SECRET,
-      { expiresIn: '8h' }
+      { expiresIn: '1h' }
     );
 
     req.session.usuarioLogueado = true;
@@ -95,19 +95,6 @@ exports.procesarRegistro = async (req, res, next) => {
     const nuevoUsuario = new Usuario({ nombre, email, password });
     await nuevoUsuario.save();
 
-    // Generar JWT
-    const token = jwt.sign(
-      { id: nuevoUsuario._id, email: nuevoUsuario.email, rol: nuevoUsuario.rol },
-      JWT_SECRET,
-      { expiresIn: '8h' }
-    );
-
-    // Setear session y cookie
-    req.session.usuarioLogueado = true;
-    req.session.usuarioId = nuevoUsuario._id;
-    req.session.usuarioRol = nuevoUsuario.rol;
-    res.cookie('token', token, { httpOnly: true, maxAge: 1000 * 60 * 60 * 8 });
-
     res.redirect('/login?registro=ok');
 
   } catch (error) {
@@ -121,8 +108,25 @@ exports.protegerRuta = (req, res, next) => {
   if (req.session && req.session.usuarioLogueado === true) {
     return next();
   }
-  res.redirect('/login');
+
+  // Si no hay session, verifica el JWT de la cookie
+  const token = req.cookies?.token;
+  if (!token) return res.redirect('/login');
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    // Restaura la session a partir del token
+    req.session.usuarioLogueado = true;
+    req.session.usuarioId = decoded.id;
+    req.session.usuarioRol = decoded.rol;
+    return next();
+  } catch (err) {
+    // Token inválido o expirado
+    res.clearCookie('token');
+    return res.redirect('/login');
+  }
 };
+
 
 // Cierra sesión
 exports.logout = (req, res) => {
