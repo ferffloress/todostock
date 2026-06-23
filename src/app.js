@@ -40,6 +40,7 @@ const cobranzasRouter = require('./routes/cobranzas');
 const movimientosStockRouter = require('./routes/movimientosStock');
 const alertasRouter = require('./routes/alertas');
 const resumenesRouter = require('./routes/resumenes');
+const usuariosRouter = require('./routes/usuariosRoutes');
 
 //APIs 
 const apiProductosRouter = require('./routes/productosRoutes');
@@ -57,6 +58,7 @@ app.use('/api/ventas', apiVentasRouter);
 app.use('/api/lotes', apiLotesRouter);
 app.use('/api/compras', apiComprasRouter);
 app.use('/api/movimientos-stock', apiMovimientosRouter);
+app.use('/usuarios', protegerRuta, usuariosRouter);
 
 try {
   const apiCuentasRouter = require('./routes/cuentasCorrientesRoutes');
