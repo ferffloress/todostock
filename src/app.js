@@ -3,6 +3,8 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
@@ -18,10 +20,19 @@ app.use(session({
   saveUninitialized: false,
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
 }));
+app.use(cookieParser());
 
 // Inyecta el rol en todas las vistas
 app.use((req, res, next) => {
   res.locals.usuarioRol = req.session?.usuarioRol || null;
+  next();
+});
+
+// Evita que el navegador cachee páginas protegidas
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
   next();
 });
 

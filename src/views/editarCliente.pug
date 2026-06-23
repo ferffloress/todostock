@@ -41,10 +41,10 @@ html(lang="es")
             div.row
               div.col-md-6.mb-4
                 label.form-label.fw-bold Límite de Crédito
-                input.form-control.rounded-0#limite_credito(type="number", value=cliente.limite_credito)
+                input.form-control.rounded-0#limite_credito(type="number", min="0", value=cliente.limite_credito)
               div.col-md-6.mb-4
                 label.form-label.fw-bold Saldo Cuenta Corriente
-                input.form-control.rounded-0#saldo_cuenta_corriente(type="number", value=cliente.saldo_cuenta_corriente)
+                input.form-control.rounded-0#saldo_cuenta_corriente(type="number", min="0", value=cliente.saldo_cuenta_corriente)
 
             div.d-flex.justify-content-end.gap-2
               a.btn.btn-outline-secondary.rounded-0(href="/clientes") Cancelar
