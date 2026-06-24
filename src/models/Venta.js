@@ -13,7 +13,7 @@ const ventaSchema = new mongoose.Schema({
     observaciones: { type: String, default: null }
 },{
     timestamps: true,
-    _id: false  // deshabilita el _id automático de MongoDB
+    _id: false  // deshabilita el _id automático de MongoDB ??
 });
 
 ventaSchema.pre('save', async function() {

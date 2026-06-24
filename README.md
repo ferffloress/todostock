@@ -91,9 +91,10 @@ todostock/
 
 ---
 
-## Autenticación y autorización
+## Autenticación, autorización y roles
 
-El sistema combina **JWT** y **express-session** con contraseñas hasheadas con **bcrypt**.
+El sistema usa **express-session** con contraseñas hasheadas con **bcrypt**.  
+Al iniciar sesión, el rol del usuario (`admin` o `user`) se almacena en la sesión y controla el acceso a ciertas funciones.
 
 - Al hacer login o registrarse, se genera un **token JWT** (duración: 1 hora) que se guarda en una **cookie httpOnly**.
 - La sesión también se setea en el servidor con **express-session**.
@@ -173,12 +174,15 @@ Todas las rutas están protegidas. Sin sesión activa, redirige a `/login`.
 
 ### Lotes
 
-| Método | Ruta                           | Descripción                        |
-| ------ | ------------------------------ | ---------------------------------- |
-| GET    | `/lotes`                       | Listado de lotes                   |
-| GET    | `/lotes/nuevo`                 | Formulario nuevo lote              |
-| POST   | `/lotes`                       | Crear lote                         |
-| GET    | `/lotes/:id/movimientos`       | Ver movimientos de stock del lote  |
+| Método | Ruta                      | Descripción                                        |
+|--------|---------------------------|----------------------------------------------------|
+| GET    | `/lotes`                  | Listado de lotes con stock actual y vencimiento    |
+| GET    | `/lotes/nuevo`            | Formulario nuevo lote                              |
+| POST   | `/lotes`                  | Crear lote (número de lote formato AAA-YYYY-X)     |
+| GET    | `/lotes/:id/editar`       | Editar lote (admin: todo; user: nro. lote y fecha) |
+| POST   | `/lotes/:id/editar`       | Guardar cambios del lote                           |
+| POST   | `/lotes/:id/eliminar`     | Eliminar lote (si no tiene ventas ni movimientos)  |
+| GET    | `/lotes/:id/movimientos`  | Ver movimientos de stock del lote                  |
 
 ### Compras
 
@@ -231,12 +235,13 @@ Endpoints JSON para integración externa, todos bajo `/api/`:
 ## Lógica de negocio
 
 - **FEFO (First Expired, First Out):** Al crear una venta, los lotes se asignan priorizando los de fecha de vencimiento más próxima.
-- **Lote automático:** Al crear un producto con `stock_actual > 0`, se genera un lote inicial automáticamente.
-- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas); los créditos lo reducen (cobranzas).
+- **Stock por lotes:** El stock no se carga directamente en el producto. Se ingresa mediante lotes, que se crean al recibir una compra. El stock del producto es la suma de todos sus lotes activos.
+- **Número de lote:** Formato obligatorio `AAA-YYYY-X` (ej: `LAV-2024-A`). No se permiten duplicados.
+- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas a cuenta); los créditos lo reducen (cobranzas).
 - **Límite de crédito:** Se valida al crear una venta con forma de pago `cuenta_corriente`.
-- **Control de dependencias:** No se puede eliminar un cliente con ventas, ni un producto con ventas o lotes, ni un proveedor con compras activas.
-- **IDs numéricos auto-increment:** Todos los modelos usan un campo `_id: Number` generado por el modelo `Contador`.
-- **Validaciones frontend:** Los campos numéricos tienen `min="0"` en los formularios para evitar valores negativos.
+- **Control de dependencias:** No se puede eliminar un cliente con ventas, un producto con lotes o ventas, un proveedor con compras activas, ni un lote con movimientos de stock o ventas pendientes.
+- **IDs numéricos autoincrementales:** Todos los modelos usan `_id: Number` generado por el modelo `Contador` con `findOneAndUpdate + $inc`.
+- **Roles:** El rol `admin` tiene acceso a edición completa de lotes y gestión de usuarios. El rol `user` opera el sistema sin poder modificar cantidades de stock directamente.
 
 ---
 
@@ -256,3 +261,16 @@ Endpoints JSON para integración externa, todos bajo `/api/`:
 | CORS              | Acceso desde otros orígenes             |
 | Render            | Hosting en la nube                      |
 | nodemon           | Recarga automática en desarrollo        |
+
+
+## Decisiones de diseño
+
+- **Sesiones en lugar de JWT:** Se optó por `express-session` para el manejo de autenticación dado que la aplicación es server-side rendering con Pug. JWT es más adecuado para APIs stateless o SPAs; en este caso las sesiones resultan más simples y seguras para el flujo de vistas.
+- **IDs numéricos:** Se usaron IDs numéricos autoincrementales en lugar de ObjectId de MongoDB para facilitar la lectura y referencia entre documentos en las vistas.
+- **Sin transacciones:** Las operaciones que involucran múltiples colecciones (ej: crear venta + actualizar lote + registrar movimiento) usan `async/await` con `try/catch` sin transacciones MongoDB, dado que el plan gratuito de Atlas no garantiza replica set. Esta limitación está documentada como decisión consciente.
+
+---
+
+## Repositorio
+
+[GitHub — TodoStock](https://github.com/ferffloress/todostock.git)

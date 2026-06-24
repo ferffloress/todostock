@@ -1,6 +1,6 @@
 const Usuario = require('../models/Usuario');
 
-// Lista todos los usuarios
+
 exports.listar = async (req, res, next) => {
   try {
     const usuarios = await Usuario.find({}).select('-password');
@@ -10,7 +10,7 @@ exports.listar = async (req, res, next) => {
   }
 };
 
-// Cambia el rol de un usuario
+
 exports.cambiarRol = async (req, res, next) => {
   try {
     const usuario = await Usuario.findById(req.params.id);
@@ -23,7 +23,7 @@ exports.cambiarRol = async (req, res, next) => {
   }
 };
 
-// Edita el nombre de un usuario
+
 exports.editar = async (req, res, next) => {
   try {
     const { nombre } = req.body;
@@ -35,7 +35,7 @@ exports.editar = async (req, res, next) => {
   }
 };
 
-// Elimina un usuario
+
 exports.eliminar = async (req, res, next) => {
   try {
     await Usuario.findByIdAndDelete(req.params.id);
@@ -45,7 +45,7 @@ exports.eliminar = async (req, res, next) => {
   }
 };
 
-// Muestra el formulario de edición
+
 exports.mostrarEditar = async (req, res, next) => {
   try {
     const usuario = await Usuario.findById(req.params.id).select('-password');
@@ -56,7 +56,7 @@ exports.mostrarEditar = async (req, res, next) => {
   }
 };
 
-// Guarda los cambios
+
 exports.editar = async (req, res, next) => {
   try {
     const { nombre, email, rol } = req.body;

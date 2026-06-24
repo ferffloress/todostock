@@ -22,7 +22,6 @@ html(lang="es")
 
       div.row.g-4
 
-        //- Tarjeta info general
         div.col-md-6
           div.card.shadow-sm.h-100
             div.card-header.bg-dark.text-white
@@ -46,7 +45,6 @@ html(lang="es")
                   dt.col-5 Observaciones
                   dd.col-7= venta.observaciones
 
-        //- Tarjeta cliente
         div.col-md-6
           div.card.shadow-sm.h-100
             div.card-header.bg-dark.text-white
@@ -67,7 +65,6 @@ html(lang="es")
               else
                 p.text-muted Cliente no encontrado
 
-      //- Tabla de items
       div.card.shadow-sm.mt-4
         div.card-header.bg-dark.text-white
           h5.mb-0
@@ -98,7 +95,6 @@ html(lang="es")
                 td.text-end.fw-bold(colspan="5") Total
                 td.fw-bold.fs-5= `$${venta.total.toLocaleString('es-AR')}`
 
-      //- Acciones (solo si está pendiente)
       if venta.estado === 'pendiente'
         div.d-flex.gap-2.mt-4.justify-content-end
           form(action=`/ventas/despachar/${venta._id}` method="POST")

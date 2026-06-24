@@ -32,7 +32,6 @@ html(lang="es")
               td= lote.cantidad_actual
               td= `$${lote.costo_unitario}`
               td
-                //- Formateamos la fecha de vencimiento del JSON
                 span(class=new Date(lote.fecha_vencimiento) < new Date() ? 'text-danger fw-bold' : '')
                   = new Date(lote.fecha_vencimiento).toLocaleDateString('es-AR')
               td

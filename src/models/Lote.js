@@ -12,7 +12,7 @@ const loteSchema  = new mongoose.Schema({
     cantidad_actual: { type: Number },
     costo_unitario: { type: Number, default: 0 },
 }, {
-  timestamps: true, // reemplaza created_at y updated_at
+  timestamps: true, 
   _id: false
 });
 
