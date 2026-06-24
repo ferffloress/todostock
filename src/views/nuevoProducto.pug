@@ -31,10 +31,25 @@ html(lang="es")
               div.row
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Categoría
-                  input.form-control.rounded-0(type="text", name="categoria")
+                  select.form-control.rounded-0(name="categoria")
+                    option(value="") Seleccionar...
+                    option Accesorios de Limpieza
+                    option Artículos Varios
+                    option Desinfectantes
+                    option Papelería
+                    option Productos a Granel
+                    option Productos de Limpieza
+                    
+
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Unidad de Medida
-                  input.form-control.rounded-0(type="text", name="unidad_medida")
+                   select.form-select.rounded-0(name="unidad_medida")
+                     option(value="") Seleccionar...
+                     option Unidad
+                     option Kilogramo
+                     option Litro 
+                     option Caja
+                     option Bulto
 
               div.row
                 div.col-md-6.mb-3

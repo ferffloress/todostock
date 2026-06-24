@@ -100,19 +100,23 @@ const comprasController = {
         throw err;
       }
 
+      const items = [];
       for (const item of req.body.items) {
         const producto = await Producto.findById(Number(item.producto_id));
         if (!producto) throw makeError(`Producto no encontrado: ${item.producto_id}`, 404);
-      }
 
-      const items = req.body.items.map(item => ({
-        producto_id:      Number(item.producto_id),
-        cantidad:         Number(item.cantidad),
-        precio_unitario:  Number(item.precio_unitario),
-        numero_lote:      item.numero_lote,
-        fecha_vencimiento: item.fecha_vencimiento,
-        subtotal:         Number(item.cantidad) * Number(item.precio_unitario),
-      }));
+        const lote = await Lote.findById(Number(item.lote_id));
+        if (!lote) throw makeError(`Lote no encontrado: ${item.lote_id}`, 404);
+
+        items.push({
+          producto_id:       Number(item.producto_id),
+          cantidad:          Number(item.cantidad),
+          precio_unitario:   Number(item.precio_unitario),
+          numero_lote:       lote.numero_lote,
+          fecha_vencimiento: lote.fecha_vencimiento,
+          subtotal:          Number(item.cantidad) * Number(item.precio_unitario),
+        });
+      }
 
       const total = items.reduce((sum, i) => sum + i.subtotal, 0);
       const compra = await new Compra({ ...req.body, items, total }).save();
