@@ -21,23 +21,32 @@ html(lang="es")
             form(method="POST", action="/lotes")
               div.row
                 div.col-md-6.mb-3
-                  label.form-label.fw-bold ID Producto
-                  input.form-control.rounded-0(type="number", name="producto_id", required)
+                  label.form-label.fw-bold Producto
+                  select.form-select.rounded-0(name="producto_id", required)
+                    option(value="" disabled selected) Seleccione un producto...
+                    each prod in productos
+                      option(value=prod._id)= `#${prod._id} - ${prod.nombre}`
                 div.col-md-6.mb-3
-                  label.form-label.fw-bold ID Proveedor
-                  input.form-control.rounded-0(type="number", name="proveedor_id")
+                  label.form-label.fw-bold Proveedor
+                  select.form-select.rounded-0(name="proveedor_id")
+                    option(value="") Sin proveedor
+                    each prov in proveedores
+                      option(value=prov._id)= `#${prov._id} - ${prov.nombre}`
 
               div.mb-3
                 label.form-label.fw-bold Número de Lote
-                input.form-control.rounded-0(type="text", name="numero_lote", required)
+                div.input-group
+                  input.form-control.rounded-0(type="text", id="prefijo_lote", maxlength="3", placeholder="LAV", style="max-width:80px", readonly)
+                  span.input-group-text -
+                  input.form-control.rounded-0(type="number", id="anio_lote", value=new Date().getFullYear(), min="2000", max="2099", style="max-width:100px")
+                  span.input-group-text -
+                  input.form-control.rounded-0(type="text", id="sufijo_lote", maxlength="1", placeholder="A", style="max-width:60px")
+                  input(type="hidden", name="numero_lote", id="numero_lote")
 
-              div.row
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Cantidad
-                  input.form-control.rounded-0(type="number", min = "1", name="cantidad_inicial", required)
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Costo Unitario
-                  input.form-control.rounded-0(type="number", name="costo_unitario", min="0", value="0")
+              div.mb-3
+                label.form-label.fw-bold Costo Unitario
+                input.form-control.rounded-0(type="number", name="costo_unitario", min="0", value="0")
+              input(type="hidden", name="cantidad_inicial", value="0")
 
               div.mb-4
                 label.form-label.fw-bold Fecha de Vencimiento
@@ -50,3 +59,49 @@ html(lang="es")
     script.
       const hoy = new Date().toISOString().split('T')[0];
       document.getElementById('fecha_vencimiento').setAttribute('min', hoy);
+
+      // Autocompleta prefijo cuando se elige producto
+      document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
+        const texto = this.options[this.selectedIndex].text;
+        // Toma las primeras 3 letras del nombre del producto (sin el #ID)
+        const nombre = texto.split(' - ')[1] || '';
+        document.getElementById('prefijo_lote').value = nombre.substring(0, 3).toUpperCase();
+        actualizarNumeroLote();
+      });
+
+      function actualizarNumeroLote() {
+        const prefijo = document.getElementById('prefijo_lote').value.toUpperCase();
+        const anio = document.getElementById('anio_lote').value;
+        const sufijo = document.getElementById('sufijo_lote').value.toUpperCase();
+        document.getElementById('numero_lote').value = `${prefijo}-${anio}-${sufijo}`;
+      }
+
+      document.getElementById('anio_lote').addEventListener('input', actualizarNumeroLote);
+      document.getElementById('sufijo_lote').addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+        actualizarNumeroLote();
+      });
+
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const prefijo = document.getElementById('prefijo_lote').value.trim();
+        const anio = document.getElementById('anio_lote').value.trim();
+        const sufijo = document.getElementById('sufijo_lote').value.trim();
+
+        if (!prefijo || prefijo.length < 2) {
+          e.preventDefault();
+          alert('Seleccioná un producto para generar el prefijo del lote.');
+          return;
+        }
+        if (!anio) {
+          e.preventDefault();
+          alert('El año es requerido.');
+          return;
+        }
+        if (!sufijo || !/^[A-Z]$/.test(sufijo)) {
+          e.preventDefault();
+          alert('El sufijo debe ser una letra (A, B, C...).');
+          return;
+        }
+
+        actualizarNumeroLote();
+      });

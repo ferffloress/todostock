@@ -20,4 +20,13 @@ router.get('/:id/movimientos', lotesController.detalleVista);
 // GET /lotes/:id
 router.get('/:id', lotesController.obtener);
 
+// GET /lotes/:id/editar
+router.get('/:id/editar', lotesController.formularioEditar);
+
+// POST /lotes/:id/editar
+router.post('/:id/editar', lotesController.actualizar);
+
+// POST /lotes/:id/eliminar
+router.post('/:id/eliminar', lotesController.eliminar);
+
 module.exports = router;
