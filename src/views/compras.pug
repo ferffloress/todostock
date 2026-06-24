@@ -27,14 +27,11 @@ html(lang="es")
         tbody
           each compra in compras
             tr
-              //- Formateamos la fecha del seed
               td= new Date(compra.fecha).toLocaleDateString('es-AR')
-              //- ID del proveedor
               td.text-muted.small= compra.proveedor_id
               td
                 span.badge(class=compra.estado === 'recibida' ? 'bg-info' : 'bg-secondary')
                   = compra.estado.toUpperCase()
-              //- Monto total de la compra
               td.fw-bold= `$${compra.total}`
               td= compra.observaciones || 'Sin observaciones'
               td

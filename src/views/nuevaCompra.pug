@@ -83,16 +83,15 @@ html(lang="es")
 
         const lote_id = Number(document.getElementById('lote_id').value);
         
-        // Obtener la fecha de vencimiento del lote seleccionado
         const provSelectValue = document.getElementById('proveedor_id').value;
         const prodSelectValue = document.getElementById('producto_id').value;
 
         const payload = {
-          proveedor_id: provSelectValue, // Se envía como string
+          proveedor_id: provSelectValue, 
           observaciones: document.getElementById('observaciones').value || null,
           estado: 'pendiente', 
           items: [{
-            producto_id: prodSelectValue, // Se envía como string
+            producto_id: prodSelectValue, 
             cantidad: Number(document.getElementById('cantidad').value),
             precio_unitario: Number(document.getElementById('precio_unitario').value),
             lote_id: lote_id
@@ -113,7 +112,7 @@ html(lang="es")
             window.location.href = '/compras';
           } else {
             const errData = await response.json().catch(() => ({}));
-            // Mostramos los detalles del error del validador
+
             let mensaje = errData.error || 'Error al procesar';
             if (errData.details) {
               mensaje += ': ' + (Array.isArray(errData.details) ? errData.details.join(', ') : errData.details);

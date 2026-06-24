@@ -22,7 +22,6 @@ app.use(session({
 }));
 app.use(cookieParser());
 
-// Inyecta el rol en todas las vistas
 app.use((req, res, next) => {
   res.locals.usuarioRol = req.session?.usuarioRol || null;
   next();

@@ -60,10 +60,10 @@ html(lang="es")
       const hoy = new Date().toISOString().split('T')[0];
       document.getElementById('fecha_vencimiento').setAttribute('min', hoy);
 
-      // Autocompleta prefijo cuando se elige producto
+
       document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
         const texto = this.options[this.selectedIndex].text;
-        // Toma las primeras 3 letras del nombre del producto (sin el #ID)
+
         const nombre = texto.split(' - ')[1] || '';
         document.getElementById('prefijo_lote').value = nombre.substring(0, 3).toUpperCase();
         actualizarNumeroLote();

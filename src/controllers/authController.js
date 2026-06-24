@@ -3,7 +3,7 @@ const Usuario = require('../models/Usuario');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'todostock_jwt_secret';
 
-// Muestra el formulario de login
+
 exports.mostrarLogin = (req, res) => {
   const success = req.query.registro === 'ok'
     ? 'Cuenta creada correctamente. Ya podés iniciar sesión.'
@@ -11,7 +11,7 @@ exports.mostrarLogin = (req, res) => {
   res.render('login', { titulo: 'Iniciar Sesión', success });
 };
 
-// Valida lo que el usuario escribe en el formulario
+
 exports.procesarLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
@@ -59,12 +59,11 @@ exports.procesarLogin = async (req, res, next) => {
 };
 
 
-// Muestra el formulario de registro
 exports.mostrarRegistro = (req, res) => {
   res.render('registro', { titulo: 'Crear cuenta' });
 };
 
-// Registra un nuevo usuario
+
 exports.procesarRegistro = async (req, res, next) => {
   try {
     const { nombre, email, password, confirmarPassword } = req.body;
@@ -91,7 +90,7 @@ exports.procesarRegistro = async (req, res, next) => {
       });
     }
 
-    // El pre('save') del modelo hashea la contraseña automáticamente
+
     const nuevoUsuario = new Usuario({ nombre, email, password });
     await nuevoUsuario.save();
 
@@ -103,32 +102,29 @@ exports.procesarRegistro = async (req, res, next) => {
 };
 
 
-// Middleware para proteger rutas
 exports.protegerRuta = (req, res, next) => {
   if (req.session && req.session.usuarioLogueado === true) {
     return next();
   }
 
-  // Si no hay session, verifica el JWT de la cookie
   const token = req.cookies?.token;
   if (!token) return res.redirect('/login');
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    // Restaura la session a partir del token
+
     req.session.usuarioLogueado = true;
     req.session.usuarioId = decoded.id;
     req.session.usuarioRol = decoded.rol;
     return next();
   } catch (err) {
-    // Token inválido o expirado
+
     res.clearCookie('token');
     return res.redirect('/login');
   }
 };
 
 
-// Cierra sesión
 exports.logout = (req, res) => {
   req.session.destroy((err) => {
     if (err) console.error('Error destruyendo sesión:', err);
@@ -138,7 +134,7 @@ exports.logout = (req, res) => {
   });
 };
 
-// Middleware solo para admin
+
 exports.soloAdmin = (req, res, next) => {
   if (req.session && req.session.usuarioRol === 'admin') {
     return next();
