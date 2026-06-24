@@ -33,14 +33,8 @@ function validate(data) {
         errors.push(`${prefix}.precio_unitario debe ser un número positivo`);
       }
 
-      if (!item.numero_lote || typeof item.numero_lote !== 'string' || item.numero_lote.trim() === '') {
-        errors.push(`${prefix}.numero_lote es requerido`);
-      }
-
-      if (!item.fecha_vencimiento) {
-        errors.push(`${prefix}.fecha_vencimiento es requerida`);
-      } else if (!isValidISODate(item.fecha_vencimiento)) {
-        errors.push(`${prefix}.fecha_vencimiento debe ser una fecha ISO válida`);
+     if (item.lote_id === undefined || item.lote_id === null || item.lote_id === '') {
+        errors.push(`${prefix}.lote_id es requerido`);
       }
     });
   }

@@ -58,23 +58,22 @@ html(lang="es")
                   label.form-label.fw-bold(for="precio_unitario") Precio Unitario de Costo ($)
                   input#precio_unitario.form-control.rounded-0(type="number" step="0.01" min="0.01" placeholder="Ej: 449.99" required)
 
-              div.card.bg-light.p-3.mb-3.border-0.rounded-0
-                h6.fw-bold.text-secondary Datos de Lote de Fábrica
-                div.row
-                  div.col-md-6
-                    label.form-label.small.fw-bold(for="numero_lote") Número de Lote
-                    input#numero_lote.form-control.rounded-0(type="text" placeholder="Ej: LOT-102" required)
-                  div.col-md-6
-                    label.form-label.small.fw-bold(for="fecha_vencimiento") Fecha de Vencimiento
-                    input#fecha_vencimiento.form-control.rounded-0(type="date" required)
+                div.card.bg-light.p-3.mb-3.border-0.rounded-0
+                  h6.fw-bold.text-secondary Lote
+                  div.mb-2
+                    label.form-label.small.fw-bold(for="lote_id") Seleccionar Lote
+                    select#lote_id.form-select.rounded-0(required)
+                      option(value="" disabled selected) Seleccione un lote...
+                      each lote in lotes
+                        option(value=lote._id)= `Lote #${lote._id} - ${lote.numero_lote} | Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString('es-AR')} | Stock: ${lote.cantidad_actual}`
 
-              div.mb-4
-                label.form-label.fw-bold(for="observaciones") Observaciones internas
-                textarea#observaciones.form-control.rounded-0(rows="2" placeholder="Notas sobre la compra...")
+                  div.mb-4
+                    label.form-label.fw-bold(for="observaciones") Observaciones internas
+                    textarea#observaciones.form-control.rounded-0(rows="2" placeholder="Notas sobre la compra...")
 
-              div.d-flex.justify-content-end.gap-2
-                a.btn.btn-outline-secondary.rounded-0(href="/compras") Cancelar
-                button.btn.btn-primary.rounded-0(type="submit") Crear Orden de Compra
+                  div.d-flex.justify-content-end.gap-2
+                    a.btn.btn-outline-secondary.rounded-0(href="/compras") Cancelar
+                    button.btn.btn-primary.rounded-0(type="submit") Crear Orden de Compra
 
     script.
       document.getElementById('formCompra').addEventListener('submit', async (e) => {
@@ -82,11 +81,9 @@ html(lang="es")
         const errorAlert = document.getElementById('errorAlert');
         errorAlert.classList.add('d-none');
 
-        const fechaInput = document.getElementById('fecha_vencimiento').value;
-        const fechaISO = fechaInput ? new Date(fechaInput).toISOString() : null;
+        const lote_id = Number(document.getElementById('lote_id').value);
         
-        // --- AQUÍ ESTÁ EL CAMBIO ---
-        // Obtenemos los valores directamente como strings (sin parseInt)
+        // Obtener la fecha de vencimiento del lote seleccionado
         const provSelectValue = document.getElementById('proveedor_id').value;
         const prodSelectValue = document.getElementById('producto_id').value;
 
@@ -98,8 +95,7 @@ html(lang="es")
             producto_id: prodSelectValue, // Se envía como string
             cantidad: Number(document.getElementById('cantidad').value),
             precio_unitario: Number(document.getElementById('precio_unitario').value),
-            numero_lote: document.getElementById('numero_lote').value,
-            fecha_vencimiento: fechaISO
+            lote_id: lote_id
           }]
         };
 
