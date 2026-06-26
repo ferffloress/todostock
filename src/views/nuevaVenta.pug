@@ -126,11 +126,10 @@ html(lang="es")
         const stockLabel = fila.querySelector('.stock-label');
         
         if (tipoVenta === 'bulto') {
-          // Lógica Mayorista: Multiplicamos el precio por el factor del bulto
-          const precioBulto = precioBaseUnidad * factor;
+          const precioBaseConDescuento = precioBaseUnidad * 0.8;
+          const precioBulto = precioBaseConDescuento * factor;
           inputPrecio.value = precioBulto.toFixed(2);
           
-          // Stock expresado en bultos (entero hacia abajo)
           const stockBultos = Math.floor(stockReal / factor);
           stockLabel.innerText = stockBultos + " bultos (" + factor + " u. c/u)";
           inputCantidad.max = stockBultos;
