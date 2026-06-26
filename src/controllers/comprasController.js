@@ -28,7 +28,7 @@ const comprasController = {
 
   async detalleVista(req, res, next) {
     try {
-      const compra = await Compra.findById(Number(req.params.id));
+      const compra = await Compra.findById(Number(req.params.id)).lean();
       if (!compra) throw makeError('Compra no encontrada', 404);
       const proveedor = await Proveedor.findById(compra.proveedor_id);
       const itemsConNombre = await Promise.all(
@@ -48,25 +48,29 @@ const comprasController = {
       if (compra.estado !== 'pendiente') throw makeError(`No se puede recibir una compra en estado '${compra.estado}'`, 400);
 
       for (const item of compra.items) {
-        const lote = await new Lote({
-          producto_id:       item.producto_id,
-          proveedor_id:      compra.proveedor_id,
-          numero_lote:       item.numero_lote,
-          fecha_vencimiento: item.fecha_vencimiento,
-          cantidad_inicial:  item.cantidad,
-          cantidad_actual:   item.cantidad,
-          costo_unitario:    item.precio_unitario,
-        }).save();
-        await Producto.findByIdAndUpdate(item.producto_id, { $inc: { stock_actual: item.cantidad } });
+        await Lote.findByIdAndUpdate(Number(item.lote_id), {
+          $inc: {
+            cantidad_inicial: item.cantidad,
+            cantidad_actual:  item.cantidad,
+          },
+          costo_unitario: item.precio_unitario,
+        });
+
+        await Producto.findByIdAndUpdate(Number(item.producto_id), {
+          $inc: { stock_actual: item.cantidad },
+          precio_costo: item.precio_unitario,
+        });
+
         await new MovimientoStock({
           tipo:          'ingreso',
           producto_id:   item.producto_id,
-          lote_id:       lote._id,
+          lote_id:       item.lote_id,
           cantidad:      item.cantidad,
           referencia:    compra._id,
           observaciones: `Recepción de compra ${compra._id}`,
         }).save();
       }
+
       await Compra.findByIdAndUpdate(Number(req.params.id), { estado: 'recibida' });
       res.redirect(`/compras/ver/${req.params.id}`);
     } catch (err) { next(err); }
@@ -110,6 +114,7 @@ const comprasController = {
 
         items.push({
           producto_id:       Number(item.producto_id),
+          lote_id:           Number(item.lote_id),
           cantidad:          Number(item.cantidad),
           precio_unitario:   Number(item.precio_unitario),
           numero_lote:       lote.numero_lote,
@@ -131,24 +136,23 @@ const comprasController = {
       if (compra.estado !== 'pendiente') throw makeError(`No se puede recibir una compra en estado '${compra.estado}'`, 400);
 
       for (const item of compra.items) {
-        const lote = await new Lote({
-          producto_id:      item.producto_id,
-          proveedor_id:     compra.proveedor_id,
-          numero_lote:      item.numero_lote,
-          fecha_vencimiento: item.fecha_vencimiento,
-          cantidad_inicial: item.cantidad,
-          cantidad_actual:  item.cantidad,
-          costo_unitario:   item.precio_unitario,
-        }).save();
+        await Lote.findByIdAndUpdate(Number(item.lote_id), {
+          $inc: {
+            cantidad_inicial: item.cantidad,
+            cantidad_actual:  item.cantidad,
+          },
+          costo_unitario: item.precio_unitario,
+        });
 
-        await Producto.findByIdAndUpdate(item.producto_id, {
-          $inc: { stock_actual: item.cantidad }
+        await Producto.findByIdAndUpdate(Number(item.producto_id), {
+          $inc: { stock_actual: item.cantidad },
+          precio_costo: item.precio_unitario,
         });
 
         await new MovimientoStock({
           tipo:          'ingreso',
           producto_id:   item.producto_id,
-          lote_id:       lote._id,
+          lote_id:       item.lote_id,
           cantidad:      item.cantidad,
           referencia:    compra._id,
           observaciones: `Recepción de compra ${compra._id}`,

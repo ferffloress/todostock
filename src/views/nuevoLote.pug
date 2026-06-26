@@ -25,7 +25,7 @@ html(lang="es")
                   select.form-select.rounded-0(name="producto_id", required)
                     option(value="" disabled selected) Seleccione un producto...
                     each prod in productos
-                      option(value=prod._id)= `#${prod._id} - ${prod.nombre}`
+                      option(value=prod._id, data-categoria=prod.categoria)= `#${prod._id} - ${prod.nombre}`
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Proveedor
                   select.form-select.rounded-0(name="proveedor_id")
@@ -40,7 +40,7 @@ html(lang="es")
                   span.input-group-text -
                   input.form-control.rounded-0(type="number", id="anio_lote", value=new Date().getFullYear(), min="2000", max="2099", style="max-width:100px")
                   span.input-group-text -
-                  input.form-control.rounded-0(type="text", id="sufijo_lote", maxlength="1", placeholder="A", style="max-width:60px")
+                  input.form-control.rounded-0(type="text", id="sufijo_lote", maxlength="3", placeholder="001", style="max-width:60px", readonly)
                   input(type="hidden", name="numero_lote", id="numero_lote")
 
               div.mb-3
@@ -50,7 +50,11 @@ html(lang="es")
 
               div.mb-4
                 label.form-label.fw-bold Fecha de Vencimiento
-                input.form-control.rounded-0#fecha_vencimiento(type="date", name="fecha_vencimiento", required)
+                div.form-check.mb-2
+                  input.form-check-input#sinVencimiento(type="checkbox", name="sin_vencimiento")
+                  label.form-check-label(for="sinVencimiento") Sin fecha de vencimiento
+                input.form-control.rounded-0#fecha_vencimiento(type="date", name="fecha_vencimiento")
+                input(type="hidden", id="fecha_vencimiento_hidden", name="fecha_vencimiento_hidden")
 
               div.d-flex.justify-content-end.gap-2
                 a.btn.btn-outline-secondary.rounded-0(href="/lotes") Cancelar
@@ -64,8 +68,21 @@ html(lang="es")
       document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
         const texto = this.options[this.selectedIndex].text;
 
-        const nombre = texto.split(' - ')[1] || '';
-        document.getElementById('prefijo_lote').value = nombre.substring(0, 3).toUpperCase();
+        const categoria = this.options[this.selectedIndex].dataset.categoria || '';
+        const prefijos = {
+          'Accesorios de Limpieza': 'ACCL',
+          'Artículos Varios': 'VARI',
+          'Desinfectantes': 'DESI',
+          'Papelería': 'PAPE',
+          'Productos a Granel': 'GRAN',
+          'Productos de Limpieza': 'LIMP',
+          'Desengrasantes': 'DENG',
+          'Jabones': 'JABO',
+          'Aromatizantes': 'AROM',
+          'Insecticidas': 'INSE',
+          'Bolsas y Descartables': 'BOLT',
+        };
+        document.getElementById('prefijo_lote').value = prefijos[categoria] || categoria.substring(0, 4).toUpperCase();
         actualizarNumeroLote();
       });
 
@@ -76,7 +93,16 @@ html(lang="es")
         document.getElementById('numero_lote').value = `${prefijo}-${anio}-${sufijo}`;
       }
 
-      document.getElementById('anio_lote').addEventListener('input', actualizarNumeroLote);
+      document.getElementById('anio_lote').addEventListener('blur', async function() {
+        const prefijo = document.getElementById('prefijo_lote').value;
+        const anio = this.value;
+        if (!prefijo || !anio) return;
+
+        const res = await fetch(`/lotes/siguiente-numero?prefijo=${prefijo}&anio=${anio}`);
+        const data = await res.json();
+        document.getElementById('sufijo_lote').value = data.numero;
+        actualizarNumeroLote();
+      });
       document.getElementById('sufijo_lote').addEventListener('input', function() {
         this.value = this.value.toUpperCase();
         actualizarNumeroLote();
@@ -97,11 +123,25 @@ html(lang="es")
           alert('El año es requerido.');
           return;
         }
-        if (!sufijo || !/^[A-Z]$/.test(sufijo)) {
+       if (!sufijo) {
           e.preventDefault();
-          alert('El sufijo debe ser una letra (A, B, C...).');
+          alert('Esperá a que se genere el número de lote.');
           return;
         }
 
         actualizarNumeroLote();
+      });
+
+      document.getElementById('sinVencimiento').addEventListener('change', function() {
+        const fechaInput = document.getElementById('fecha_vencimiento');
+        fechaInput.disabled = this.checked;
+        if (this.checked) fechaInput.value = '';
+      });
+
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const sinVenc = document.getElementById('sinVencimiento').checked;
+        if (sinVenc) {
+          document.getElementById('fecha_vencimiento').removeAttribute('disabled');
+          document.getElementById('fecha_vencimiento').value = '2099-12-31';
+        }
       });
