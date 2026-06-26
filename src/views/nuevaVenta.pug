@@ -99,6 +99,8 @@ html(lang="es")
                       option(value="pendiente") PENDIENTE (Reserva stock)
                       option(value="despachada") DESPACHADA (Afecta stock y saldo)
                   div.col-md-6.text-end
+                    div.mb-2
+                      small.text-success.d-none#descuento-efectivo Descuento efectivo 10%: $ 0,00
                     h4.fw-bold Total General: 
                       span#total-venta $ 0,00
 
@@ -110,6 +112,8 @@ html(lang="es")
       const listaProductos = document.getElementById('lista-productos');
       const btnAgregar = document.getElementById('btn-agregar');
       const totalVentaLabel = document.getElementById('total-venta');
+      const formaPagoSelect = document.querySelector('select[name="forma_pago"]');
+      const descuentoEfectivoLabel = document.getElementById('descuento-efectivo');
       let itemIndex = 1;
 
       function actualizarEtiquetaPrecio(fila) {
@@ -202,11 +206,31 @@ html(lang="es")
           const valor = parseFloat(input.value.replace('$ ', '').replace(/\./g, '').replace(',', '.')) || 0;
           total += valor;
         });
-        
-        totalVentaLabel.innerText = '$ ' + total.toLocaleString('es-AR', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
+
+        const formaPago = formaPagoSelect ? formaPagoSelect.value : "";
+        if (formaPago === 'efectivo' && total > 0) {
+          const descuento = Number((total * 0.1).toFixed(2));
+          const totalConDescuento = Number((total - descuento).toFixed(2));
+          descuentoEfectivoLabel.classList.remove('d-none');
+          descuentoEfectivoLabel.innerText = `Descuento efectivo 10%: $ ${descuento.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+          totalVentaLabel.innerText = '$ ' + totalConDescuento.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        } else {
+          descuentoEfectivoLabel.classList.add('d-none');
+          totalVentaLabel.innerText = '$ ' + total.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+      }
+
+      if (formaPagoSelect) {
+        formaPagoSelect.addEventListener('change', actualizarTotalGeneral);
       }
 
       btnAgregar.addEventListener('click', () => {

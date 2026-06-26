@@ -8,6 +8,7 @@ const { validate } = require("../validators/ventasValidator");
 const {
   calcularPrecioFacturado,
   calcularSubtotalItem,
+  calcularTotalConDescuentoEfectivo,
 } = require("../utils/precios");
 
 function makeError(message, status) {
@@ -174,7 +175,15 @@ const ventasController = {
         });
       }
 
-      const totalVenta = itemsConLote.reduce((sum, i) => sum + i.subtotal, 0);
+      const totalVentaBruto = itemsConLote.reduce(
+        (sum, i) => sum + i.subtotal,
+        0,
+      );
+      const formaPago = req.body.forma_pago || "efectivo";
+      const totalVenta = calcularTotalConDescuentoEfectivo(
+        totalVentaBruto,
+        formaPago,
+      );
 
       // 4. Validar crédito
       if (req.body.forma_pago === "cuenta_corriente") {

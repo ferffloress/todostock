@@ -38,12 +38,17 @@ html(lang="es")
                 dd.col-7
                   span.badge.fs-6(class=venta.estado === 'despachada' ? 'bg-success' : (venta.estado === 'cancelada' ? 'bg-danger' : 'bg-warning text-dark'))
                     = venta.estado.toUpperCase()
+                - const formaPago = venta.forma_pago || 'efectivo'
                 dt.col-5 Total
                 dd.col-7
                   span.fw-bold.fs-5= `$${venta.total.toLocaleString('es-AR')}`
+                if formaPago === 'efectivo'
+                  - const totalBruto = items.reduce((sum, item) => sum + (item.subtotal || 0), 0)
+                  if totalBruto > venta.total
+                    dt.col-5 Descuento efectivo
+                    dd.col-7.text-success= `$${(totalBruto - venta.total).toLocaleString('es-AR')}`
                 dt.col-5 Forma de Pago
                 dd.col-7
-                  - const formaPago = venta.forma_pago || 'efectivo'
                   span.badge(class=formaPago === 'cuenta_corriente' ? 'bg-warning text-dark' : formaPago === 'transferencia' ? 'bg-info' : 'bg-success')
                     = formaPago === 'cuenta_corriente' ? 'Cuenta Corriente' : formaPago === 'transferencia' ? 'Transferencia' : 'Efectivo'  
                 if venta.observaciones

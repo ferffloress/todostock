@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const {
   calcularPrecioFacturado,
   calcularSubtotalItem,
+  calcularTotalConDescuentoEfectivo,
 } = require("../src/utils/precios");
 
 test("aplica descuento del 20% en ventas mayoristas por bulto", () => {
@@ -27,4 +28,9 @@ test("no aplica descuento en ventas minoristas", () => {
     }),
     300,
   );
+});
+
+test("aplica descuento del 10% en ventas en efectivo", () => {
+  assert.equal(calcularTotalConDescuentoEfectivo(100, "efectivo"), 90);
+  assert.equal(calcularTotalConDescuentoEfectivo(100, "transferencia"), 100);
 });

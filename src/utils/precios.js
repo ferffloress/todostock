@@ -12,7 +12,22 @@ function calcularSubtotalItem({ tipoVenta, cantidad, precioUnitario }) {
   return Number((cantidadFinal * precioFacturado).toFixed(2));
 }
 
+function calcularTotalConDescuentoEfectivo(total, formaPago) {
+  const base = Number(total) || 0;
+  if (formaPago === "efectivo") {
+    return Number((base * 0.9).toFixed(2));
+  }
+  return Number(base.toFixed(2));
+}
+
+function calcularDescuentoEfectivo(total) {
+  const base = Number(total) || 0;
+  return Number((base * 0.1).toFixed(2));
+}
+
 module.exports = {
   calcularPrecioFacturado,
   calcularSubtotalItem,
+  calcularTotalConDescuentoEfectivo,
+  calcularDescuentoEfectivo,
 };
