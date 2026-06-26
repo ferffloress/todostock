@@ -69,7 +69,7 @@ html(lang="es")
                       
                       div.col-md-3.mb-3
                         label.form-label Tipo Venta
-                        select.form-select.select-tipo(name="items[0][tipo_venta]" onchange="actualizarFila(this.closest('.producto-item').querySelector('.select-producto'))")
+                        select.form-select.select-tipo(name="items[0][tipo_venta]" onchange="actualizarFila(this.closest('.producto-item').querySelector('.select-producto')); actualizarEtiquetaPrecio(this.closest('.producto-item'))")
                           option(value="unidad") Minorista (Unidad)
                           option(value="bulto") Mayorista (Bulto)
 
@@ -81,8 +81,10 @@ html(lang="es")
                     
                     div.row
                       div.col-md-4.mb-3
-                        label.form-label Precio Unitario ($)
-                        input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                        label.form-label.label-precio-unitario Precio unitario por menor ($)
+                        div.input-group
+                          span.input-group-text $ 
+                          input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" required oninput="calcularSubtotal(this.closest('.producto-item'))")
                       
                       div.col-md-4.mb-3
                         label.form-label Subtotal
@@ -109,6 +111,17 @@ html(lang="es")
       const btnAgregar = document.getElementById('btn-agregar');
       const totalVentaLabel = document.getElementById('total-venta');
       let itemIndex = 1;
+
+      function actualizarEtiquetaPrecio(fila) {
+        const selectTipo = fila.querySelector('.select-tipo');
+        const labelPrecio = fila.querySelector('.label-precio-unitario');
+
+        if (!selectTipo || !labelPrecio) return;
+
+        labelPrecio.innerText = selectTipo.value === 'bulto'
+          ? 'Precio unitario por mayor (-20%)'
+          : 'Precio unitario por menor';
+      }
 
       function actualizarFila(select) {
         if (!select.value) return;
@@ -139,7 +152,8 @@ html(lang="es")
           stockLabel.innerText = stockReal + " unidades";
           inputCantidad.max = stockReal;
         }
-        
+
+        actualizarEtiquetaPrecio(fila);
         calcularSubtotal(fila);
       }
 
@@ -185,6 +199,8 @@ html(lang="es")
         });
         
         nuevaFila.querySelector('.stock-label').innerText = '0';
+        nuevaFila.querySelector('.select-tipo').value = 'unidad';
+        actualizarEtiquetaPrecio(nuevaFila);
         
         // Crear botón eliminar
         const btnEliminar = document.createElement('button');
