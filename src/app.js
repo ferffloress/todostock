@@ -14,6 +14,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'todostock_secret',
   resave: false,
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
+
 // Evita que el navegador cachee páginas protegidas
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -35,7 +37,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//CANDADO DE AUTENTICACIÓN
+//AUTENTICACIÓN
 const protegerRuta = (req, res, next) => {
   if (req.session && req.session.usuarioLogueado === true) {
     next();
