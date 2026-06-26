@@ -22,8 +22,15 @@ const ventasController = {
 
   async listarVista(req, res, next) {
     try {
-      const ventas = await Venta.find();
-      res.render('ventas', { titulo: 'Ventas', ventas });
+      const ventas = await Venta.find().lean();
+      const clientes = await Cliente.find().lean();
+      const clienteMap = {};
+      clientes.forEach(c => { clienteMap[c._id] = c.nombre; });
+      const ventasConNombre = ventas.map(v => ({
+        ...v,
+        nombreCliente: clienteMap[v.cliente_id] || `#${v.cliente_id}`
+      }));
+      res.render('ventas', { titulo: 'Ventas', ventas: ventasConNombre });
     } catch (err) { next(err); }
   },
 
@@ -199,22 +206,17 @@ const ventasController = {
           descripcion:      'Venta a Cta. Cte.',
           saldo_resultante: nuevoSaldo,
         }).save();
+        await Cliente.findByIdAndUpdate(venta.cliente_id, {
+          saldo_cuenta_corriente: nuevoSaldo
+        });
       } else {
-        // Contado: débito y crédito simultáneo para historial
+        // Efectivo u otro medio: registra el movimiento pero no afecta el saldo
         await new CuentaCorriente({
           cliente_id:       venta.cliente_id,
           tipo:             'debito',
           monto:            venta.total,
           referencia:       venta._id,
-          descripcion:      `Venta Contado (${venta.forma_pago})`,
-          saldo_resultante: nuevoSaldo + venta.total,
-        }).save();
-        await new CuentaCorriente({
-          cliente_id:       venta.cliente_id,
-          tipo:             'credito',
-          monto:            venta.total,
-          referencia:       venta._id,
-          descripcion:      `Pago Recibido (${venta.forma_pago})`,
+          descripcion:      `Venta cobrada en ${venta.forma_pago} (no afecta saldo)`,
           saldo_resultante: nuevoSaldo,
         }).save();
       }
