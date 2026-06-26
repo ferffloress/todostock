@@ -4,6 +4,9 @@ const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const Producto = require('./models/Producto');
+const Venta = require('./models/Venta');
+const Cliente = require('./models/Cliente');
 
 
 //CONFIGURACIONES DEL SERVIDOR
@@ -25,6 +28,7 @@ app.use(cookieParser());
 
 app.use((req, res, next) => {
   res.locals.usuarioRol = req.session?.usuarioRol || null;
+  res.locals.currentPath = req.path;
   next();
 });
 
@@ -139,9 +143,76 @@ app.get('/cargar-datos', async (req, res) => {
   }
 });
 
+function getISOWeek(date) {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+  const yearStart = new Date(d.getFullYear(), 0, 4);
+  const week = Math.round(((d - yearStart) / 86400000 - 3 + ((yearStart.getDay() + 6) % 7)) / 7) + 1;
+  return `${d.getFullYear()}-W${String(week).padStart(2, '0')}`;
+}
+
 //RUTAS DE VISTAS
-app.get('/', protegerRuta, (req, res) => {
-  res.render('index');
+app.get('/', protegerRuta, async (req, res) => {
+  try {
+    const [productos, ventas, clientes] = await Promise.all([
+      Producto.find({ activo: true }).lean(),
+      Venta.find({ estado: 'despachada' }).lean(),
+      Cliente.find().lean(),
+    ]);
+
+    const ahora = new Date();
+    const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
+    const ventasMes = ventas.filter((venta) => {
+      const fecha = new Date(venta.fecha);
+      return fecha >= inicioMes && fecha <= ahora;
+    });
+
+    const ventasMesTotal = ventasMes.reduce((sum, venta) => sum + (venta.total || 0), 0);
+    const stockBajo = productos.filter((producto) => (producto.stock_actual || 0) <= (producto.stock_minimo || 0)).length;
+    const sinStock = productos.filter((producto) => (producto.stock_actual || 0) === 0).length;
+    const clientesDeudores = clientes.filter((cliente) => (cliente.saldo_cuenta_corriente || 0) > 0).length;
+
+    const ventasPorSemanaMap = {};
+    const haceSeisSemanas = new Date();
+    haceSeisSemanas.setDate(haceSeisSemanas.getDate() - 42);
+
+    ventas
+      .filter((venta) => new Date(venta.fecha) >= haceSeisSemanas)
+      .forEach((venta) => {
+        const semana = getISOWeek(venta.fecha);
+        if (!ventasPorSemanaMap[semana]) {
+          ventasPorSemanaMap[semana] = { semana, monto_total: 0 };
+        }
+        ventasPorSemanaMap[semana].monto_total += venta.total || 0;
+      });
+
+    const ventasPorSemana = Object.values(ventasPorSemanaMap).sort((a, b) => a.semana.localeCompare(b.semana));
+    const stockData = [
+      { label: 'Con stock', value: Math.max(productos.length - stockBajo - sinStock, 0) },
+      { label: 'Stock bajo', value: stockBajo },
+      { label: 'Sin stock', value: sinStock },
+    ];
+
+    res.render('index', {
+      metricas: [
+        { label: 'Ventas del mes', valor: `$${ventasMesTotal.toLocaleString('es-AR')}` },
+        { label: 'Productos activos', valor: productos.length },
+        { label: 'Stock bajo', valor: stockBajo },
+        { label: 'Clientes deudores', valor: clientesDeudores },
+      ],
+      ventasPorSemana,
+      stockData,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).render('index', {
+      metricas: [],
+      ventasPorSemana: [],
+      stockData: [],
+      error: 'No se pudo cargar el dashboard.',
+    });
+  }
 });
 
 app.use('/', authRouter);

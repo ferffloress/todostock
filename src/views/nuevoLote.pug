@@ -1,147 +1,140 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+extends layout
 
-  body.bg-light
-    div.container.mt-5
-      div.row.justify-content-center
-        div.col-md-7
-          div.bg-dark.text-white.p-3.d-flex.justify-content-between.align-items-center
-            h4.m-0.fw-bold= titulo
-            a.btn.btn-outline-light.btn-sm.rounded-0(href="/")
-              i.bi.bi-house-fill.me-1
-              | Home
+block title
+  = titulo
 
-          div.bg-white.p-4.border.border-top-0.shadow-sm
-            form(method="POST", action="/lotes")
-              div.row
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Producto
-                  select.form-select.rounded-0(name="producto_id", required)
-                    option(value="" disabled selected) Seleccione un producto...
-                    each prod in productos
-                      option(value=prod._id, data-categoria=prod.categoria)= `#${prod._id} - ${prod.nombre}`
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Proveedor
-                  select.form-select.rounded-0(name="proveedor_id")
-                    option(value="") Sin proveedor
-                    each prov in proveedores
-                      option(value=prov._id)= `#${prov._id} - ${prov.nombre}`
+block content
+  div.row.justify-content-center
+    div.col-md-7
+      div.bg-dark.text-white.p-3
+        h4.m-0.fw-bold= titulo
 
-              div.mb-3
-                label.form-label.fw-bold Número de Lote
-                div.input-group
-                  input.form-control.rounded-0(type="text", id="prefijo_lote", maxlength="3", placeholder="LAV", style="max-width:80px", readonly)
-                  span.input-group-text -
-                  input.form-control.rounded-0(type="number", id="anio_lote", value=new Date().getFullYear(), min="2000", max="2099", style="max-width:100px")
-                  span.input-group-text -
-                  input.form-control.rounded-0(type="text", id="sufijo_lote", maxlength="3", placeholder="001", style="max-width:60px", readonly)
-                  input(type="hidden", name="numero_lote", id="numero_lote")
+      div.bg-white.p-4.border.border-top-0.shadow-sm
+        form(method="POST", action="/lotes")
+          div.row
+            div.col-md-6.mb-3
+              label.form-label.fw-bold Producto
+              select.form-select.rounded-0(name="producto_id", required)
+                option(value="" disabled selected) Seleccione un producto...
+                each prod in productos
+                  option(value=prod._id, data-categoria=prod.categoria)= `#${prod._id} - ${prod.nombre}`
+            div.col-md-6.mb-3
+              label.form-label.fw-bold Proveedor
+              select.form-select.rounded-0(name="proveedor_id")
+                option(value="") Sin proveedor
+                each prov in proveedores
+                  option(value=prov._id)= `#${prov._id} - ${prov.nombre}`
 
-              div.mb-3
-                label.form-label.fw-bold Costo Unitario
-                input.form-control.rounded-0(type="number", name="costo_unitario", min="0", value="0")
-              input(type="hidden", name="cantidad_inicial", value="0")
+          div.mb-3
+            label.form-label.fw-bold Número de Lote
+            div.input-group
+              input.form-control.rounded-0(type="text", id="prefijo_lote", maxlength="3", placeholder="LAV", style="max-width:80px", readonly)
+              span.input-group-text -
+              input.form-control.rounded-0(type="number", id="anio_lote", value=new Date().getFullYear(), min="2000", max="2099", style="max-width:100px")
+              span.input-group-text -
+              input.form-control.rounded-0(type="text", id="sufijo_lote", maxlength="3", placeholder="001", style="max-width:60px", readonly)
+              input(type="hidden", name="numero_lote", id="numero_lote")
 
-              div.mb-4
-                label.form-label.fw-bold Fecha de Vencimiento
-                div.form-check.mb-2
-                  input.form-check-input#sinVencimiento(type="checkbox", name="sin_vencimiento")
-                  label.form-check-label(for="sinVencimiento") Sin fecha de vencimiento
-                input.form-control.rounded-0#fecha_vencimiento(type="date", name="fecha_vencimiento")
-                input(type="hidden", id="fecha_vencimiento_hidden", name="fecha_vencimiento_hidden")
+          div.mb-3
+            label.form-label.fw-bold Costo Unitario
+            input.form-control.rounded-0(type="number", name="costo_unitario", min="0", value="0")
+          input(type="hidden", name="cantidad_inicial", value="0")
 
-              div.d-flex.justify-content-end.gap-2
-                a.btn.btn-outline-secondary.rounded-0(href="/lotes") Cancelar
-                button.btn.btn-primary.rounded-0(type="submit") Guardar Lote
+          div.mb-4
+            label.form-label.fw-bold Fecha de Vencimiento
+            div.form-check.mb-2
+              input.form-check-input#sinVencimiento(type="checkbox", name="sin_vencimiento")
+              label.form-check-label(for="sinVencimiento") Sin fecha de vencimiento
+            input.form-control.rounded-0#fecha_vencimiento(type="date", name="fecha_vencimiento")
+            input(type="hidden", id="fecha_vencimiento_hidden", name="fecha_vencimiento_hidden")
 
-    script.
-      const hoy = new Date().toISOString().split('T')[0];
-      document.getElementById('fecha_vencimiento').setAttribute('min', hoy);
+          div.d-flex.justify-content-end.gap-2
+            a.btn.btn-outline-secondary.rounded-0(href="/lotes") Cancelar
+            button.btn.btn-primary.rounded-0(type="submit") Guardar Lote
+
+block scripts
+  script.
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha_vencimiento').setAttribute('min', hoy);
 
 
-      document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
-        const texto = this.options[this.selectedIndex].text;
+    document.querySelector('select[name="producto_id"]').addEventListener('change', function() {
+      const texto = this.options[this.selectedIndex].text;
 
-        const categoria = this.options[this.selectedIndex].dataset.categoria || '';
-        const prefijos = {
-          'Accesorios de Limpieza': 'ACCL',
-          'Artículos Varios': 'VARI',
-          'Desinfectantes': 'DESI',
-          'Papelería': 'PAPE',
-          'Productos a Granel': 'GRAN',
-          'Productos de Limpieza': 'LIMP',
-          'Desengrasantes': 'DENG',
-          'Jabones': 'JABO',
-          'Aromatizantes': 'AROM',
-          'Insecticidas': 'INSE',
-          'Bolsas y Descartables': 'BOLT',
-        };
-        document.getElementById('prefijo_lote').value = prefijos[categoria] || categoria.substring(0, 4).toUpperCase();
-        actualizarNumeroLote();
-      });
+      const categoria = this.options[this.selectedIndex].dataset.categoria || '';
+      const prefijos = {
+        'Accesorios de Limpieza': 'ACCL',
+        'Artículos Varios': 'VARI',
+        'Desinfectantes': 'DESI',
+        'Papelería': 'PAPE',
+        'Productos a Granel': 'GRAN',
+        'Productos de Limpieza': 'LIMP',
+        'Desengrasantes': 'DENG',
+        'Jabones': 'JABO',
+        'Aromatizantes': 'AROM',
+        'Insecticidas': 'INSE',
+        'Bolsas y Descartables': 'BOLT',
+      };
+      document.getElementById('prefijo_lote').value = prefijos[categoria] || categoria.substring(0, 4).toUpperCase();
+      actualizarNumeroLote();
+    });
 
-      function actualizarNumeroLote() {
-        const prefijo = document.getElementById('prefijo_lote').value.toUpperCase();
-        const anio = document.getElementById('anio_lote').value;
-        const sufijo = document.getElementById('sufijo_lote').value.toUpperCase();
-        document.getElementById('numero_lote').value = `${prefijo}-${anio}-${sufijo}`;
+    function actualizarNumeroLote() {
+      const prefijo = document.getElementById('prefijo_lote').value.toUpperCase();
+      const anio = document.getElementById('anio_lote').value;
+      const sufijo = document.getElementById('sufijo_lote').value.toUpperCase();
+      document.getElementById('numero_lote').value = `${prefijo}-${anio}-${sufijo}`;
+    }
+
+    document.getElementById('anio_lote').addEventListener('blur', async function() {
+      const prefijo = document.getElementById('prefijo_lote').value;
+      const anio = this.value;
+      if (!prefijo || !anio) return;
+
+      const res = await fetch(`/lotes/siguiente-numero?prefijo=${prefijo}&anio=${anio}`);
+      const data = await res.json();
+      document.getElementById('sufijo_lote').value = data.numero;
+      actualizarNumeroLote();
+    });
+    document.getElementById('sufijo_lote').addEventListener('input', function() {
+      this.value = this.value.toUpperCase();
+      actualizarNumeroLote();
+    });
+
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const prefijo = document.getElementById('prefijo_lote').value.trim();
+      const anio = document.getElementById('anio_lote').value.trim();
+      const sufijo = document.getElementById('sufijo_lote').value.trim();
+
+      if (!prefijo || prefijo.length < 2) {
+        e.preventDefault();
+        alert('Seleccioná un producto para generar el prefijo del lote.');
+        return;
+      }
+      if (!anio) {
+        e.preventDefault();
+        alert('El año es requerido.');
+        return;
+      }
+     if (!sufijo) {
+        e.preventDefault();
+        alert('Esperá a que se genere el número de lote.');
+        return;
       }
 
-      document.getElementById('anio_lote').addEventListener('blur', async function() {
-        const prefijo = document.getElementById('prefijo_lote').value;
-        const anio = this.value;
-        if (!prefijo || !anio) return;
+      actualizarNumeroLote();
+    });
 
-        const res = await fetch(`/lotes/siguiente-numero?prefijo=${prefijo}&anio=${anio}`);
-        const data = await res.json();
-        document.getElementById('sufijo_lote').value = data.numero;
-        actualizarNumeroLote();
-      });
-      document.getElementById('sufijo_lote').addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
-        actualizarNumeroLote();
-      });
+    document.getElementById('sinVencimiento').addEventListener('change', function() {
+      const fechaInput = document.getElementById('fecha_vencimiento');
+      fechaInput.disabled = this.checked;
+      if (this.checked) fechaInput.value = '';
+    });
 
-      document.querySelector('form').addEventListener('submit', function(e) {
-        const prefijo = document.getElementById('prefijo_lote').value.trim();
-        const anio = document.getElementById('anio_lote').value.trim();
-        const sufijo = document.getElementById('sufijo_lote').value.trim();
-
-        if (!prefijo || prefijo.length < 2) {
-          e.preventDefault();
-          alert('Seleccioná un producto para generar el prefijo del lote.');
-          return;
-        }
-        if (!anio) {
-          e.preventDefault();
-          alert('El año es requerido.');
-          return;
-        }
-       if (!sufijo) {
-          e.preventDefault();
-          alert('Esperá a que se genere el número de lote.');
-          return;
-        }
-
-        actualizarNumeroLote();
-      });
-
-      document.getElementById('sinVencimiento').addEventListener('change', function() {
-        const fechaInput = document.getElementById('fecha_vencimiento');
-        fechaInput.disabled = this.checked;
-        if (this.checked) fechaInput.value = '';
-      });
-
-      document.querySelector('form').addEventListener('submit', function(e) {
-        const sinVenc = document.getElementById('sinVencimiento').checked;
-        if (sinVenc) {
-          document.getElementById('fecha_vencimiento').removeAttribute('disabled');
-          document.getElementById('fecha_vencimiento').value = '2099-12-31';
-        }
-      });
+    document.querySelector('form').addEventListener('submit', function(e) {
+      const sinVenc = document.getElementById('sinVencimiento').checked;
+      if (sinVenc) {
+        document.getElementById('fecha_vencimiento').removeAttribute('disabled');
+        document.getElementById('fecha_vencimiento').value = '2099-12-31';
+      }
+    });

@@ -1,74 +1,67 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+extends layout
 
-  body.bg-light
-    div.container.mt-5
-      div.row.justify-content-center
-        div.col-md-7
-          div.bg-dark.text-white.p-3.d-flex.justify-content-between.align-items-center
-            h4.m-0.fw-bold= titulo
-            a.btn.btn-outline-light.btn-sm.rounded-0(href="/")
-              i.bi.bi-house-fill.me-1
-              | Home
+block title
+  = titulo
 
-          div.bg-white.p-4.border.border-top-0.shadow-sm
-            div.mb-3
-              label.form-label.fw-bold Nombre / Razón Social
-              input.form-control.rounded-0#nombre(type="text", value=proveedor.nombre)
+block content
+  div.row.justify-content-center
+    div.col-md-7
+      div.bg-dark.text-white.p-3
+        h4.m-0.fw-bold= titulo
 
-            div.row
-              div.col-md-6.mb-3
-                label.form-label.fw-bold CUIT
-                input.form-control.rounded-0#cuit(type="text", value=proveedor.cuit)
-              div.col-md-6.mb-3
-                label.form-label.fw-bold Email
-                input.form-control.rounded-0#email(type="email", value=proveedor.email)
+      div.bg-white.p-4.border.border-top-0.shadow-sm
+        div.mb-3
+          label.form-label.fw-bold Nombre / Razón Social
+          input.form-control.rounded-0#nombre(type="text", value=proveedor.nombre)
 
-            div.row
-              div.col-md-6.mb-3
-                label.form-label.fw-bold Teléfono
-                input.form-control.rounded-0#telefono(type="text", value=proveedor.telefono)
-              div.col-md-6.mb-3
-                label.form-label.fw-bold Contacto
-                input.form-control.rounded-0#contacto(type="text", value=proveedor.contacto)
+        div.row
+          div.col-md-6.mb-3
+            label.form-label.fw-bold CUIT
+            input.form-control.rounded-0#cuit(type="text", value=proveedor.cuit)
+          div.col-md-6.mb-3
+            label.form-label.fw-bold Email
+            input.form-control.rounded-0#email(type="email", value=proveedor.email)
 
-            div.mb-4
-              label.form-label.fw-bold Condición de Pago
-              select.form-select.rounded-0#condicion_pago
-                option(value="contado", selected=proveedor.condicion_pago === 'contado') Contado
-                option(value="30 dias", selected=proveedor.condicion_pago === '30 dias') 30 días
-                option(value="60 dias", selected=proveedor.condicion_pago === '60 dias') 60 días
-                option(value="90 dias", selected=proveedor.condicion_pago === '90 dias') 90 días
+        div.row
+          div.col-md-6.mb-3
+            label.form-label.fw-bold Teléfono
+            input.form-control.rounded-0#telefono(type="text", value=proveedor.telefono)
+          div.col-md-6.mb-3
+            label.form-label.fw-bold Contacto
+            input.form-control.rounded-0#contacto(type="text", value=proveedor.contacto)
 
-            div.d-flex.justify-content-end.gap-2
-              a.btn.btn-outline-secondary.rounded-0(href="/proveedores") Cancelar
-              button.btn.btn-primary.rounded-0#btnGuardar(type="button") Guardar Cambios
+        div.mb-4
+          label.form-label.fw-bold Condición de Pago
+          select.form-select.rounded-0#condicion_pago
+            option(value="contado", selected=proveedor.condicion_pago === 'contado') Contado
+            option(value="30 dias", selected=proveedor.condicion_pago === '30 dias') 30 días
+            option(value="60 dias", selected=proveedor.condicion_pago === '60 dias') 60 días
+            option(value="90 dias", selected=proveedor.condicion_pago === '90 dias') 90 días
 
-    script.
-      document.getElementById('btnGuardar').addEventListener('click', async () => {
-        const body = {
-          nombre: document.getElementById('nombre').value,
-          cuit: document.getElementById('cuit').value,
-          email: document.getElementById('email').value,
-          telefono: document.getElementById('telefono').value,
-          contacto: document.getElementById('contacto').value,
-          condicion_pago: document.getElementById('condicion_pago').value,
-        };
-        const res = await fetch(`/proveedores/!{proveedor._id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body),
-        });
-        if (res.ok) {
-          window.location.href = '/proveedores';
-        } else {
-          const data = await res.json();
-          alert(data.error);
-        }
+        div.d-flex.justify-content-end.gap-2
+          a.btn.btn-outline-secondary.rounded-0(href="/proveedores") Cancelar
+          button.btn.btn-primary.rounded-0#btnGuardar(type="button") Guardar Cambios
+
+block scripts
+  script.
+    document.getElementById('btnGuardar').addEventListener('click', async () => {
+      const body = {
+        nombre: document.getElementById('nombre').value,
+        cuit: document.getElementById('cuit').value,
+        email: document.getElementById('email').value,
+        telefono: document.getElementById('telefono').value,
+        contacto: document.getElementById('contacto').value,
+        condicion_pago: document.getElementById('condicion_pago').value,
+      };
+      const res = await fetch(`/proveedores/!{proveedor._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
       });
+      if (res.ok) {
+        window.location.href = '/proveedores';
+      } else {
+        const data = await res.json();
+        alert(data.error);
+      }
+    });

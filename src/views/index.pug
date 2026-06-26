@@ -1,41 +1,224 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title TodoStock - Inicio
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-  
-  body.bg-light
-    div.container.mt-5
-      div.text-center.mb-5
-        h1.fw-bold TodoStock S.A.
-    
-      
-      // Listado módulos
-      div.row.justify-content-center
-        div.col-md-5.col-lg-4
-          div.list-group.shadow-sm.text-center
-            a.list-group-item.list-group-item-action(href="/clientes") 
-              span Clientes
-            
-            a.list-group-item.list-group-item-action(href="/productos")
-              span Productos
-            
-            a.list-group-item.list-group-item-action(href="/ventas")
-              span Ventas
-            
-            a.list-group-item.list-group-item-action(href="/compras")
-              span Compras
-            
-            a.list-group-item.list-group-item-action(href="/lotes")
-              span Lotes
-            
-            a.list-group-item.list-group-item-action(href="/proveedores")
-              span Proveedores
+extends layout
 
-            if usuarioRol === 'admin'
-              a.list-group-item.list-group-item-action(href="/usuarios")
-                span Usuarios
+block title
+  | TodoStock - Inicio
 
-            a.btn.btn-danger.fw-bold.mt-3(href="/logout") Cerrar Sesión
+block styles
+  script(src="https://cdn.jsdelivr.net/npm/chart.js")
+  style.
+    .metric-card,
+    .panel {
+      border: 1px solid var(--app-line);
+      border-radius: 8px;
+      background: #ffffff;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, .05);
+    }
+
+    .metric-card {
+      height: 100%;
+      padding: 1.15rem;
+    }
+
+    .metric-icon {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border-radius: 8px;
+      color: #ffffff;
+    }
+
+    .metric-label {
+      color: var(--app-muted);
+      font-size: .86rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .metric-value {
+      margin: .35rem 0 0;
+      font-size: clamp(1.45rem, 3vw, 2rem);
+      font-weight: 800;
+      line-height: 1.05;
+    }
+
+    .panel {
+      padding: 1.15rem;
+    }
+
+    .chart-wrap {
+      position: relative;
+      min-height: 280px;
+    }
+
+    .quick-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .95rem 1rem;
+      border: 1px solid var(--app-line);
+      border-radius: 8px;
+      color: #243444;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .quick-action:hover,
+    .quick-action:focus {
+      border-color: #8cc6be;
+      background: #f0fdfa;
+      color: #0f766e;
+    }
+
+    @media (max-width: 991.98px) {
+      .chart-wrap {
+        min-height: 240px;
+      }
+    }
+
+block content
+  div.d-flex.flex-column.flex-md-row.justify-content-between.gap-3.mb-4
+    div
+      p.page-kicker.mb-1 Panel de control
+      h1.page-title.fw-bold.mb-1 TodoStock S.A.
+      p.text-secondary.mb-0 Resumen rapido del negocio y accesos principales.
+    div.d-flex.gap-2.align-items-start
+      a.btn.btn-primary.fw-semibold(href="/ventas/nueva-venta")
+        i.bi.bi-plus-lg.me-2(aria-hidden="true")
+        | Nueva venta
+      a.btn.btn-outline-secondary.fw-semibold(href="/productos/nuevo-producto")
+        i.bi.bi-box-seam.me-2(aria-hidden="true")
+        | Producto
+
+  if error
+    div.alert.alert-danger= error
+
+  div.row.g-3.mb-4
+    each item, index in metricas
+      - const metricStyles = [{icon: 'bi-currency-dollar', bg: '#0f766e'}, {icon: 'bi-boxes', bg: '#2563eb'}, {icon: 'bi-exclamation-triangle', bg: '#d97706'}, {icon: 'bi-person-exclamation', bg: '#9333ea'}]
+      - const style = metricStyles[index] || metricStyles[0]
+      div.col-12.col-sm-6.col-xl-3
+        div.metric-card
+          div.d-flex.justify-content-between.align-items-start.gap-3
+            div
+              div.metric-label= item.label
+              div.metric-value= item.valor
+            div.metric-icon(style=`background:${style.bg}`)
+              i.bi(class=style.icon, aria-hidden="true")
+
+  div.row.g-3.mb-4
+    div.col-12.col-xl-8
+      section.panel.h-100
+        div.d-flex.justify-content-between.align-items-center.gap-3.mb-3
+          div
+            h2.h5.fw-bold.mb-1 Ventas por semana
+            p.text-secondary.small.mb-0 Evolucion de ventas despachadas
+          a.btn.btn-sm.btn-outline-secondary(href="/ventas")
+            i.bi.bi-arrow-up-right.me-1(aria-hidden="true")
+            | Ver
+        div.chart-wrap
+          canvas#ventasChart
+
+    div.col-12.col-xl-4
+      section.panel.h-100
+        div.d-flex.justify-content-between.align-items-center.gap-3.mb-3
+          div
+            h2.h5.fw-bold.mb-1 Estado del stock
+            p.text-secondary.small.mb-0 Productos activos
+          a.btn.btn-sm.btn-outline-secondary(href="/productos")
+            i.bi.bi-arrow-up-right.me-1(aria-hidden="true")
+            | Ver
+        div.chart-wrap
+          canvas#stockChart
+
+  section.panel
+    div.d-flex.flex-column.flex-md-row.justify-content-between.gap-2.mb-3
+      div
+        h2.h5.fw-bold.mb-1 Accesos rapidos
+        p.text-secondary.small.mb-0 Operaciones frecuentes del sistema
+    div.row.g-3
+      div.col-12.col-md-6.col-xl-3
+        a.quick-action(href="/ventas/nueva-venta")
+          span
+            i.bi.bi-receipt.me-2(aria-hidden="true")
+            | Registrar venta
+          i.bi.bi-chevron-right(aria-hidden="true")
+      div.col-12.col-md-6.col-xl-3
+        a.quick-action(href="/compras")
+          span
+            i.bi.bi-cart-check.me-2(aria-hidden="true")
+            | Compras
+          i.bi.bi-chevron-right(aria-hidden="true")
+      div.col-12.col-md-6.col-xl-3
+        a.quick-action(href="/lotes")
+          span
+            i.bi.bi-layers.me-2(aria-hidden="true")
+            | Lotes
+          i.bi.bi-chevron-right(aria-hidden="true")
+      div.col-12.col-md-6.col-xl-3
+        a.quick-action(href="/alertas")
+          span
+            i.bi.bi-bell.me-2(aria-hidden="true")
+            | Alertas
+          i.bi.bi-chevron-right(aria-hidden="true")
+
+block scripts
+  script.
+    const ventasPorSemana = !{JSON.stringify(ventasPorSemana || [])};
+    const stockData = !{JSON.stringify(stockData || [])};
+
+    if (document.getElementById('ventasChart')) {
+      const ventasCtx = document.getElementById('ventasChart');
+      new Chart(ventasCtx, {
+        type: 'bar',
+        data: {
+          labels: ventasPorSemana.map(item => item.semana),
+          datasets: [{
+            label: 'Ventas ($)',
+            data: ventasPorSemana.map(item => item.monto_total),
+            backgroundColor: '#0d6efd',
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              grid: { display: false }
+            },
+            y: {
+              beginAtZero: true,
+              ticks: {
+                callback: value => '$' + Number(value).toLocaleString('es-AR')
+              }
+            }
+          }
+        }
+      });
+    }
+
+    if (document.getElementById('stockChart')) {
+      const stockCtx = document.getElementById('stockChart');
+      new Chart(stockCtx, {
+        type: 'doughnut',
+        data: {
+          labels: stockData.map(item => item.label),
+          datasets: [{
+            data: stockData.map(item => item.value),
+            backgroundColor: ['#198754', '#ffc107', '#dc3545']
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+    }
