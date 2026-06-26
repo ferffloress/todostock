@@ -41,6 +41,11 @@ html(lang="es")
                 dt.col-5 Total
                 dd.col-7
                   span.fw-bold.fs-5= `$${venta.total.toLocaleString('es-AR')}`
+                dt.col-5 Forma de Pago
+                dd.col-7
+                  - const formaPago = venta.forma_pago || 'efectivo'
+                  span.badge(class=formaPago === 'cuenta_corriente' ? 'bg-warning text-dark' : formaPago === 'transferencia' ? 'bg-info' : 'bg-success')
+                    = formaPago === 'cuenta_corriente' ? 'Cuenta Corriente' : formaPago === 'transferencia' ? 'Transferencia' : 'Efectivo'  
                 if venta.observaciones
                   dt.col-5 Observaciones
                   dd.col-7= venta.observaciones
