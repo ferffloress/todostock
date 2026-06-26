@@ -8,7 +8,6 @@ html(lang="es")
   body
     div.container.mt-5
 
-      //- Encabezado con nombre del cliente
       div.d-flex.justify-content-between.align-items-center.mb-4
         h1= titulo
         div.d-flex.gap-2
@@ -17,7 +16,6 @@ html(lang="es")
             | Home
           a.btn.btn-outline-secondary.rounded-0(href="/clientes") Volver
 
-      //- Tarjeta resumen del cliente
       div.bg-dark.text-white.p-3.mb-0
         h5.m-0.fw-bold= cliente.nombre
 
@@ -27,11 +25,15 @@ html(lang="es")
             span.fw-bold Límite de crédito:
             span  $#{cliente.limite_credito}
           div.col-md-6
-            span.fw-bold Saldo actual:
-            span.fw-bold(class=cliente.saldo_actual >= 0 ? 'text-success' : 'text-danger')
-              |  $#{cliente.saldo_actual}
+            span.fw-bold Por cobrar:
+            - const saldo = cliente.saldo_cuenta_corriente || 0
+            span.fw-bold(class=saldo > 0 ? 'text-danger' : (saldo < 0 ? 'text-success' : 'text-muted'))
+              |  $#{Math.abs(saldo)}
+            if saldo < 0
+              span.text-success.ms-1 (a favor del cliente)
+            else if saldo === 0
+              span.text-muted.ms-1 (sin deuda)
 
-      //- Tabla de movimientos
       div.bg-dark.text-white.p-3.mb-0
         h6.m-0.fw-bold Movimientos
 
@@ -50,7 +52,11 @@ html(lang="es")
               td= new Date(mov.fecha).toLocaleDateString('es-AR')
               td= mov.tipo.charAt(0).toUpperCase() + mov.tipo.slice(1)
               td= mov.descripcion
-              td= mov.referencia
+              td
+                if mov.referencia
+                  a(href=`/ventas/ver/${mov.referencia}`) Venta ##{mov.referencia}
+                else
+                  | -
               td= `$${mov.monto}`
               td= `$${mov.saldo_resultante}`
           else

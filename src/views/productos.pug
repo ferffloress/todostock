@@ -5,6 +5,14 @@ html(lang="es")
     title= titulo
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+    style.
+      th.sortable { cursor: pointer; user-select: none; }
+      th.sortable:hover { background-color: #343a40; opacity: 0.85; }
+      th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
+      th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
+      th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
+      th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
+
   body
     div.container.mt-5
       div.d-flex.justify-content-between.align-items-center.mb-4
@@ -15,30 +23,33 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/productos/nuevo-producto") Nuevo Producto
 
-      table.table.table-hover.shadow-sm
+      input.form-control.mb-3#buscadorProductos(type="text", placeholder="Buscar producto por nombre, categoría...")
+
+      table.table.table-hover.shadow-sm#tablaProductos
         thead.table-dark
           tr
-            th Nombre
-            th Categoría
-            th Precio Costo
-            th Precio Venta
-            th Stock
-            th Unidad
+            th.sortable(data-col="0") Nombre #[span.sort-icon]
+            th.sortable(data-col="1") Categoría #[span.sort-icon]
+            th.sortable(data-col="2") Precio Costo #[span.sort-icon]
+            th.sortable(data-col="3") Precio Venta #[span.sort-icon]
+            th.sortable(data-col="4") Stock #[span.sort-icon]
+            th.sortable(data-col="5") Unidad #[span.sort-icon]
             th Acciones
         tbody
           each producto in productos
             tr
               td= producto.nombre
               td= producto.categoria
-              td= `$${producto.precio_costo}`
-              td= `$${producto.precio_venta}`
-              td
+              td(data-val=producto.precio_costo)= `$${producto.precio_costo}`
+              td(data-val=producto.precio_venta)= `$${producto.precio_venta}`
+              td(data-val=producto.stock_actual)
                 span(class=producto.stock_actual <= producto.stock_minimo ? 'text-danger fw-bold' : '')
                   = producto.stock_actual
               td= producto.unidad_medida
               td
                 a.btn.btn-sm.btn-secondary.me-1(href=`/productos/${producto._id}/editar`) Editar
-                button.btn.btn-sm.btn-danger(onclick=`eliminarProducto('${producto._id}', this)`) Eliminar
+                if usuarioRol === 'admin'
+                  button.btn.btn-sm.btn-danger(onclick=`eliminarProducto('${producto._id}', this)`) Eliminar
           else
             tr
               td.text-center(colspan="7") No hay productos en la base de datos.
@@ -53,3 +64,44 @@ html(lang="es")
           btn.closest('tr').remove();
         }
       }
+
+      let sortCol = -1;
+      let sortAsc = true;
+
+      document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+          const col = Number(th.dataset.col);
+          if (sortCol === col) {
+            sortAsc = !sortAsc;
+          } else {
+            sortCol = col;
+            sortAsc = true;
+          }
+
+          document.querySelectorAll('th.sortable').forEach(h => h.classList.remove('asc', 'desc'));
+          th.classList.add(sortAsc ? 'asc' : 'desc');
+
+          const tbody = document.querySelector('#tablaProductos tbody');
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+
+          rows.sort((a, b) => {
+            const cellA = a.cells[col];
+            const cellB = b.cells[col];
+            const valA = cellA.dataset.val !== undefined ? Number(cellA.dataset.val) : cellA.textContent.trim().toLowerCase();
+            const valB = cellB.dataset.val !== undefined ? Number(cellB.dataset.val) : cellB.textContent.trim().toLowerCase();
+
+            if (valA < valB) return sortAsc ? -1 : 1;
+            if (valA > valB) return sortAsc ? 1 : -1;
+            return 0;
+          });
+
+          rows.forEach(r => tbody.appendChild(r));
+        });
+      });
+
+      document.getElementById('buscadorProductos').addEventListener('input', function() {
+        const filtro = this.value.toLowerCase();
+        document.querySelectorAll('#tablaProductos tbody tr').forEach(tr => {
+          tr.style.display = tr.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+      });

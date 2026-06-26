@@ -3,6 +3,8 @@ const app = express();
 const path = require('path');
 const cors = require('cors');
 const session = require('express-session');
+const cookieParser = require('cookie-parser');
+
 
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
@@ -12,20 +14,43 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({
   secret: process.env.SESSION_SECRET || 'todostock_secret',
   resave: false,
   saveUninitialized: false,
   cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
 }));
+app.use(cookieParser());
 
-//CANDADO DE AUTENTICACIÓN
+app.use((req, res, next) => {
+  res.locals.usuarioRol = req.session?.usuarioRol || null;
+  next();
+});
+
+
+// Evita que el navegador cachee páginas protegidas
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
+//AUTENTICACIÓN
 const protegerRuta = (req, res, next) => {
   if (req.session && req.session.usuarioLogueado === true) {
     next();
   } else {
     res.redirect('/login');
   }
+};
+
+const soloAdmin = (req, res, next) => {
+  if (req.session && req.session.usuarioRol === 'admin') {
+    return next();
+  }
+  res.status(403).json({ error: 'No tenés permiso para realizar esta acción.' });
 };
 
 //IMPORTACIÓN DE ENRUTADORES
@@ -40,6 +65,7 @@ const cobranzasRouter = require('./routes/cobranzas');
 const movimientosStockRouter = require('./routes/movimientosStock');
 const alertasRouter = require('./routes/alertas');
 const resumenesRouter = require('./routes/resumenes');
+const usuariosRouter = require('./routes/usuariosRoutes');
 
 //APIs 
 const apiProductosRouter = require('./routes/productosRoutes');
@@ -57,6 +83,7 @@ app.use('/api/ventas', apiVentasRouter);
 app.use('/api/lotes', apiLotesRouter);
 app.use('/api/compras', apiComprasRouter);
 app.use('/api/movimientos-stock', apiMovimientosRouter);
+app.use('/usuarios', protegerRuta, soloAdmin, usuariosRouter);
 
 try {
   const apiCuentasRouter = require('./routes/cuentasCorrientesRoutes');

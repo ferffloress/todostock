@@ -75,7 +75,7 @@ const proveedoresController = {
         err.details = errors;
         throw err;
       }
-      const updated = await Proveedor.findByIdAndUpdate(Number(req.params.id), { ...req.body, updated_at: new Date().toISOString() }, { new: true })  ;
+      const updated = await Proveedor.findByIdAndUpdate(Number(req.params.id), { ...req.body, updated_at: new Date().toISOString() }, { returnDocument: 'after' });
       res.json(updated);
     } catch (err) {
       next(err);

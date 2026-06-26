@@ -31,29 +31,49 @@ html(lang="es")
               div.row
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Categoría
-                  input.form-control.rounded-0(type="text", name="categoria")
+                  select.form-control.rounded-0(name="categoria")
+                    option(value="") Seleccionar...
+                    option Accesorios de Limpieza
+                    option Aromatizantes
+                    option Artículos Varios
+                    option Bolsas y Descartables
+                    option Desengrasantes
+                    option Desinfectantes
+                    option Insecticidas
+                    option Jabones
+                    option Papelería
+                    option Productos a Granel
+                    option Productos de Limpieza
+                    
+
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Unidad de Medida
-                  input.form-control.rounded-0(type="text", name="unidad_medida")
+                   select.form-select.rounded-0(name="unidad_medida")
+                     option(value="") Seleccionar...
+                     option Unidad
+                     option Kilogramo
+                     option Litro 
+                     option Caja
+                     option Bulto
 
               div.row
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Precio Costo
-                  input.form-control.rounded-0(type="number", name="precio_costo", value=datos ? datos.precio_costo : 0)
+                  input.form-control.rounded-0(type="number", min="0", name="precio_costo", value=datos ? datos.precio_costo : 0)
                 div.col-md-6.mb-3
                   label.form-label.fw-bold Precio Venta
-                  input.form-control.rounded-0(type="number", name="precio_venta", value=datos ? datos.precio_venta : 0)
+                  input.form-control.rounded-0(type="number", min="0", name="precio_venta", value=datos ? datos.precio_venta : 0)
 
               div.row
                 div.col-md-4.mb-4
                   label.form-label.fw-bold Stock Actual
-                  input.form-control.rounded-0(type="number", name="stock_actual", value="0")
+                  input.form-control.rounded-0(type="number", min="0", name="stock_actual", value="0")
                 div.col-md-4.mb-4
                   label.form-label.fw-bold Stock Mínimo
-                  input.form-control.rounded-0(type="number", name="stock_minimo", value="0")
+                  input.form-control.rounded-0(type="number", min="0", name="stock_minimo", value="0")
                 div.col-md-4.mb-4
                   label.form-label.fw-bold Unidades por Bulto
-                  input.form-control.rounded-0(type="number", name="unidades_por_bulto", value="1", min="1")
+                  input.form-control.rounded-0(type="number", min="1", name="unidades_por_bulto", value="1")
 
               div.d-flex.justify-content-end.gap-2
                 a.btn.btn-outline-secondary.rounded-0(href="/productos") Cancelar

@@ -9,13 +9,13 @@ const UsuarioSchema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now }
 });
 
-// Hashea la contraseña antes de guardar
+
 UsuarioSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   this.password = await bcrypt.hash(this.password, 10);
 });
 
-// Método para comparar contraseñas
+
 UsuarioSchema.methods.compararPassword = function (passwordIngresada) {
   return bcrypt.compare(passwordIngresada, this.password);
 };

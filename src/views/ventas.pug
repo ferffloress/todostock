@@ -5,6 +5,13 @@ html(lang="es")
     title= titulo
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+    style.
+      th.sortable { cursor: pointer; user-select: none; }
+      th.sortable:hover { background-color: #343a40; opacity: 0.85; }
+      th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
+      th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
+      th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
+      th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
   body
     div.container.mt-5
       div.d-flex.justify-content-between.align-items-center.mb-4
@@ -15,38 +22,42 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/ventas/nueva-venta") Nueva Venta
 
-      table.table.table-hover.shadow-sm
+      input.form-control.mb-3#buscadorVentas(type="text", placeholder="Buscar por cliente, estado...")
+
+      table.table.table-hover.shadow-sm#tablaVentas
         thead.table-dark
           tr
-            th ID Venta
-            th Cliente (ID)
-            th Fecha
-            th Estado
-            th Total
+            th.sortable(data-col="0") ID Venta #[span.sort-icon]
+            th.sortable(data-col="1") Cliente #[span.sort-icon]
+            th.sortable(data-col="2") Fecha #[span.sort-icon]
+            th.sortable(data-col="3") Estado #[span.sort-icon]
+            th.sortable(data-col="4") Total #[span.sort-icon]
             th Acciones
         tbody
           each venta in ventas
             tr
               td.text-muted.small= venta._id
-              td= venta.cliente_id
-              td= new Date(venta.fecha).toLocaleDateString('es-AR')
+              td= venta.nombreCliente
+              td(data-val=new Date(venta.fecha).getTime())= new Date(venta.fecha).toLocaleDateString('es-AR')
               td
                 span.badge(class=venta.estado === 'despachada' ? 'bg-success' : (venta.estado === 'cancelada' ? 'bg-danger' : 'bg-warning'))
                   = venta.estado.toUpperCase()
-              td.fw-bold= `$${venta.total}`
+              td.fw-bold(data-val=venta.total)= `$${venta.total}`
               td.d-flex.gap-1
-                //- BOTÓN DETALLE: Nos lleva a la vista de la venta específica
                 a.btn.btn-sm.btn-secondary(href=`/ventas/ver/${venta._id}`) Detalle
                 
-                //- BOTÓN DESPACHAR: Solo aparece si está pendiente
                 if venta.estado === 'pendiente'
                   form(action=`/ventas/despachar/${venta._id}` method="POST")
                     button.btn.btn-sm.btn-success(type="submit") Despachar
                 
-                //- BOTÓN ELIMINAR: Solo aparece si está pendiente
-                if venta.estado === 'pendiente'
+                if venta.estado === 'pendiente'  && usuarioRol === 'admin'
                   form(action=`/ventas/eliminar/${venta._id}` method="POST" onsubmit="return confirm('¿Está seguro de cancelar esta venta?')")
                     button.btn.btn-sm.btn-danger(type="submit") Eliminar
           else
             tr
               td.text-center(colspan="6") No hay ventas registradas.
+
+    script(src="/js/sortTable.js")
+    script.
+      initSortTable('tablaVentas')
+      initSearchTable('tablaVentas', 'buscadorVentas')

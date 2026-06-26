@@ -5,6 +5,14 @@ html(lang="es")
     title= titulo
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
     link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+    style.
+      th.sortable { cursor: pointer; user-select: none; }
+      th.sortable:hover { background-color: #343a40; opacity: 0.85; }
+      th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
+      th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
+      th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
+      th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
+
   body
     div.container.mt-5
       div.d-flex.justify-content-between.align-items-center.mb-4
@@ -15,30 +23,34 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/compras/nueva") Registrar Compra
 
-      table.table.table-hover.shadow-sm
+      input.form-control.mb-3#buscadorCompras(type="text", placeholder="Buscar por estado, observaciones...")
+
+      table.table.table-hover.shadow-sm#tablaCompras
         thead.table-dark
           tr
-            th Fecha
-            th Proveedor (ID)
-            th Estado
-            th Total
+            th.sortable(data-col="0") Fecha #[span.sort-icon]
+            th.sortable(data-col="1") Proveedor (ID) #[span.sort-icon]
+            th.sortable(data-col="2") Estado #[span.sort-icon]
+            th.sortable(data-col="3") Total #[span.sort-icon]
             th Observaciones
             th Acciones
         tbody
           each compra in compras
             tr
-              //- Formateamos la fecha del seed
-              td= new Date(compra.fecha).toLocaleDateString('es-AR')
-              //- ID del proveedor
+              td(data-val=new Date(compra.fecha).getTime())= new Date(compra.fecha).toLocaleDateString('es-AR')
               td.text-muted.small= compra.proveedor_id
               td
                 span.badge(class=compra.estado === 'recibida' ? 'bg-info' : 'bg-secondary')
                   = compra.estado.toUpperCase()
-              //- Monto total de la compra
-              td.fw-bold= `$${compra.total}`
+              td.fw-bold(data-val=compra.total)= `$${compra.total}`
               td= compra.observaciones || 'Sin observaciones'
               td
                 a.btn.btn-sm.btn-outline-secondary(href=`/compras/ver/${compra._id}`) Ver Items
           else
             tr
               td.text-center(colspan="6") No hay compras registradas en el sistema.
+
+    script(src="/js/sortTable.js")
+    script.
+     initSortTable('tablaCompras')
+     initSearchTable('tablaCompras', 'buscadorCompras')

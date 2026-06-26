@@ -48,10 +48,10 @@ html(lang="es")
               div.row
                 div.col-md-6.mb-4
                   label.form-label.fw-bold Límite de Crédito
-                  input.form-control.rounded-0(type="number", name="limite_credito", value="0")
+                  input.form-control.rounded-0(type="number", min="0", name="limite_credito", value="0")
                 div.col-md-6.mb-4
                   label.form-label.fw-bold Saldo Inicial
-                  input.form-control.rounded-0(type="number", name="saldo_cuenta_corriente", value="0")
+                  input.form-control.rounded-0(type="number", min="0", name="saldo_cuenta_corriente", value="0")
 
               div.d-flex.justify-content-end.gap-2
                 a.btn.btn-outline-secondary.rounded-0(href="/clientes") Cancelar

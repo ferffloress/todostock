@@ -69,20 +69,22 @@ html(lang="es")
                       
                       div.col-md-3.mb-3
                         label.form-label Tipo Venta
-                        select.form-select.select-tipo(name="items[0][tipo_venta]" onchange="actualizarFila(this.closest('.producto-item').querySelector('.select-producto'))")
+                        select.form-select.select-tipo(name="items[0][tipo_venta]" onchange="actualizarFila(this.closest('.producto-item').querySelector('.select-producto')); actualizarEtiquetaPrecio(this.closest('.producto-item'))")
                           option(value="unidad") Minorista (Unidad)
                           option(value="bulto") Mayorista (Bulto)
 
                       div.col-md-3.mb-3
                         label.form-label Cantidad
-                        input.form-control.input-cantidad(type="number" name="items[0][cantidad]" min="1" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                        input.form-control.input-cantidad(type="number" name="items[0][cantidad]" min="1" required oninput="validarNoNegativos(this); calcularSubtotal(this.closest('.producto-item'))")
                         small.text-muted Stock disponible: 
                           span.stock-label 0
                     
                     div.row
                       div.col-md-4.mb-3
-                        label.form-label Precio Unitario ($)
-                        input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                        label.form-label.label-precio-unitario Precio unitario por menor ($)
+                        div.input-group
+                          span.input-group-text $ 
+                          input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" min="0.01" required oninput="validarNoNegativos(this); calcularSubtotal(this.closest('.producto-item'))")
                       
                       div.col-md-4.mb-3
                         label.form-label Subtotal
@@ -97,6 +99,8 @@ html(lang="es")
                       option(value="pendiente") PENDIENTE (Reserva stock)
                       option(value="despachada") DESPACHADA (Afecta stock y saldo)
                   div.col-md-6.text-end
+                    div.mb-2
+                      small.text-success.d-none#descuento-efectivo Descuento efectivo 10%: $ 0,00
                     h4.fw-bold Total General: 
                       span#total-venta $ 0,00
 
@@ -108,7 +112,30 @@ html(lang="es")
       const listaProductos = document.getElementById('lista-productos');
       const btnAgregar = document.getElementById('btn-agregar');
       const totalVentaLabel = document.getElementById('total-venta');
+      const formaPagoSelect = document.querySelector('select[name="forma_pago"]');
+      const descuentoEfectivoLabel = document.getElementById('descuento-efectivo');
       let itemIndex = 1;
+
+      function actualizarEtiquetaPrecio(fila) {
+        const selectTipo = fila.querySelector('.select-tipo');
+        const labelPrecio = fila.querySelector('.label-precio-unitario');
+
+        if (!selectTipo || !labelPrecio) return;
+
+        labelPrecio.innerText = selectTipo.value === 'bulto'
+          ? 'Precio por bulto (-20%)'
+          : 'Precio unitario por menor';
+      }
+
+      function validarNoNegativos(input) {
+        const valor = parseFloat(input.value);
+        const min = parseFloat(input.min) || 0;
+
+        if (isNaN(valor)) return;
+        if (valor < min) {
+          input.value = min;
+        }
+      }
 
       function actualizarFila(select) {
         if (!select.value) return;
@@ -126,11 +153,10 @@ html(lang="es")
         const stockLabel = fila.querySelector('.stock-label');
         
         if (tipoVenta === 'bulto') {
-          // Lógica Mayorista: Multiplicamos el precio por el factor del bulto
-          const precioBulto = precioBaseUnidad * factor;
+          const precioBaseConDescuento = precioBaseUnidad * 0.8;
+          const precioBulto = precioBaseConDescuento * factor;
           inputPrecio.value = precioBulto.toFixed(2);
           
-          // Stock expresado en bultos (entero hacia abajo)
           const stockBultos = Math.floor(stockReal / factor);
           stockLabel.innerText = stockBultos + " bultos (" + factor + " u. c/u)";
           inputCantidad.max = stockBultos;
@@ -140,8 +166,23 @@ html(lang="es")
           stockLabel.innerText = stockReal + " unidades";
           inputCantidad.max = stockReal;
         }
-        
+
+        actualizarEtiquetaPrecio(fila);
+        validarStock(fila);
         calcularSubtotal(fila);
+      }
+
+      function validarStock(fila) {
+        const inputCantidad = fila.querySelector('.input-cantidad');
+        const stockLabel = fila.querySelector('.stock-label');
+        const cantidad = parseFloat(inputCantidad.value) || 0;
+        const max = parseFloat(inputCantidad.max) || 0;
+
+        if (cantidad > max && max > 0) {
+          stockLabel.classList.add('text-danger');
+        } else {
+          stockLabel.classList.remove('text-danger');
+        }
       }
 
       function calcularSubtotal(fila) {
@@ -154,6 +195,7 @@ html(lang="es")
           maximumFractionDigits: 2
         });
         
+        validarStock(fila);
         actualizarTotalGeneral();
       }
 
@@ -164,11 +206,31 @@ html(lang="es")
           const valor = parseFloat(input.value.replace('$ ', '').replace(/\./g, '').replace(',', '.')) || 0;
           total += valor;
         });
-        
-        totalVentaLabel.innerText = '$ ' + total.toLocaleString('es-AR', {
-          minimumFractionDigits: 2,
-          maximumFractionDigits: 2
-        });
+
+        const formaPago = formaPagoSelect ? formaPagoSelect.value : "";
+        if (formaPago === 'efectivo' && total > 0) {
+          const descuento = Number((total * 0.1).toFixed(2));
+          const totalConDescuento = Number((total - descuento).toFixed(2));
+          descuentoEfectivoLabel.classList.remove('d-none');
+          descuentoEfectivoLabel.innerText = `Descuento efectivo 10%: $ ${descuento.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+          totalVentaLabel.innerText = '$ ' + totalConDescuento.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        } else {
+          descuentoEfectivoLabel.classList.add('d-none');
+          totalVentaLabel.innerText = '$ ' + total.toLocaleString('es-AR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          });
+        }
+      }
+
+      if (formaPagoSelect) {
+        formaPagoSelect.addEventListener('change', actualizarTotalGeneral);
       }
 
       btnAgregar.addEventListener('click', () => {
@@ -186,6 +248,8 @@ html(lang="es")
         });
         
         nuevaFila.querySelector('.stock-label').innerText = '0';
+        nuevaFila.querySelector('.select-tipo').value = 'unidad';
+        actualizarEtiquetaPrecio(nuevaFila);
         
         // Crear botón eliminar
         const btnEliminar = document.createElement('button');

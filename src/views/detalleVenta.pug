@@ -22,7 +22,6 @@ html(lang="es")
 
       div.row.g-4
 
-        //- Tarjeta info general
         div.col-md-6
           div.card.shadow-sm.h-100
             div.card-header.bg-dark.text-white
@@ -39,14 +38,23 @@ html(lang="es")
                 dd.col-7
                   span.badge.fs-6(class=venta.estado === 'despachada' ? 'bg-success' : (venta.estado === 'cancelada' ? 'bg-danger' : 'bg-warning text-dark'))
                     = venta.estado.toUpperCase()
+                - const formaPago = venta.forma_pago || 'efectivo'
                 dt.col-5 Total
                 dd.col-7
                   span.fw-bold.fs-5= `$${venta.total.toLocaleString('es-AR')}`
+                if formaPago === 'efectivo'
+                  - const totalBruto = items.reduce((sum, item) => sum + (item.subtotal || 0), 0)
+                  if totalBruto > venta.total
+                    dt.col-5 Descuento efectivo
+                    dd.col-7.text-success= `$${(totalBruto - venta.total).toLocaleString('es-AR')}`
+                dt.col-5 Forma de Pago
+                dd.col-7
+                  span.badge(class=formaPago === 'cuenta_corriente' ? 'bg-warning text-dark' : formaPago === 'transferencia' ? 'bg-info' : 'bg-success')
+                    = formaPago === 'cuenta_corriente' ? 'Cuenta Corriente' : formaPago === 'transferencia' ? 'Transferencia' : 'Efectivo'  
                 if venta.observaciones
                   dt.col-5 Observaciones
                   dd.col-7= venta.observaciones
 
-        //- Tarjeta cliente
         div.col-md-6
           div.card.shadow-sm.h-100
             div.card-header.bg-dark.text-white
@@ -67,7 +75,6 @@ html(lang="es")
               else
                 p.text-muted Cliente no encontrado
 
-      //- Tabla de items
       div.card.shadow-sm.mt-4
         div.card-header.bg-dark.text-white
           h5.mb-0
@@ -98,7 +105,6 @@ html(lang="es")
                 td.text-end.fw-bold(colspan="5") Total
                 td.fw-bold.fs-5= `$${venta.total.toLocaleString('es-AR')}`
 
-      //- Acciones (solo si está pendiente)
       if venta.estado === 'pendiente'
         div.d-flex.gap-2.mt-4.justify-content-end
           form(action=`/ventas/despachar/${venta._id}` method="POST")
