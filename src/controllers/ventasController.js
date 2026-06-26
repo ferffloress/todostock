@@ -22,8 +22,15 @@ const ventasController = {
 
   async listarVista(req, res, next) {
     try {
-      const ventas = await Venta.find();
-      res.render('ventas', { titulo: 'Ventas', ventas });
+      const ventas = await Venta.find().lean();
+      const clientes = await Cliente.find().lean();
+      const clienteMap = {};
+      clientes.forEach(c => { clienteMap[c._id] = c.nombre; });
+      const ventasConNombre = ventas.map(v => ({
+        ...v,
+        nombreCliente: clienteMap[v.cliente_id] || `#${v.cliente_id}`
+      }));
+      res.render('ventas', { titulo: 'Ventas', ventas: ventasConNombre });
     } catch (err) { next(err); }
   },
 
