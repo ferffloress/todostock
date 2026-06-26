@@ -75,7 +75,7 @@ html(lang="es")
 
                       div.col-md-3.mb-3
                         label.form-label Cantidad
-                        input.form-control.input-cantidad(type="number" name="items[0][cantidad]" min="1" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                        input.form-control.input-cantidad(type="number" name="items[0][cantidad]" min="1" required oninput="validarNoNegativos(this); calcularSubtotal(this.closest('.producto-item'))")
                         small.text-muted Stock disponible: 
                           span.stock-label 0
                     
@@ -84,7 +84,7 @@ html(lang="es")
                         label.form-label.label-precio-unitario Precio unitario por menor ($)
                         div.input-group
                           span.input-group-text $ 
-                          input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" required oninput="calcularSubtotal(this.closest('.producto-item'))")
+                          input.form-control.input-precio(type="number" name="items[0][precio_unitario]" step="0.01" min="0.01" required oninput="validarNoNegativos(this); calcularSubtotal(this.closest('.producto-item'))")
                       
                       div.col-md-4.mb-3
                         label.form-label Subtotal
@@ -119,8 +119,18 @@ html(lang="es")
         if (!selectTipo || !labelPrecio) return;
 
         labelPrecio.innerText = selectTipo.value === 'bulto'
-          ? 'Precio unitario por mayor (-20%)'
+          ? 'Precio por bulto (-20%)'
           : 'Precio unitario por menor';
+      }
+
+      function validarNoNegativos(input) {
+        const valor = parseFloat(input.value);
+        const min = parseFloat(input.min) || 0;
+
+        if (isNaN(valor)) return;
+        if (valor < min) {
+          input.value = min;
+        }
       }
 
       function actualizarFila(select) {
@@ -154,7 +164,21 @@ html(lang="es")
         }
 
         actualizarEtiquetaPrecio(fila);
+        validarStock(fila);
         calcularSubtotal(fila);
+      }
+
+      function validarStock(fila) {
+        const inputCantidad = fila.querySelector('.input-cantidad');
+        const stockLabel = fila.querySelector('.stock-label');
+        const cantidad = parseFloat(inputCantidad.value) || 0;
+        const max = parseFloat(inputCantidad.max) || 0;
+
+        if (cantidad > max && max > 0) {
+          stockLabel.classList.add('text-danger');
+        } else {
+          stockLabel.classList.remove('text-danger');
+        }
       }
 
       function calcularSubtotal(fila) {
@@ -167,6 +191,7 @@ html(lang="es")
           maximumFractionDigits: 2
         });
         
+        validarStock(fila);
         actualizarTotalGeneral();
       }
 
