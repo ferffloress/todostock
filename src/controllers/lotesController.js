@@ -23,8 +23,16 @@ const lotesController = {
 
     async listarVista(req, res, next) {
     try {
-      const lotes = await Lote.find ();
-      res.render('lotes', { titulo: 'Gestión de Lotes (Stock)', lotes });
+      const lotes = await Lote.find().lean ();
+      const productos = await Producto.find().lean();
+      const productoMap = {};
+      productos.forEach(p => { productoMap[p._id] = p.nombre; });
+      const lotesConNombre = lotes.map(l => ({
+        ...l,
+        nombreProducto: productoMap[l.producto_id] || `#${l.producto_id}`
+      }));
+
+      res.render('lotes', { titulo: 'Gestión de Lotes (Stock)', lotes: lotesConNombre });
     } catch (err) {
       next(err);
     }
@@ -94,7 +102,7 @@ const lotesController = {
         });
       }
 
-      const formatoValido = /^[A-Z]{2,3}-\d{4}-[A-Z]$/.test(body.numero_lote);
+      const formatoValido = /^[A-Z]{2,4}-\d{4}-\d{3}$/.test(body.numero_lote);
       if (!formatoValido) {
         return res.status(400).json({ error: `Formato de número de lote inválido: "${body.numero_lote}". Debe ser como LAV-2024-A` });
       }
@@ -175,5 +183,18 @@ async formularioEditar(req, res, next) {
       res.redirect('/lotes');
     } catch (err) { next(err); }
   },
+
+  async siguienteNumero(req, res, next) {
+    try {
+      const { prefijo, anio } = req.query;
+      if (!prefijo || !anio) return res.json({ numero: '001' });
+
+      const regex = new RegExp(`^${prefijo}-${anio}-`);
+      const count = await Lote.countDocuments({ numero_lote: regex });
+      const siguiente = String(count + 1).padStart(3, '0');
+      res.json({ numero: siguiente });
+    } catch (err) { next(err); }
+  },
+
 };
 module.exports = lotesController;

@@ -7,6 +7,7 @@ router.get('/nuevo', lotesController.formularioNuevo);
 router.post('/', lotesController.crear);
 router.get('/producto/:producto_id', lotesController.listarPorProducto);
 router.get('/:id/movimientos', lotesController.detalleVista);
+router.get('/siguiente-numero', lotesController.siguienteNumero);
 router.get('/:id', lotesController.obtener);
 router.get('/:id/editar', lotesController.formularioEditar);
 router.post('/:id/editar', lotesController.actualizar);

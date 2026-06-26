@@ -7,7 +7,15 @@ const CompraSchema = new mongoose.Schema({
   proveedor_id: { type: Number, required: true },
   fecha: { type: Date, default: Date.now },
   estado: { type: String, default: 'pendiente' },
-  items: { type: Array, default: [] },
+  items: [{
+    producto_id:       { type: Number },
+    lote_id:           { type: Number },
+    cantidad:          { type: Number },
+    precio_unitario:   { type: Number },
+    numero_lote:       { type: String },
+    fecha_vencimiento: { type: Date },
+    subtotal:          { type: Number },
+  }],
   total: { type: Number, default: 0 },
   observaciones: { type: String, default: null },
 }, { timestamps: true, _id: false });
