@@ -23,6 +23,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/proveedores/nuevo") Nuevo Proveedor
 
+      input.form-control.mb-3#buscadorProveedores(type="text", placeholder="Buscar por nombre, CUIT, contacto...")
+
       table.table.table-hover.shadow-sm#tablaProveedores
         thead.table-dark
           tr
@@ -54,6 +56,7 @@ html(lang="es")
     script(src="/js/sortTable.js")
     script.
       initSortTable('tablaProveedores')
+      initSearchTable('tablaProveedores', 'buscadorProveedores')
       async function eliminarProveedor(id, btn) {
         const res = await fetch(`/proveedores/${id}`, { method: 'DELETE' });
         const data = await res.json();

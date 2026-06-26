@@ -23,6 +23,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/compras/nueva") Registrar Compra
 
+      input.form-control.mb-3#buscadorCompras(type="text", placeholder="Buscar por estado, observaciones...")
+
       table.table.table-hover.shadow-sm#tablaCompras
         thead.table-dark
           tr
@@ -51,3 +53,4 @@ html(lang="es")
     script(src="/js/sortTable.js")
     script.
      initSortTable('tablaCompras')
+     initSearchTable('tablaCompras', 'buscadorCompras')
