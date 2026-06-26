@@ -22,6 +22,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/ventas/nueva-venta") Nueva Venta
 
+      input.form-control.mb-3#buscadorVentas(type="text", placeholder="Buscar por cliente, estado...")
+
       table.table.table-hover.shadow-sm#tablaVentas
         thead.table-dark
           tr
@@ -58,3 +60,4 @@ html(lang="es")
     script(src="/js/sortTable.js")
     script.
       initSortTable('tablaVentas')
+      initSearchTable('tablaVentas', 'buscadorVentas')

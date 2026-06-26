@@ -162,7 +162,7 @@ const comprasController = {
       const updated = await Compra.findByIdAndUpdate(
         Number(req.params.id),
         { estado: 'recibida' },
-        { new: true }
+        { returnDocument: 'after' }
       );
       res.json(updated);
     } catch (err) { next(err); }
@@ -176,7 +176,7 @@ const comprasController = {
       const updated = await Compra.findByIdAndUpdate(
         Number(req.params.id),
         { estado: 'cancelada' },
-        { new: true }
+        { returnDocument: 'after' }
       );
       res.json(updated);
     } catch (err) { next(err); }

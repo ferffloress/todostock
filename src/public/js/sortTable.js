@@ -1,3 +1,12 @@
+function initSearchTable(tableId, inputId) {
+  document.getElementById(inputId).addEventListener('input', function() {
+    const filtro = this.value.toLowerCase();
+    document.querySelectorAll(`#${tableId} tbody tr`).forEach(tr => {
+      tr.style.display = tr.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+    });
+  });
+}
+
 function initSortTable(tableId) {
   let sortCol = -1;
   let sortAsc = true;

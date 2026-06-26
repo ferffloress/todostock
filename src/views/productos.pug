@@ -23,6 +23,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/productos/nuevo-producto") Nuevo Producto
 
+      input.form-control.mb-3#buscadorProductos(type="text", placeholder="Buscar producto por nombre, categoría...")
+
       table.table.table-hover.shadow-sm#tablaProductos
         thead.table-dark
           tr
@@ -97,6 +99,9 @@ html(lang="es")
         });
       });
 
-      script(src="/js/sortTable.js")
-      script.
-      initSortTable('tablaProductos')
+      document.getElementById('buscadorProductos').addEventListener('input', function() {
+        const filtro = this.value.toLowerCase();
+        document.querySelectorAll('#tablaProductos tbody tr').forEach(tr => {
+          tr.style.display = tr.textContent.toLowerCase().includes(filtro) ? '' : 'none';
+        });
+      });
