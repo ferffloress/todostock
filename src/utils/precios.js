@@ -25,9 +25,23 @@ function calcularDescuentoEfectivo(total) {
   return Number((base * 0.1).toFixed(2));
 }
 
+function calcularUnidadesPorBulto(cantidadBultos, unidadesPorBulto) {
+  const cantidad = Number(cantidadBultos) || 0;
+  const factor = Number(unidadesPorBulto) || 1;
+  return cantidad * factor;
+}
+
+function validarStockSuficiente(stockDisponible, cantidadSolicitada) {
+  const stock = Number(stockDisponible) || 0;
+  const cantidad = Number(cantidadSolicitada) || 0;
+  return stock >= cantidad;
+}
+
 module.exports = {
   calcularPrecioFacturado,
   calcularSubtotalItem,
   calcularTotalConDescuentoEfectivo,
   calcularDescuentoEfectivo,
+  calcularUnidadesPorBulto,
+  validarStockSuficiente,
 };
