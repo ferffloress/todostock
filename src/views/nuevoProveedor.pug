@@ -1,67 +1,60 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    meta(name="viewport", content="width=device-width, initial-scale=1.0")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
+extends layout
 
-  body.bg-light
-    div.container.mt-5
-      div.row.justify-content-center
-        div.col-md-7
-          div.bg-dark.text-white.p-3.d-flex.justify-content-between.align-items-center
-            h4.m-0.fw-bold= titulo
-            a.btn.btn-outline-light.btn-sm.rounded-0(href="/")
-              i.bi.bi-house-fill.me-1
-              | Home
+block title
+  = titulo
 
-          div.bg-white.p-4.border.border-top-0.shadow-sm
-            if errores && errores.length
-              div.alert.alert-danger.rounded-0
-                ul.mb-0
-                  each e in errores
-                    li= e
-            form(method="POST", action="/proveedores")
-              div.mb-3
-                label.form-label.fw-bold Nombre / Razón Social
-                input.form-control.rounded-0(type="text", name="nombre", required)
+block content
+  div.row.justify-content-center
+    div.col-md-7
+      div.bg-dark.text-white.p-3
+        h4.m-0.fw-bold= titulo
 
-              div.row
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold CUIT
-                  input.form-control.rounded-0#cuit(type="text", name="cuit", placeholder="XX-XXXXXXXX-X", maxlength="13", required)
-                  small.text-muted Se agregan los guiones automáticamente
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Email
-                  input.form-control.rounded-0(type="email", name="email")
+      div.bg-white.p-4.border.border-top-0.shadow-sm
+        if errores && errores.length
+          div.alert.alert-danger.rounded-0
+            ul.mb-0
+              each e in errores
+                li= e
+        form(method="POST", action="/proveedores")
+          div.mb-3
+            label.form-label.fw-bold Nombre / Razón Social
+            input.form-control.rounded-0(type="text", name="nombre", required)
 
-              div.row
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Teléfono
-                  input.form-control.rounded-0(type="text", name="telefono")
-                div.col-md-6.mb-3
-                  label.form-label.fw-bold Contacto
-                  input.form-control.rounded-0(type="text", name="contacto")
+          div.row
+            div.col-md-6.mb-3
+              label.form-label.fw-bold CUIT
+              input.form-control.rounded-0#cuit(type="text", name="cuit", placeholder="XX-XXXXXXXX-X", maxlength="13", required)
+              small.text-muted Se agregan los guiones automáticamente
+            div.col-md-6.mb-3
+              label.form-label.fw-bold Email
+              input.form-control.rounded-0(type="email", name="email")
 
-              div.mb-4
-                label.form-label.fw-bold Condición de Pago
-                select.form-select.rounded-0(name="condicion_pago")
-                  option(value="contado") Contado
-                  option(value="30 dias") 30 días
-                  option(value="60 dias") 60 días
-                  option(value="90 dias") 90 días
+          div.row
+            div.col-md-6.mb-3
+              label.form-label.fw-bold Teléfono
+              input.form-control.rounded-0(type="text", name="telefono")
+            div.col-md-6.mb-3
+              label.form-label.fw-bold Contacto
+              input.form-control.rounded-0(type="text", name="contacto")
 
-              div.d-flex.justify-content-end.gap-2
-                a.btn.btn-outline-secondary.rounded-0(href="/proveedores") Cancelar
-                button.btn.btn-primary.rounded-0(type="submit") Guardar Proveedor
+          div.mb-4
+            label.form-label.fw-bold Condición de Pago
+            select.form-select.rounded-0(name="condicion_pago")
+              option(value="contado") Contado
+              option(value="30 dias") 30 días
+              option(value="60 dias") 60 días
+              option(value="90 dias") 90 días
 
-    script.
-      const cuitInput = document.getElementById('cuit');
-      cuitInput.addEventListener('input', function () {
-        let val = this.value.replace(/\D/g, '');
-        if (val.length > 2)  val = val.slice(0,2) + '-' + val.slice(2);
-        if (val.length > 11) val = val.slice(0,11) + '-' + val.slice(11);
-        this.value = val.slice(0, 13);
-      });
+          div.d-flex.justify-content-end.gap-2
+            a.btn.btn-outline-secondary.rounded-0(href="/proveedores") Cancelar
+            button.btn.btn-primary.rounded-0(type="submit") Guardar Proveedor
+
+block scripts
+  script.
+    const cuitInput = document.getElementById('cuit');
+    cuitInput.addEventListener('input', function () {
+      let val = this.value.replace(/\D/g, '');
+      if (val.length > 2)  val = val.slice(0,2) + '-' + val.slice(2);
+      if (val.length > 11) val = val.slice(0,11) + '-' + val.slice(11);
+      this.value = val.slice(0, 13);
+    });

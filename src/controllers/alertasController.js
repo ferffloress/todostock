@@ -3,7 +3,6 @@ const Lote = require('../models/Lote');
 const Cliente = require('../models/Cliente');
 
 const alertasController = {
-
   async obtener(req, res, next) {
     try {
       const ahora = new Date();
@@ -24,8 +23,15 @@ const alertasController = {
         $expr: { $gt: ['$saldo_cuenta_corriente', '$limite_credito'] }
       });
 
-      res.json({ stock_bajo, lotes_por_vencer, clientes_excedidos });
-    } catch (err) { next(err); }
+      res.render('alertas', { 
+        stock_bajo, 
+        lotes_por_vencer, 
+        clientes_excedidos 
+      });
+      
+    } catch (err) { 
+      next(err); 
+    }
   },
 };
 

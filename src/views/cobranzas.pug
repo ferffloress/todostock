@@ -1,0 +1,32 @@
+extends layout
+
+block title
+  | Cobranzas
+
+block content
+  div.d-flex.flex-column.flex-sm-row.justify-content-between.align-items-start.align-items-sm-center.gap-3.mb-4
+    h1.mb-0 Gestión de Cobranzas
+
+  .card.shadow-sm
+    .card-header.bg-dark.text-white
+      h5.card-title.mb-0 Registro de Cobros Realizados
+    .card-body
+      .table-responsive
+        table.table.table-striped.table-hover.align-middle
+          thead
+            tr
+              th ID Cobranza
+              th ID Cliente
+              th Descripción
+              th Monto Cobrado
+          tbody
+            if cobranzas && cobranzas.length > 0
+              each c in cobranzas
+                tr
+                  td= c._id
+                  td= c.cliente_id
+                  td= c.descripcion || 'Cobro registrado'
+                  td.text-success.fw-bold= `$${c.monto}`
+            else
+              tr
+                td.text-center(colspan="4") No se registraron cobros todavía.
