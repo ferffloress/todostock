@@ -23,6 +23,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/lotes/nuevo") Nuevo Lote
 
+      input.form-control.mb-3#buscadorLotes(type="text", placeholder="Buscar por número de lote, producto...")
+
       table.table.table-hover.shadow-sm#tablaLotes
         thead.table-dark
           tr
@@ -56,4 +58,5 @@ html(lang="es")
 
     script(src="/js/sortTable.js")
     script.
-      initSortTable('tablaLotes')    
+      initSortTable('tablaLotes')
+      initSearchTable('tablaLotes', 'buscadorLotes')    

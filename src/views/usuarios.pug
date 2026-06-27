@@ -16,6 +16,7 @@ html(lang="es")
     .container.mt-4
       h2 Administrar usuarios
       a.btn.btn-secondary.mb-3(href="/") Volver
+      input.form-control.mb-3#buscadorUsuarios(type="text", placeholder="Buscar por nombre, email o rol...")
       table.table.table-bordered.table-hover.align-middle#tablaUsuarios
         thead.table-dark
           tr
@@ -49,4 +50,5 @@ html(lang="es")
 
     script(src="/js/sortTable.js")
     script.
-      initSortTable('tablaUsuarios')                  
+      initSortTable('tablaUsuarios')
+      initSearchTable('tablaUsuarios', 'buscadorUsuarios')                  

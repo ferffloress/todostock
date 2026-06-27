@@ -23,6 +23,8 @@ html(lang="es")
             | Home
           a.btn.btn-primary(href="/clientes/nuevo-cliente") Nuevo Cliente
 
+      input.form-control.mb-3#buscadorClientes(type="text", placeholder="Buscar por nombre, email...")
+
       table.table.table-hover.shadow-sm#tablaClientes
         thead.table-dark
           tr
@@ -50,6 +52,7 @@ html(lang="es")
     script(src="/js/sortTable.js")
     script.
       initSortTable('tablaClientes')
+      initSearchTable('tablaClientes', 'buscadorClientes')
       async function eliminarCliente(id, btn) {
         const res = await fetch(`/clientes/${id}`, { method: 'DELETE' });
         const data = await res.json();
