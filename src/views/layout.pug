@@ -124,7 +124,7 @@ html(lang="es")
       th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
     block styles
   body
-    - const menuItems = [{href: '/', icon: 'bi-speedometer2', label: 'Dashboard'}, {href: '/clientes', icon: 'bi-people', label: 'Clientes'}, {href: '/productos', icon: 'bi-box-seam', label: 'Productos'}, {href: '/ventas', icon: 'bi-receipt', label: 'Ventas'}, {href: '/compras', icon: 'bi-cart-check', label: 'Compras'}, {href: '/lotes', icon: 'bi-layers', label: 'Lotes'}, {href: '/proveedores', icon: 'bi-truck', label: 'Proveedores'}, {href: '/cobranzas', icon: 'bi-cash-coin', label: 'Cobranzas'}, {href: '/movimientos-stock', icon: 'bi-arrow-left-right', label: 'Movimientos'}, {href: '/alertas', icon: 'bi-bell', label: 'Alertas'}]
+    - const menuItems = [{href: '/', icon: 'bi-speedometer2', label: 'Dashboard'}, {href: '/clientes', icon: 'bi-people', label: 'Clientes'}, {href: '/productos', icon: 'bi-box-seam', label: 'Productos'}, {href: '/ventas', icon: 'bi-receipt', label: 'Ventas'}, {href: '/compras', icon: 'bi-cart-check', label: 'Compras'}, {href: '/lotes', icon: 'bi-layers', label: 'Lotes'}, {href: '/proveedores', icon: 'bi-truck', label: 'Proveedores'}, {href: '/cobranzas', icon: 'bi-cash-coin', label: 'Cobranzas'}, {href: '/movimientos-stock', icon: 'bi-arrow-left-right', label: 'Movimientos'}, {href: '/alertas', icon: 'bi-bell', label: 'Alertas'}, {href: '/soporte', icon: 'bi-chat-dots', label: 'Soporte'}]
     if usuarioRol === 'admin'
       - menuItems.push({href: '/usuarios', icon: 'bi-person-gear', label: 'Usuarios'})
 

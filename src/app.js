@@ -32,7 +32,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 // Evita que el navegador cachee páginas protegidas
 app.use((req, res, next) => {
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
@@ -68,6 +67,7 @@ const ventasRouter = require('./routes/ventas');
 const cobranzasRouter = require('./routes/cobranzas');
 const movimientosStockRouter = require('./routes/movimientosStock');
 const alertasRouter = require('./routes/alertas');
+const soporteRouter = require('./routes/soporteRoutes');
 const resumenesRouter = require('./routes/resumenes');
 const usuariosRouter = require('./routes/usuariosRoutes');
 
@@ -87,6 +87,7 @@ app.use('/api/ventas', apiVentasRouter);
 app.use('/api/lotes', apiLotesRouter);
 app.use('/api/compras', apiComprasRouter);
 app.use('/api/movimientos-stock', apiMovimientosRouter);
+app.use('/soporte', soporteRouter);
 app.use('/usuarios', protegerRuta, soloAdmin, usuariosRouter);
 
 try {
@@ -96,7 +97,7 @@ try {
   console.log("Nota: Las rutas de cuentas-corrientes no se cargaron.");
 }
 
-//RUTA TEMPORAL - carga datos de ejemplo desde los JSON
+//RUTA TEMPORAL
 app.get('/cargar-datos', async (req, res) => {
   try {
     const Cliente = require('./models/Cliente');

@@ -1,0 +1,48 @@
+extends layout
+
+block title
+  | #{titulo}
+
+block content
+  style.
+    #chat-box { 
+      height: 450px; 
+      overflow-y: auto; 
+      background-color: #f8f9fa; 
+      border: 1px solid #dee2e6;
+    }
+    .msg-usuario {
+      background-color: #e9ecef;
+      border-radius: 10px 10px 0 10px;
+    }
+    .msg-gemini {
+      background-color: #e3f2fd;
+      border-radius: 10px 10px 10px 0;
+      border-left: 4px solid #0d6efd;
+    }
+
+  div.container.mt-4
+    div.d-flex.justify-content-between.align-items-center.mb-4
+      h1= titulo
+      span.badge.bg-success.p-2 
+        i.bi.bi-circle-fill.me-2(style="font-size: 0.6rem;")
+        | Canales activos
+
+    div.card.shadow-sm
+      div.card-header.bg-dark.text-white.d-flex.justify-content-between.align-items-center
+        h5.mb-0 Sala de Soporte Mayorista
+        small.text-muted Escribe #[strong @gemini] para consultar al asistente virtual
+
+      div.card-body
+        div#chat-box.p-3.rounded.mb-3
+
+        form#chat-form(onsubmit="return enviarMensaje(event)")
+          div.input-group
+            input#user-name.form-control(type="text", placeholder="Tu Nombre o Empresa", style="max-width: 200px;", required)
+            input#chat-input.form-control(type="text", placeholder="Escribe tu consulta aquí...", required)
+            button.btn.btn-primary(type="submit") 
+              i.bi.bi-send.me-2
+              | Enviar
+
+  script(src="/socket.io/socket.io.js")
+  script(src="/js/chat.js")
