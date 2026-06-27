@@ -1,64 +1,56 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
-  body
-    div.container.mt-5
+extends layout
 
-      div.d-flex.justify-content-between.align-items-center.mb-4
-        h1= titulo
-        div.d-flex.gap-2
-          a.btn.btn-outline-secondary(href="/")
-            i.bi.bi-house-fill.me-1
-            | Home
-          a.btn.btn-outline-secondary.rounded-0(href="/clientes") Volver
+block title
+  = titulo
 
-      div.bg-dark.text-white.p-3.mb-0
-        h5.m-0.fw-bold= cliente.nombre
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h1= titulo
+    a.btn.btn-outline-secondary.rounded-0(href="/clientes") Volver
 
-      div.bg-white.p-4.border.border-top-0.shadow-sm.mb-4
-        div.row
-          div.col-md-6
-            span.fw-bold Límite de crédito:
-            span  $#{cliente.limite_credito}
-          div.col-md-6
-            span.fw-bold Por cobrar:
-            - const saldo = cliente.saldo_cuenta_corriente || 0
-            span.fw-bold(class=saldo > 0 ? 'text-danger' : (saldo < 0 ? 'text-success' : 'text-muted'))
-              |  $#{Math.abs(saldo)}
-            if saldo < 0
-              span.text-success.ms-1 (a favor del cliente)
-            else if saldo === 0
-              span.text-muted.ms-1 (sin deuda)
+  div.bg-dark.text-white.p-3.mb-0
+    h5.m-0.fw-bold= cliente.nombre
 
-      div.bg-dark.text-white.p-3.mb-0
-        h6.m-0.fw-bold Movimientos
+  div.bg-white.p-4.border.border-top-0.shadow-sm.mb-4
+    div.row
+      div.col-md-6
+        span.fw-bold Límite de crédito:
+        span  $#{cliente.limite_credito}
+      div.col-md-6
+        span.fw-bold Por cobrar:
+        - const saldo = cliente.saldo_cuenta_corriente || 0
+        span.fw-bold(class=saldo > 0 ? 'text-danger' : (saldo < 0 ? 'text-success' : 'text-muted'))
+          |  $#{Math.abs(saldo)}
+        if saldo < 0
+          span.text-success.ms-1 (a favor del cliente)
+        else if saldo === 0
+          span.text-muted.ms-1 (sin deuda)
 
-      table.table.table-hover.shadow-sm.mb-0
-        thead.table-dark
-          tr
-            th Fecha
-            th Tipo
-            th Descripción
-            th Referencia
-            th Monto
-            th Saldo Resultante
-        tbody
-          each mov in cliente.movimientos
-            tr
-              td= new Date(mov.fecha).toLocaleDateString('es-AR')
-              td= mov.tipo.charAt(0).toUpperCase() + mov.tipo.slice(1)
-              td= mov.descripcion
-              td
-                if mov.referencia
-                  a(href=`/ventas/ver/${mov.referencia}`) Venta ##{mov.referencia}
-                else
-                  | -
-              td= `$${mov.monto}`
-              td= `$${mov.saldo_resultante}`
-          else
-            tr
-              td.text-center(colspan="6") Sin movimientos registrados.
+  div.bg-dark.text-white.p-3.mb-0
+    h6.m-0.fw-bold Movimientos
+
+  table.table.table-hover.shadow-sm.mb-0
+    thead.table-dark
+      tr
+        th Fecha
+        th Tipo
+        th Descripción
+        th Referencia
+        th Monto
+        th Saldo Resultante
+    tbody
+      each mov in cliente.movimientos
+        tr
+          td= new Date(mov.fecha).toLocaleDateString('es-AR')
+          td= mov.tipo.charAt(0).toUpperCase() + mov.tipo.slice(1)
+          td= mov.descripcion
+          td
+            if mov.referencia
+              a(href=`/ventas/ver/${mov.referencia}`) Venta ##{mov.referencia}
+            else
+              | -
+          td= `$${mov.monto}`
+          td= `$${mov.saldo_resultante}`
+      else
+        tr
+          td.text-center(colspan="6") Sin movimientos registrados.

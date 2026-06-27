@@ -1,68 +1,54 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
-    style.
-      th.sortable { cursor: pointer; user-select: none; }
-      th.sortable:hover { background-color: #343a40; opacity: 0.85; }
-      th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
-      th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
-      th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
-      th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
+extends layout
 
-  body
-    div.container.mt-5
-      div.d-flex.justify-content-between.align-items-center.mb-4
-        h1= titulo
-        div.d-flex.gap-2
-          a.btn.btn-outline-secondary(href="/")
-            i.bi.bi-house-fill.me-1
-            | Home
-          a.btn.btn-primary(href="/proveedores/nuevo") Nuevo Proveedor
+block title
+  = titulo
 
-      input.form-control.mb-3#buscadorProveedores(type="text", placeholder="Buscar por nombre, CUIT, contacto...")
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h1= titulo
+    a.btn.btn-primary(href="/proveedores/nuevo") Nuevo Proveedor
 
-      table.table.table-hover.shadow-sm#tablaProveedores
-        thead.table-dark
-          tr
-            th.sortable(data-col="0") Nombre #[span.sort-icon]
-            th.sortable(data-col="1") CUIT #[span.sort-icon]
-            th.sortable(data-col="2") Contacto #[span.sort-icon]
-            th.sortable(data-col="3") Teléfono #[span.sort-icon]
-            th.sortable(data-col="4") Email #[span.sort-icon]
-            th.sortable(data-col="5") Pago #[span.sort-icon]
-            th Acciones
-        tbody
-          each prov in proveedores
-            tr
-              td.fw-bold= prov.nombre
-              td= prov.cuit
-              td= prov.contacto
-              td= prov.telefono
-              td
-                a(href=`mailto:${prov.email}`)= prov.email
-              td: span.badge.bg-secondary= prov.condicion_pago
-              td
-                a.btn.btn-sm.btn-outline-secondary.me-1(href=`/proveedores/${prov._id}/editar`) Editar
-                if usuarioRol === 'admin'
-                  button.btn.btn-sm.btn-danger(onclick=`eliminarProveedor('${prov._id}', this)`) Eliminar
-          else
-            tr
-              td.text-center(colspan="7") No hay proveedores registrados.
+  input.form-control.mb-3#buscadorProveedores(type="text", placeholder="Buscar por nombre, CUIT, contacto...")
 
-    script(src="/js/sortTable.js")
-    script.
-      initSortTable('tablaProveedores')
-      initSearchTable('tablaProveedores', 'buscadorProveedores')
-      async function eliminarProveedor(id, btn) {
-        const res = await fetch(`/proveedores/${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (!res.ok) {
-          alert(data.error);
-        } else {
-          btn.closest('tr').remove();
-        }
+  table.table.table-hover.shadow-sm#tablaProveedores
+    thead.table-dark
+      tr
+        th.sortable(data-col="0") Nombre #[span.sort-icon]
+        th.sortable(data-col="1") CUIT #[span.sort-icon]
+        th.sortable(data-col="2") Contacto #[span.sort-icon]
+        th.sortable(data-col="3") Teléfono #[span.sort-icon]
+        th.sortable(data-col="4") Email #[span.sort-icon]
+        th.sortable(data-col="5") Pago #[span.sort-icon]
+        th Acciones
+    tbody
+      each prov in proveedores
+        tr
+          td.fw-bold= prov.nombre
+          td= prov.cuit
+          td= prov.contacto
+          td= prov.telefono
+          td
+            a(href=`mailto:${prov.email}`)= prov.email
+          td: span.badge.bg-secondary= prov.condicion_pago
+          td
+            a.btn.btn-sm.btn-outline-secondary.me-1(href=`/proveedores/${prov._id}/editar`) Editar
+            if usuarioRol === 'admin'
+              button.btn.btn-sm.btn-danger(onclick=`eliminarProveedor('${prov._id}', this)`) Eliminar
+      else
+        tr
+          td.text-center(colspan="7") No hay proveedores registrados.
+
+block scripts
+  script(src="/js/sortTable.js")
+  script.
+    initSortTable('tablaProveedores')
+    initSearchTable('tablaProveedores', 'buscadorProveedores')
+    async function eliminarProveedor(id, btn) {
+      const res = await fetch(`/proveedores/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error);
+      } else {
+        btn.closest('tr').remove();
       }
+    }

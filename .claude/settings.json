@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -c cookies.txt -X POST http://localhost:3000/registro -d 'nombre=TestUser&email=__TRACKED_VAR__&password=Test1234&confirmarPassword=Test1234' -o /dev/null)",
+      "Bash(curl -s -c cookies.txt -b cookies.txt -X POST http://localhost:3000/login -d 'email=__TRACKED_VAR__&password=Test1234' -L -o login_out.html -w '%{http_code}\\\\n')",
+      "Bash(curl -s -c /tmp/cookies.txt -X POST http://localhost:3000/registro -d 'nombre=TestUser&email=testuser_login___CMDSUB_OUTPUT__@example.com&password=Test1234&confirmarPassword=Test1234' -o /tmp/reg_out.html -w 'register:%{http_code}\\\\n')",
+      "Bash(curl -s -c /tmp/cookies.txt -b /tmp/cookies.txt -X POST http://localhost:3000/login -d 'email=testuser_login___CMDSUB_OUTPUT__@example.com&password=Test1234' -L -o /tmp/login_out.html -w 'login:%{http_code}\\\\n')",
+      "Bash(curl -s -c /tmp/cookies.txt -X POST http://localhost:3000/registro -d 'nombre=TestUser&email=testuser_login2___CMDSUB_OUTPUT__@example.com&password=Test1234&confirmarPassword=Test1234' -o /dev/null -w 'register:%{http_code}\\\\n')",
+      "Bash(curl -s -c /tmp/cookies.txt -b /tmp/cookies.txt -X POST http://localhost:3000/login -d 'email=testuser_login2___CMDSUB_OUTPUT__@example.com&password=Test1234' -o /dev/null -w 'loginpost:%{http_code}\\\\n')",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/ -o /tmp/dashboard.html -w \"dashboard:%{http_code}\\\\n\")",
+      "Read(//tmp/**)",
+      "Bash(bash /private/tmp/claude-501/-Users-fernandaflores-dev-tp-backend-todostock/56608ed3-f88c-4177-8c95-b5035652575f/scratchpad/check_sidebar.sh)",
+      "Bash(node -e \"require.resolve\\('playwright'\\)\")",
+      "Bash(npm ls *)",
+      "Bash(curl -s http://localhost:3000/login -o /tmp/login_page.html -w \"login_page:%{http_code}\\\\n\")",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/usuarios -o /tmp/usuarios_page.html -w \"usuarios:%{http_code}\\\\n\")",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/ventas/nueva-venta -o /tmp/nueva_venta.html -w \"nueva_venta:%{http_code}\\\\n\")",
+      "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/compras/nueva -o /tmp/nueva_compra.html -w \"nueva_compra:%{http_code}\\\\n\")",
+      "Bash(node -e ' *)",
+      "Bash(lsof -i :3000 -P -n 2>/dev/null; rm -f /tmp/cookies.txt /tmp/reg_out.html /tmp/login_out.html /tmp/dashboard.html /tmp/page_check.html /tmp/usuarios_page.html /tmp/nueva_venta.html /tmp/nueva_compra.html /tmp/login_page.html /tmp/todostock_server.log)"
+    ],
+    "additionalDirectories": [
+      "/private/tmp"
+    ]
+  }
+}
