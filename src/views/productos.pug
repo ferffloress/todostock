@@ -6,7 +6,10 @@ block title
 block content
   div.d-flex.justify-content-between.align-items-center.mb-4
     h1= titulo
-    a.btn.btn-primary(href="/productos/nuevo-producto") Nuevo Producto
+    div.d-flex.gap-2
+      a.btn.btn-primary(href="/productos/nuevo-producto") 
+        i.bi.bi-plus-lg.me-2(aria-hidden="true")
+        | Nuevo Producto
 
   input.form-control.mb-3#buscadorProductos(type="text", placeholder="Buscar producto por nombre, categoría...")
 

@@ -1,23 +1,25 @@
-doctype html
-html(lang="es")
-  head
-    meta(charset="UTF-8")
-    title= titulo
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
-    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css")
-    style.
-      th.sortable { cursor: pointer; user-select: none; }
-      th.sortable:hover { background-color: #343a40; opacity: 0.85; }
-      th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
-      th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
-      th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
-      th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
-  body
-    .container.mt-4
-      h2 Administrar usuarios
-      a.btn.btn-secondary.mb-3(href="/") Volver
-      input.form-control.mb-3#buscadorUsuarios(type="text", placeholder="Buscar por nombre, email o rol...")
-      table.table.table-bordered.table-hover.align-middle#tablaUsuarios
+extends layout
+
+block title
+  | #{titulo || 'Administrar Usuarios'}
+
+block content
+  style.
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { background-color: #343a40; opacity: 0.85; }
+    th.sortable .sort-icon { font-size: 0.75rem; margin-left: 4px; opacity: 0.5; }
+    th.sortable.asc .sort-icon::after { content: '▲'; opacity: 1; }
+    th.sortable.desc .sort-icon::after { content: '▼'; opacity: 1; }
+    th.sortable:not(.asc):not(.desc) .sort-icon::after { content: '⇅'; }
+
+  div.container.mt-4
+    div.d-flex.justify-content-between.align-items-center.mb-4
+      h1 Administrar usuarios
+
+    input.form-control.mb-3#buscadorUsuarios(type="text", placeholder="Buscar por nombre, email o rol...")
+    
+    div.table-responsive
+      table.table.table-hover.shadow-sm.align-middle#tablaUsuarios
         thead.table-dark
           tr
             th.sortable(data-col="0") Nombre #[span.sort-icon]
@@ -27,28 +29,36 @@ html(lang="es")
             th Editar
             th Eliminar
         tbody
-          each u in usuarios
-            tr
-              td= u.nombre
-              td= u.email
-              td
-                if u.rol === 'admin'
-                  span.badge.bg-danger admin
-                else
-                  span.badge.bg-secondary user
-              td
-                form(action=`/usuarios/${u._id}/rol` method="POST")
+          if usuarios && usuarios.length > 0
+            each u in usuarios
+              tr
+                td= u.nombre
+                td= u.email
+                td
                   if u.rol === 'admin'
-                    button.btn.btn-sm.btn-outline-secondary(type="submit") Quitar admin
+                    span.badge.bg-danger admin
                   else
-                    button.btn.btn-sm.btn-outline-danger(type="submit") Hacer admin
-              td
-                a.btn.btn-sm.btn-outline-primary(href=`/usuarios/${u._id}/editar`) Editar
-              td
-                form(action=`/usuarios/${u._id}/eliminar` method="POST" onsubmit="return confirm('¿Seguro que querés eliminar este usuario?')")
-                  button.btn.btn-sm.btn-danger(type="submit") Eliminar
+                    span.badge.bg-secondary user
+                td
+                  form(action=`/usuarios/${u._id}/rol` method="POST" style="margin:0;")
+                    if u.rol === 'admin'
+                      button.btn.btn-sm.btn-outline-secondary(type="submit") Quitar admin
+                    else
+                      button.btn.btn-sm.btn-outline-danger(type="submit") Hacer admin
+                td
+                  a.btn.btn-sm.btn-outline-primary(href=`/usuarios/${u._id}/editar`)
+                    i.bi.bi-pencil.me-1
+                    | Editar
+                td
+                  form(action=`/usuarios/${u._id}/eliminar` method="POST" onsubmit="return confirm('¿Seguro que querés eliminar este usuario?')" style="margin:0;")
+                    button.btn.btn-sm.btn-danger(type="submit")
+                      i.bi.bi-trash.me-1
+                      | Eliminar
+          else
+            tr
+              td.text-center(colspan="6") No hay usuarios registrados en el sistema.
 
-    script(src="/js/sortTable.js")
-    script.
-      initSortTable('tablaUsuarios')
-      initSearchTable('tablaUsuarios', 'buscadorUsuarios')                  
+  script(src="/js/sortTable.js")
+  script.
+    initSortTable('tablaUsuarios')
+    initSearchTable('tablaUsuarios', 'buscadorUsuarios')

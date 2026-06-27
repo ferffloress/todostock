@@ -6,7 +6,10 @@ block title
 block content
   div.d-flex.justify-content-between.align-items-center.mb-4
     h1= titulo
-    a.btn.btn-primary(href="/proveedores/nuevo") Nuevo Proveedor
+    div.d-flex.gap-2
+      a.btn.btn-primary(href="/proveedores/nuevo")
+        i.bi.bi-plus-lg.me-2(aria-hidden="true")
+        | Nuevo Proveedor
 
   input.form-control.mb-3#buscadorProveedores(type="text", placeholder="Buscar por nombre, CUIT, contacto...")
 
