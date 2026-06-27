@@ -1,0 +1,88 @@
+extends layout
+
+block title
+  | Alertas
+
+block content
+  // Cabecera responsiva con el botón en tamaño natural a la derecha
+  div.d-flex.flex-column.flex-sm-row.justify-content-between.align-items-start.align-items-sm-center.gap-3.mb-4
+    h1.mb-0 Alertas de Control
+
+  // Si no hay alertas en ninguna de las tres categorías
+  if stock_bajo.length === 0 && lotes_por_vencer.length === 0 && clientes_excedidos.length === 0
+    .card.shadow-sm
+      .card-body.text-center.py-5
+        i.bi.bi-check-circle-fill.text-success.display-4.mb-3
+        h4.card-title Todo bajo control
+        p.text-muted.mb-0 No hay alertas de stock, vencimientos o créditos excedidos en este momento.
+
+  else
+    .row
+      // --- SECCIÓN 1: STOCK BAJO ---
+      if stock_bajo && stock_bajo.length > 0
+        .col-12.mb-4
+          .card.shadow-sm.border-danger
+            .card-header.bg-danger.text-white
+              h5.card-title.mb-0 
+                i.bi.bi-box-seam-fill.me-2
+                | Productos con Stock Bajo o Crítico
+            .card-body.p-0
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0
+                  thead.table-light
+                    tr
+                      th Producto
+                      th Stock Actual
+                      th Stock Mínimo
+                  tbody
+                    each p in stock_bajo
+                      tr
+                        td= p.nombre
+                        td.text-danger.fw-bold= p.stock_actual
+                        td.text-muted= p.stock_minimo
+
+      // --- SECCIÓN 2: LOTES POR VENCER ---
+      if lotes_por_vencer && lotes_por_vencer.length > 0
+        .col-md-6.mb-4
+          .card.shadow-sm.border-warning
+            .card-header.bg-warning.text-dark
+              h5.card-title.mb-0 
+                i.bi.bi-calendar-exclamation-fill.me-2
+                | Lotes Próximos a Vencer (Menos de 30 días)
+            .card-body.p-0
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0
+                  thead.table-light
+                    tr
+                      th Lote ID
+                      th Cantidad
+                      th Vencimiento
+                  tbody
+                    each l in lotes_por_vencer
+                      tr
+                        td= l._id
+                        td= l.cantidad_actual
+                        td.text-warning-emphasis.fw-bold= l.fecha_vencimiento.toLocaleDateString('es-AR')
+
+      // --- SECCIÓN 3: CLIENTES EXCEDIDOS ---
+      if clientes_excedidos && clientes_excedidos.length > 0
+        .col-md-6.mb-4
+          .card.shadow-sm.border-danger
+            .card-header.bg-dark.text-white
+              h5.card-title.mb-0 
+                i.bi.bi-exclamation-triangle-fill.text-warning.me-2
+                | Clientes con Límite de Crédito Excedido
+            .card-body.p-0
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0
+                  thead.table-light
+                    tr
+                      th Cliente
+                      th Saldo Cuenta Cte.
+                      th Límite Permitido
+                  tbody
+                    each c in clientes_excedidos
+                      tr
+                        td= c.nombre
+                        td.text-danger.fw-bold= `$${c.saldo_cuenta_corriente}`
+                        td.text-muted= `$${c.limite_credito}`

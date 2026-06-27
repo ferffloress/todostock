@@ -14,7 +14,7 @@ const cobranzasController = {
  async listar(req, res, next) {
     try {
       const cobranzas = await Cobranza.find();
-      res.json(cobranzas);
+      res.render('cobranzas', { cobranzas });
     } catch (err) {
       next(err);
     }
