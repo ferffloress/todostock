@@ -127,7 +127,6 @@ const ventasController = {
         const cantidadEnUnidades =
           item.tipo_venta === "bulto" ? item.cantidad * factor : item.cantidad;
 
-        // Lotes disponibles ordenados por fecha vencimiento (FIFO)
         const lotesActivos = await Lote.find({
           producto_id: item.producto_id,
           cantidad_actual: { $gt: 0 },
@@ -144,7 +143,6 @@ const ventasController = {
           );
         }
 
-        // Asignación de lotes
         let remaining = cantidadEnUnidades;
         const loteAssignments = [];
         for (const lote of lotesActivos) {
@@ -196,7 +194,7 @@ const ventasController = {
       }
 
       // 5. Guardar venta
-      await new Venta({
+      const ventaGuardada = await new Venta({
         cliente_id: Number(req.body.cliente_id),
         items: itemsConLote,
         total: totalVenta,
@@ -204,6 +202,56 @@ const ventasController = {
         estado: req.body.estado || "pendiente",
         observaciones: req.body.observaciones || null,
       }).save();
+
+      // 6. Si se crea directamente como despachada, ejecutar lógica de despacho
+      if ((req.body.estado || "pendiente") === "despachada") {
+        for (const item of itemsConLote) {
+          for (const assignment of item.lote_assignments) {
+            await Lote.findByIdAndUpdate(assignment.lote_id, {
+              $inc: { cantidad_actual: -assignment.cantidad },
+            });
+            await Producto.findByIdAndUpdate(item.producto_id, {
+              $inc: { stock_actual: -assignment.cantidad },
+            });
+            await new MovimientoStock({
+              tipo: "egreso",
+              producto_id: item.producto_id,
+              lote_id: assignment.lote_id,
+              cantidad: assignment.cantidad,
+              referencia: ventaGuardada._id,
+              observaciones: `Venta ${ventaGuardada._id} - ${item.tipo_venta}`,
+            }).save();
+          }
+        }
+
+        const clienteDespacho = await Cliente.findById(Number(req.body.cliente_id));
+        let nuevoSaldo = clienteDespacho.saldo_cuenta_corriente || 0;
+
+        if (req.body.forma_pago === "cuenta_corriente") {
+          nuevoSaldo += totalVenta;
+          await new CuentaCorriente({
+            cliente_id: clienteDespacho._id,
+            tipo: "debito",
+            monto: totalVenta,
+            referencia: ventaGuardada._id,
+            descripcion: "Venta a Cta. Cte.",
+            saldo_resultante: nuevoSaldo,
+          }).save();
+        } else {
+          await new CuentaCorriente({
+            cliente_id: clienteDespacho._id,
+            tipo: "ingreso",
+            monto: totalVenta,
+            referencia: ventaGuardada._id,
+            descripcion: `Venta Contado (${req.body.forma_pago})`,
+            saldo_resultante: nuevoSaldo,
+          }).save();
+        }
+
+        await Cliente.findByIdAndUpdate(clienteDespacho._id, {
+          saldo_cuenta_corriente: nuevoSaldo,
+        });
+      }
 
       res.redirect("/ventas");
     } catch (err) {
@@ -229,15 +277,12 @@ const ventasController = {
       // 1. Egreso de stock
       for (const item of venta.items) {
         for (const assignment of item.lote_assignments) {
-          // Descontar lote
           await Lote.findByIdAndUpdate(assignment.lote_id, {
             $inc: { cantidad_actual: -assignment.cantidad },
           });
-          // Descontar producto
           await Producto.findByIdAndUpdate(item.producto_id, {
             $inc: { stock_actual: -assignment.cantidad },
           });
-          // Registrar movimiento
           await new MovimientoStock({
             tipo: "egreso",
             producto_id: item.producto_id,
@@ -263,22 +308,15 @@ const ventasController = {
           descripcion: "Venta a Cta. Cte.",
           saldo_resultante: nuevoSaldo,
         }).save();
-        
-        await Cliente.findByIdAndUpdate(venta.cliente_id, {
-          saldo_cuenta_corriente: nuevoSaldo,
-        });
       } else {
-        // Efectivo u otro medio: registra el movimiento doble para reflejar el historial sin alterar el saldo final neto
-
-        
         await new CuentaCorriente({
-        cliente_id: venta.cliente_id,
-        tipo: 'ingreso',
-        monto: venta.total,
-        referencia: venta._id,
-        descripcion: `Venta Contado (${venta.forma_pago})`,
-        saldo_resultante: nuevoSaldo, 
-      }).save();
+          cliente_id: venta.cliente_id,
+          tipo: "ingreso",
+          monto: venta.total,
+          referencia: venta._id,
+          descripcion: `Venta Contado (${venta.forma_pago})`,
+          saldo_resultante: nuevoSaldo,
+        }).save();
       }
 
       await Cliente.findByIdAndUpdate(venta.cliente_id, {
@@ -288,7 +326,7 @@ const ventasController = {
       await Venta.findByIdAndUpdate(Number(req.params.id), {
         estado: "despachada",
       });
-      
+
       res.redirect(`/ventas/ver/${req.params.id}`);
     } catch (err) {
       next(err);

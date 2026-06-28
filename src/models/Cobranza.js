@@ -9,6 +9,8 @@ const CobranzaSchema = new mongoose.Schema({
   forma_pago: { type: String, enum: ['efectivo', 'transferencia', 'cheque'], required: true },
   fecha: { type: Date, default: Date.now },
   observaciones: { type: String, default: null },
+  nro_comprobante: { type: String, default: null },
+  fecha_vto_cheque: { type: Date, default: null },
 }, { timestamps: true, _id: false });
 
 CobranzaSchema.pre('save', async function () {
