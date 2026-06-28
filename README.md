@@ -162,15 +162,17 @@ Todas las rutas están protegidas. Sin sesión activa, redirige a `/login`.
 
 ### Clientes
 
-| Método | Ruta                                  | Descripción                |
-| ------ | ------------------------------------- | -------------------------- |
-| GET    | `/clientes`                           | Listado de clientes        |
-| GET    | `/clientes/nuevo-cliente`             | Formulario nuevo cliente   |
-| POST   | `/clientes`                           | Crear cliente              |
-| GET    | `/clientes/:id/editar`                | Formulario editar          |
-| PUT    | `/clientes/:id`                       | Actualizar cliente         |
-| DELETE | `/clientes/:id`                       | Eliminar cliente           |
-| GET    | `/clientes/:id/cuenta-corriente`      | Ver cuenta corriente       |
+| Método | Ruta                                  | Descripción                                    |
+| ------ | ------------------------------------- | -----------------------------------------------|
+| GET    | `/clientes`                           | Listado de clientes                            |
+| GET    | `/clientes/nuevo-cliente`             | Formulario nuevo cliente                       |
+| POST   | `/clientes`                           | Crear cliente                                  |
+| GET    | `/clientes/:id/editar`                | Formulario editar                              |
+| PUT    | `/clientes/:id`                       | Actualizar cliente                             |
+| DELETE | `/clientes/:id`                       | Eliminar cliente                               |
+| GET    | `/clientes/:id/cuenta-corriente`      | Ver cuenta corriente                           |
+| GET    | `/clientes/:id/cobrar`                | Formulario registrar cobro                     |
+| POST   | `/clientes/:id/cobrar`                | Registrar cobro (acredita en cuenta corriente) |
 
 ### Lotes
 
@@ -213,6 +215,14 @@ Todas las rutas están protegidas. Sin sesión activa, redirige a `/login`.
 | GET    | `/cobranzas/nueva`| Formulario nueva cobranza                         |
 | POST   | `/cobranzas`      | Registrar cobranza (acredita en cuenta corriente) |
 
+
+### Alertas
+
+| Método | Ruta                                    | Descripción                                                                                          |
+| ------ | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| GET    | `/alertas`                              | Panel de alertas: stock bajo, lotes por vencer, clientes excedidos y revisiones de precio pendientes |
+| POST   | `/alertas/revisiones/:id/resolver`      | Aplicar precio de venta sugerido y marcar revisión como resuelta                                     |
+
 ---
 
 ## API REST
@@ -236,31 +246,36 @@ Endpoints JSON para integración externa, todos bajo `/api/`:
 
 - **FEFO (First Expired, First Out):** Al crear una venta, los lotes se asignan priorizando los de fecha de vencimiento más próxima.
 - **Stock por lotes:** El stock no se carga directamente en el producto. Se ingresa mediante lotes, que se crean al recibir una compra. El stock del producto es la suma de todos sus lotes activos.
-- **Número de lote:** Formato obligatorio `AAA-YYYY-X` (ej: `LAV-2024-A`). No se permiten duplicados.
-- **Cuenta Corriente:** Los débitos aumentan el saldo (ventas a cuenta); los créditos lo reducen (cobranzas).
+- **Número de lote:** Formato `SSSS-YYYY-NNN` (ej: `LIMP-2025-001`). El prefijo se genera automáticamente según la categoría del producto (`LIMP`, `DESI`, `GRAN`, `PAPE`, etc.) y el correlativo se consulta a la API para evitar duplicados. El campo es editable como fallback manual.
+- **Cuenta Corriente:** Las ventas a cuenta corriente generan un débito (aumenta el saldo del cliente). Los cobros registrados generan un crédito (reduce el saldo). Las ventas al contado (efectivo / transferencia) generan un registro de tipo `ingreso` que queda en el historial sin modificar el saldo.
 - **Límite de crédito:** Se valida al crear una venta con forma de pago `cuenta_corriente`.
 - **Control de dependencias:** No se puede eliminar un cliente con ventas, un producto con lotes o ventas, un proveedor con compras activas, ni un lote con movimientos de stock o ventas pendientes.
 - **IDs numéricos autoincrementales:** Todos los modelos usan `_id: Number` generado por el modelo `Contador` con `findOneAndUpdate + $inc`.
 - **Roles:** El rol `admin` tiene acceso a edición completa de lotes y gestión de usuarios. El rol `user` opera el sistema sin poder modificar cantidades de stock directamente.
+- **Actualización automática de precios al recibir compras:** Al recibir una compra, el `precio_costo` del producto se actualiza con el valor de la orden. Si el admin completó un precio de venta en el formulario, también se actualiza `precio_venta` directamente. Si no, el sistema genera una revisión pendiente con el precio sugerido (+40% del costo), visible en el panel de Alertas.
+- **Revisiones de precio:** El modelo `RevisionPrecio` almacena las actualizaciones de costo que quedaron sin precio de venta definido. El admin las resuelve desde Alertas aplicando el precio sugerido o uno personalizado.
+- **Validación de cheques:** No se acepta un cheque con fecha de vencimiento anterior a hoy menos 15 días, validado tanto en el frontend como en el backend.
 
 ---
 
 ## Tecnologías
 
-| Tecnología        | Uso                                     |
-| ------------------| ----------------------------------------|
-| Node.js + Express | Servidor HTTP y routing                 |
-| MongoDB Atlas     | Base de datos en la nube                |
-| Mongoose          | ODM para MongoDB                        |
-| Pug               | Motor de plantillas (vistas)            |
-| bcrypt            | Hash de contraseñas                     |
-| jsonwebtoken      | Generación y verificación de tokens JWT |
-| express-session   | Manejo de sesiones                      |
-| cookie-parser     | Lectura de cookies (para verificar JWT) |
-| dotenv            | Variables de entorno                    |
-| CORS              | Acceso desde otros orígenes             |
-| Render            | Hosting en la nube                      |
-| nodemon           | Recarga automática en desarrollo        |
+| Tecnología           | Uso                                     |
+| ---------------------| ----------------------------------------|
+| Node.js + Express    | Servidor HTTP y routing                 |
+| MongoDB Atlas        | Base de datos en la nube                |
+| Mongoose             | ODM para MongoDB                        |
+| Pug                  | Motor de plantillas (vistas)            |
+| bcrypt               | Hash de contraseñas                     |
+| jsonwebtoken         | Generación y verificación de tokens JWT |
+| express-session      | Manejo de sesiones                      |
+| cookie-parser        | Lectura de cookies (para verificar JWT) |
+| dotenv               | Variables de entorno                    |
+| CORS                 | Acceso desde otros orígenes             |
+| Render               | Hosting en la nube                      |
+| nodemon              | Recarga automática en desarrollo        |
+| Socket.IO            | Chat en tiempo real (WebSockets)        |
+| Google Generative AI | Asistente de chat con Gemini            |
 
 
 ## Decisiones de diseño
