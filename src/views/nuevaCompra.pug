@@ -34,44 +34,72 @@ block content
               label.form-label.fw-bold(for="precio_unitario") Precio Unitario de Costo ($)
               input#precio_unitario.form-control.rounded-0(type="number" step="0.01" min="0.01" placeholder="Ej: 449.99" required)
 
-            div.card.bg-light.p-3.mb-3.border-0.rounded-0
-              h6.fw-bold.text-secondary Lote
-              div.mb-2
-                label.form-label.small.fw-bold(for="lote_id") Seleccionar Lote
-                select#lote_id.form-select.rounded-0(required)
-                  option(value="" disabled selected) Seleccione un lote...
-                  each lote in lotes
-                    option(value=lote._id)= `Lote #${lote._id} - ${lote.numero_lote} | Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString('es-AR')} | Stock: ${lote.cantidad_actual}`
+          if usuarioRol === 'admin'
+            div.mb-3
+              label.form-label.text-muted
+                i.bi.bi-tag.me-1
+                | Precio de Venta Sugerido (+40%)
+              div.input-group
+                span.input-group-text $
+                input#precio_venta_nuevo.form-control.rounded-0(
+                  type="number"
+                  step="0.01"
+                  min="0.01"
+                  placeholder="Se calcula automáticamente..."
+                  style="background:#f8f9fa; color:#6c757d;"
+                )
+              div.form-text Calculado automáticamente. Podés editarlo antes de guardar.
 
-              div.mb-4
-                label.form-label.fw-bold(for="observaciones") Observaciones internas
-                textarea#observaciones.form-control.rounded-0(rows="2" placeholder="Notas sobre la compra...")
+          div.card.bg-light.p-3.mb-3.border-0.rounded-0
+            h6.fw-bold.text-secondary Lote
+            div.mb-2
+              label.form-label.small.fw-bold(for="lote_id") Seleccionar Lote
+              select#lote_id.form-select.rounded-0(required)
+                option(value="" disabled selected) Seleccione un lote...
+                - const lotesOrdenados = lotes.map(l => { const p = productos.find(pr => pr._id === l.producto_id); return { ...l, _nombre: p ? p.nombre : '' }; }).sort((a, b) => a._nombre.localeCompare(b._nombre, 'es'))
+                each lote in lotesOrdenados
+                  - const prodLote = productos.find(p => p._id === lote.producto_id)
+                  - const nombreProd = prodLote ? prodLote.nombre : `Producto #${lote.producto_id}`
+                  option(value=lote._id)= `${nombreProd} - ${lote.numero_lote} | Vence: ${new Date(lote.fecha_vencimiento).toLocaleDateString('es-AR')} | Stock: ${lote.cantidad_actual}`
+                
+            div.mb-4
+              label.form-label.fw-bold(for="observaciones") Observaciones internas
+              textarea#observaciones.form-control.rounded-0(rows="2" placeholder="Notas sobre la compra...")
 
-              div.d-flex.justify-content-end.gap-2
-                a.btn.btn-outline-secondary.rounded-0(href="/compras") Cancelar
-                button.btn.btn-primary.rounded-0(type="submit") Crear Orden de Compra
+            div.d-flex.justify-content-end.gap-2
+              a.btn.btn-outline-secondary.rounded-0(href="/compras") Cancelar
+              button.btn.btn-primary.rounded-0(type="submit") Crear Orden de Compra
 
 block scripts
   script.
+    const esAdmin = !{JSON.stringify(usuarioRol === 'admin')};
+    const campoPrecioVenta = document.getElementById('precio_venta_nuevo');
+    const campoCosto = document.getElementById('precio_unitario');
+
+    if (esAdmin && campoPrecioVenta) {
+      campoCosto.addEventListener('input', function () {
+        const costo = parseFloat(this.value) || 0;
+        campoPrecioVenta.value = costo > 0 ? Math.round(costo * 1.40) : '';
+      });
+    }
+
     document.getElementById('formCompra').addEventListener('submit', async (e) => {
       e.preventDefault();
       const errorAlert = document.getElementById('errorAlert');
       errorAlert.classList.add('d-none');
 
-      const lote_id = Number(document.getElementById('lote_id').value);
-
-      const provSelectValue = document.getElementById('proveedor_id').value;
-      const prodSelectValue = document.getElementById('producto_id').value;
-
       const payload = {
-        proveedor_id: provSelectValue,
+        proveedor_id: document.getElementById('proveedor_id').value,
         observaciones: document.getElementById('observaciones').value || null,
         estado: 'pendiente',
         items: [{
-          producto_id: prodSelectValue,
-          cantidad: Number(document.getElementById('cantidad').value),
-          precio_unitario: Number(document.getElementById('precio_unitario').value),
-          lote_id: lote_id
+          producto_id:     document.getElementById('producto_id').value,
+          cantidad:        Number(document.getElementById('cantidad').value),
+          precio_unitario: Number(campoCosto.value),
+          lote_id:         Number(document.getElementById('lote_id').value),
+          precio_venta_nuevo: (esAdmin && campoPrecioVenta && campoPrecioVenta.value)
+                               ? Number(campoPrecioVenta.value)
+                               : null,
         }]
       };
 
@@ -89,7 +117,6 @@ block scripts
           window.location.href = '/compras';
         } else {
           const errData = await response.json().catch(() => ({}));
-
           let mensaje = errData.error || 'Error al procesar';
           if (errData.details) {
             mensaje += ': ' + (Array.isArray(errData.details) ? errData.details.join(', ') : errData.details);

@@ -46,7 +46,7 @@ block content
         .col-md-6.mb-4
           .card.shadow-sm.border-warning
             .card-header.bg-warning.text-dark
-              h5.card-title.mb-0 
+              h5.card-title.mb-0
                 i.bi.bi-calendar-exclamation-fill.me-2
                 | Lotes Próximos a Vencer (Menos de 30 días)
             .card-body.p-0
@@ -54,13 +54,15 @@ block content
                 table.table.table-hover.align-middle.mb-0
                   thead.table-light
                     tr
-                      th Lote ID
+                      th Producto
+                      th Lote
                       th Cantidad
                       th Vencimiento
                   tbody
                     each l in lotes_por_vencer
                       tr
-                        td= l._id
+                        td.fw-semibold= l.nombreProducto
+                        td.text-muted= l.numero_lote
                         td= l.cantidad_actual
                         td.text-warning-emphasis.fw-bold= l.fecha_vencimiento.toLocaleDateString('es-AR')
 
@@ -86,3 +88,44 @@ block content
                         td= c.nombre
                         td.text-danger.fw-bold= `$${c.saldo_cuenta_corriente}`
                         td.text-muted= `$${c.limite_credito}`
+
+      // --- SECCIÓN 4: REVISIONES DE PRECIO ---
+      if revisiones_precio && revisiones_precio.length > 0
+        .col-12.mb-4
+          .card.shadow-sm.border-info
+            .card-header.bg-info.text-white
+              h5.card-title.mb-0
+                i.bi.bi-tag-fill.me-2
+                | Precios de Venta Pendientes de Revisión
+            .card-body.p-0
+              .table-responsive
+                table.table.table-hover.align-middle.mb-0
+                  thead.table-light
+                    tr
+                      th Producto
+                      th Costo Nuevo
+                      th Precio Venta Actual
+                      th Precio Sugerido (+40%)
+                      th Nuevo Precio
+                      th
+                  tbody
+                    each r in revisiones_precio
+                      tr
+                        td.fw-semibold= r.nombreProducto
+                        td.text-muted= `$${r.precio_costo_nuevo}`
+                        td= `$${r.precio_venta_actual}`
+                        td.text-info.fw-bold= `$${r.precio_venta_sugerido}`
+                        td
+                          form(action=`/alertas/revisiones/${r._id}/resolver` method="POST" style="min-width:180px")
+                            div.input-group.input-group-sm
+                              span.input-group-text $
+                              input.form-control(
+                                type="number"
+                                name="precio_venta_nuevo"
+                                value=r.precio_venta_sugerido
+                                min="1"
+                                required
+                              )
+                              button.btn.btn-success(type="submit") Aplicar
+                        td
+                          a.btn.btn-sm.btn-outline-secondary(href=`/productos/${r.producto_id}/editar`) Editar producto
