@@ -42,7 +42,10 @@ block content
       each mov in cliente.movimientos
         tr
           td= new Date(mov.fecha).toLocaleDateString('es-AR')
-          td= mov.tipo.charAt(0).toUpperCase() + mov.tipo.slice(1)
+          td
+            - const badge = mov.tipo === 'debito' ? 'bg-danger' : (mov.tipo === 'credito' ? 'bg-success' : 'bg-info')
+            - const label = mov.tipo === 'debito' ? 'Débito' : (mov.tipo === 'credito' ? 'Crédito' : 'Ingreso')
+            span.badge(class=badge)= label
           td= mov.descripcion
           td
             if mov.referencia
@@ -50,7 +53,12 @@ block content
             else
               | -
           td= `$${mov.monto}`
-          td= `$${mov.saldo_resultante}`
+          td= mov.tipo === 'ingreso' ? '-' : `$${mov.saldo_resultante}`
       else
         tr
           td.text-center(colspan="6") Sin movimientos registrados.
+        
+    tfoot
+      tr.table-dark.fw-bold
+        td(colspan="5") Total adeudado
+        td= `$${cliente.saldo_cuenta_corriente}`
