@@ -12,6 +12,7 @@ const CompraSchema = new mongoose.Schema({
     lote_id:           { type: Number },
     cantidad:          { type: Number },
     precio_unitario:   { type: Number },
+    precio_venta_nuevo: { type: Number, default: null },
     numero_lote:       { type: String },
     fecha_vencimiento: { type: Date },
     subtotal:          { type: Number },
