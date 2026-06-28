@@ -17,7 +17,13 @@
       "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/ventas/nueva-venta -o /tmp/nueva_venta.html -w \"nueva_venta:%{http_code}\\\\n\")",
       "Bash(curl -s -b /tmp/cookies.txt http://localhost:3000/compras/nueva -o /tmp/nueva_compra.html -w \"nueva_compra:%{http_code}\\\\n\")",
       "Bash(node -e ' *)",
-      "Bash(lsof -i :3000 -P -n 2>/dev/null; rm -f /tmp/cookies.txt /tmp/reg_out.html /tmp/login_out.html /tmp/dashboard.html /tmp/page_check.html /tmp/usuarios_page.html /tmp/nueva_venta.html /tmp/nueva_compra.html /tmp/login_page.html /tmp/todostock_server.log)"
+      "Bash(lsof -i :3000 -P -n 2>/dev/null; rm -f /tmp/cookies.txt /tmp/reg_out.html /tmp/login_out.html /tmp/dashboard.html /tmp/page_check.html /tmp/usuarios_page.html /tmp/nueva_venta.html /tmp/nueva_compra.html /tmp/login_page.html /tmp/todostock_server.log)",
+      "Bash(npm -v)",
+      "Bash(curl -s -o /tmp/healthz.html -w \"http:%{http_code}\\\\n\" http://localhost:3000/healthz)",
+      "Bash(curl -s -o /dev/null -w \"login_page:%{http_code}\\\\n\" http://localhost:3000/login)",
+      "Bash(echo \"exit:$?\")",
+      "Bash(curl -s -o /tmp/index_prod.html -w \"index:%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -o /tmp/login_prod.html -w \"login:%{http_code}\\\\n\" http://localhost:3000/login)"
     ],
     "additionalDirectories": [
       "/private/tmp"

@@ -12,6 +12,9 @@ const Cliente = require('./models/Cliente');
 //CONFIGURACIONES DEL SERVIDOR
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
+// Render (y otros PaaS) ponen un proxy TLS delante de la app; sin esto,
+// Express no reconoce la conexión como HTTPS y la cookie "secure" nunca se envía.
+app.set('trust proxy', 1);
 
 //MIDDLEWARES
 app.use(cors());
@@ -22,9 +25,16 @@ app.use(session({
   secret: process.env.SESSION_SECRET || 'todostock_secret',
   resave: false,
   saveUninitialized: false,
-  cookie: { secure: false, httpOnly: true, maxAge: 1000 * 60 * 60 * 8 }
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 1000 * 60 * 60 * 8,
+  },
 }));
 app.use(cookieParser());
+
+// Healthcheck para Render: no requiere sesión ni DB.
+app.get('/healthz', (req, res) => res.status(200).send('ok'));
 
 app.use((req, res, next) => {
   res.locals.usuarioRol = req.session?.usuarioRol || null;
