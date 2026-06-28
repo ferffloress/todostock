@@ -270,25 +270,15 @@ const ventasController = {
       } else {
         // Efectivo u otro medio: registra el movimiento doble para reflejar el historial sin alterar el saldo final neto
 
-        // 2a. Registra el Débito (Entrega de mercadería por la venta)
+        
         await new CuentaCorriente({
-          cliente_id: venta.cliente_id,
-          tipo: "debito",
-          monto: venta.total,
-          referencia: venta._id,
-          descripcion: `Venta Contado (${venta.forma_pago})`,
-          saldo_resultante: nuevoSaldo + venta.total, // Sube momentáneamente en el asiento
-        }).save();
-
-        // 2b. Registra el Crédito (Pago inmediato que cancela la operación)
-        await new CuentaCorriente({
-          cliente_id: venta.cliente_id,
-          tipo: "credito",
-          monto: venta.total,
-          referencia: venta._id,
-          descripcion: `Pago Recibido (${venta.forma_pago})`,
-          saldo_resultante: nuevoSaldo, // Retorna al saldo real que le queda al cliente
-        }).save();
+        cliente_id: venta.cliente_id,
+        tipo: 'ingreso',
+        monto: venta.total,
+        referencia: venta._id,
+        descripcion: `Venta Contado (${venta.forma_pago})`,
+        saldo_resultante: nuevoSaldo, 
+      }).save();
       }
 
       await Cliente.findByIdAndUpdate(venta.cliente_id, {
