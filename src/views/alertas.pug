@@ -115,17 +115,18 @@ block content
                         td.text-muted= `$${r.precio_costo_nuevo}`
                         td= `$${r.precio_venta_actual}`
                         td.text-info.fw-bold= `$${r.precio_venta_sugerido}`
-                        td
-                          form(action=`/alertas/revisiones/${r._id}/resolver` method="POST" style="min-width:180px")
-                            div.input-group.input-group-sm
-                              span.input-group-text $
-                              input.form-control(
-                                type="number"
-                                name="precio_venta_nuevo"
-                                value=r.precio_venta_sugerido
-                                min="1"
-                                required
-                              )
-                              button.btn.btn-success(type="submit") Aplicar
-                        td
-                          a.btn.btn-sm.btn-outline-secondary(href=`/productos/${r.producto_id}/editar`) Editar producto
+                        if usuarioRol === 'admin'
+                          td
+                            form(action=`/alertas/revisiones/${r._id}/resolver` method="POST" style="min-width:180px")
+                              div.input-group.input-group-sm
+                                span.input-group-text $
+                                input.form-control(
+                                  type="number"
+                                  name="precio_venta_nuevo"
+                                  value=r.precio_venta_sugerido
+                                  min="1"
+                                  required
+                                )
+                                button.btn.btn-success(type="submit") Aplicar
+                          td
+                            a.btn.btn-sm.btn-outline-secondary(href=`/productos/${r.producto_id}/editar`) Editar producto
