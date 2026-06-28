@@ -25,6 +25,11 @@ block content
           span.text-success.ms-1 (a favor del cliente)
         else if saldo === 0
           span.text-muted.ms-1 (sin deuda)
+        else
+          a.btn.btn-sm.btn-success.ms-3(href=`/clientes/${cliente._id}/cobrar`)
+            i.bi.bi-cash-coin.me-1
+            | Registrar Cobro
+
 
   div.bg-dark.text-white.p-3.mb-0
     h6.m-0.fw-bold Movimientos

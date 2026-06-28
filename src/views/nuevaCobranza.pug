@@ -1,0 +1,100 @@
+extends layout
+
+block title
+  | Registrar Cobro
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h1 Registrar Cobro
+    a.btn.btn-outline-secondary(href=`/clientes/${cliente._id}/cuenta-corriente`) Volver
+
+  div.row.justify-content-center
+    div.col-lg-6
+      div.card.shadow-sm
+        div.card-header.bg-dark.text-white
+          h5.mb-0= cliente.nombre
+        div.card-body
+          if error
+            div.alert.alert-danger= error
+
+          p.mb-3 Saldo pendiente:
+            span.text-danger.fw-bold.ms-1 $#{cliente.saldo_cuenta_corriente}
+
+          form(method="POST" action=`/clientes/${cliente._id}/cobrar`)
+
+            div.mb-3
+              label.form-label.fw-semibold Monto a cobrar
+              div.input-group
+                span.input-group-text $
+                input.form-control(
+                  type="number"
+                  name="monto"
+                  min="1"
+                  max=cliente.saldo_cuenta_corriente
+                  value=cliente.saldo_cuenta_corriente
+                  required
+                )
+
+            div.mb-4
+              label.form-label.fw-semibold Forma de pago
+              div.d-flex.gap-2.flex-wrap
+                each medio in ['efectivo', 'transferencia', 'cheque']
+                  div
+                    input.btn-check(
+                      type="radio"
+                      name="forma_pago"
+                      id=`pago_${medio}`
+                      value=medio
+                      required
+                      autocomplete="off"
+                    )
+                    label.btn.btn-outline-primary.text-capitalize(for=`pago_${medio}`)= medio
+
+            div#camposComprobante.mb-3(hidden)
+              label.form-label.fw-semibold Nro. de comprobante
+              input.form-control#nroComprobante(
+                type="text"
+                name="nro_comprobante"
+                placeholder="Ej: 0001234567"
+              )
+
+            div#camposCheque.mb-3(hidden)
+              label.form-label.fw-semibold Fecha de vencimiento del cheque
+              input.form-control#fechaVtoCheque(
+                type="date"
+                name="fecha_vto_cheque"
+              )
+
+            div.mb-3
+              label.form-label.fw-semibold Observaciones
+              textarea.form-control(name="observaciones" rows="2" placeholder="Opcional...")
+
+            div.d-flex.justify-content-end.gap-2.mt-4
+              a.btn.btn-outline-secondary(href=`/clientes/${cliente._id}/cuenta-corriente`) Cancelar
+              button.btn.btn-success(type="submit")
+                i.bi.bi-cash-coin.me-2
+                | Confirmar Cobro
+
+block scripts
+  script.
+    const camposComprobante = document.getElementById('camposComprobante');
+    const camposCheque = document.getElementById('camposCheque');
+    const nroComprobante = document.getElementById('nroComprobante');
+    const fechaVtoCheque = document.getElementById('fechaVtoCheque');
+
+    document.querySelectorAll('input[name="forma_pago"]').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const esTrans = this.value === 'transferencia';
+        const esCheque = this.value === 'cheque';
+
+        camposComprobante.hidden = !(esTrans || esCheque);
+        camposCheque.hidden = !esCheque;
+
+        nroComprobante.required = esTrans || esCheque;
+        fechaVtoCheque.required = esCheque;
+      });
+    });
+
+    const fechaMin = new Date();
+    fechaMin.setDate(fechaMin.getDate() - 15);
+    document.getElementById('fechaVtoCheque').min = fechaMin.toISOString().split('T')[0]; 

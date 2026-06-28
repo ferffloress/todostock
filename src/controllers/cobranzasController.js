@@ -12,13 +12,20 @@ function makeError(message, status) {
 
 const cobranzasController = {
  async listar(req, res, next) {
-    try {
-      const cobranzas = await Cobranza.find();
-      res.render('cobranzas', { cobranzas });
-    } catch (err) {
-      next(err);
-    }
-  },
+  try {
+    const cobranzas = await Cobranza.find().sort({ fecha: -1 }).lean();
+    const clientes = await Cliente.find().lean();
+    const clienteMap = {};
+    clientes.forEach(c => { clienteMap[c._id] = c.nombre; });
+    const cobranzasConNombre = cobranzas.map(c => ({
+      ...c,
+      nombreCliente: clienteMap[c.cliente_id] || `Cliente #${c.cliente_id}`,
+    }));
+    res.render('cobranzas', { cobranzas: cobranzasConNombre });
+  } catch (err) {
+    next(err);
+  }
+},
 
   async obtener(req, res, next) {
     try {

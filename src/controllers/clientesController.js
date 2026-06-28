@@ -2,6 +2,7 @@ const Cliente = require('../models/Cliente');
 const CuentaCorriente = require('../models/CuentaCorriente');
 const Venta = require('../models/Venta');
 const { validate } = require('../validators/clientesValidator');
+const Cobranza = require('../models/Cobranza');
 
 function makeError(message, status) {
   const err = new Error(message);
@@ -53,6 +54,72 @@ const clientesController = {
       next(err);
     }
   },
+
+  async formularioCobrar(req, res, next) {
+    try {
+      const cliente = await Cliente.findById(Number(req.params.id));
+      if (!cliente) throw makeError('Cliente no encontrado', 404);
+      if (cliente.saldo_cuenta_corriente <= 0)
+        throw makeError('Este cliente no tiene saldo pendiente', 400);
+      res.render('nuevaCobranza', { titulo: 'Registrar Cobro', cliente, error: null });
+    } catch (err) {
+      next(err);
+    }
+  },
+
+  async registrarCobro(req, res, next) {
+    const cliente = await Cliente.findById(Number(req.params.id));
+    try {
+      if (!cliente) throw makeError('Cliente no encontrado', 404);
+
+      const monto = Number(req.body.monto);
+      const forma_pago = req.body.forma_pago;
+
+      if (!monto || monto <= 0)
+        throw makeError('El monto debe ser mayor a cero', 400);
+      if (!['efectivo', 'transferencia', 'cheque'].includes(forma_pago))
+        throw makeError('Forma de pago inválida', 400);
+      if ((forma_pago === 'transferencia' || forma_pago === 'cheque') && !req.body.nro_comprobante)
+        throw makeError('El número de comprobante es requerido', 400);
+      if (forma_pago === 'cheque' && !req.body.fecha_vto_cheque)
+        throw makeError('La fecha de vencimiento del cheque es requerida', 400);
+      if (forma_pago === 'cheque') {
+        const fechaVto = new Date(req.body.fecha_vto_cheque);
+        const minFecha = new Date();
+        minFecha.setDate(minFecha.getDate() - 15);
+        minFecha.setHours(0, 0, 0, 0);
+        if (fechaVto < minFecha) {
+          throw makeError('El cheque está vencido hace más de 15 días y no puede ser aceptado', 400);
+        }
+      }
+
+      await new Cobranza({
+        cliente_id: cliente._id,
+        monto,
+        forma_pago,
+        observaciones: req.body.observaciones || null,
+        nro_comprobante: req.body.nro_comprobante || null,
+        fecha_vto_cheque: req.body.fecha_vto_cheque || null,
+      }).save();
+
+      const nuevoSaldo = cliente.saldo_cuenta_corriente - monto;
+
+      await new CuentaCorriente({
+        cliente_id: cliente._id,
+        tipo: 'credito',
+        monto,
+        descripcion: `Cobro registrado (${forma_pago})`,
+        saldo_resultante: nuevoSaldo,
+      }).save();
+
+      await Cliente.findByIdAndUpdate(cliente._id, { saldo_cuenta_corriente: nuevoSaldo });
+
+      res.redirect(`/clientes/${cliente._id}/cuenta-corriente`);
+    } catch (err) {
+      res.render('nuevaCobranza', { titulo: 'Registrar Cobro', cliente, error: err.message });
+    }
+  },
+
 
   async obtener(req, res, next) {
     try {
